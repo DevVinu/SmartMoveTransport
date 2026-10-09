@@ -35,7 +35,7 @@ $pageTitle = "Log In | SmartMove Transport";
         <button type="button" class="role-btn" data-role="STAFF">Staff / Admin</button>
       </div>
 
-      <form class="auth-form" action="../index.php" method="GET" onsubmit="alert('Login successful! Redirecting...');">
+      <form class="auth-form" action="dashboard.php" method="GET">
         <input type="hidden" name="role" id="userRoleInput" value="PASSENGER">
 
         <div class="form-group">

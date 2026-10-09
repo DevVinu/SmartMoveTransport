@@ -7,6 +7,7 @@
         <li><a href="#fleet">Fleet</a></li>
         <li><a href="#earn">Drive</a></li>
         <li><a href="#business">Business</a></li>
+        <li><a href="pages/dashboard.php">Dashboard</a></li>
         <li><a href="#about">About ▾</a></li>
       </ul>
     </div>

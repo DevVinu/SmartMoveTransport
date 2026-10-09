@@ -32,7 +32,7 @@
 
       <div class="hero-cta-row">
         <button class="btn-see-prices" id="seePricesBtn">See prices & fleet</button>
-        <a href="pages/login.php" class="activity-link">Log in to check your activity</a>
+        <a href="pages/dashboard.php" class="activity-link">Check dashboard activity →</a>
       </div>
     </div>
 
