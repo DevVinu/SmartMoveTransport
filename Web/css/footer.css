@@ -1,7 +1,7 @@
 /* Footer */
 .uber-footer {
-  background-color: #0B0F17;
-  border-top: 1px solid rgba(37, 99, 235, 0.3);
+  background-color: var(--bg-surface-dark);
+  border-top: 1px solid var(--border-gray);
   padding: 3.5rem 2rem;
   width: 100%;
 }
@@ -12,12 +12,12 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  color: #94A3B8;
+  color: var(--text-sub);
   font-size: 0.9rem;
 }
 
 .footer-brand {
-  color: #FFFFFF;
+  color: var(--color-white);
   font-size: 1.3rem;
   display: block;
   margin-bottom: 0.5rem;
@@ -29,7 +29,12 @@
 }
 
 .footer-links a {
-  color: #F8FAFC;
+  color: var(--color-white);
+  transition: color 0.15s ease;
+}
+
+.footer-links a:hover {
+  color: var(--blue-light);
 }
 
 .footer-links a.signup-link {

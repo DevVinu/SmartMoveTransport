@@ -17,3 +17,7 @@ a {
   color: inherit;
   text-decoration: none;
 }
+
+.blue-text {
+  color: var(--blue-light);
+}

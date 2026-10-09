@@ -1,9 +1,11 @@
 /* Member savings banner */
 .member-savings-section {
-  background-color: #FFFFFF;
-  color: #000000;
-  padding: 4rem 2rem;
-  margin: 3rem 0;
+  background-color: var(--bg-gray-section);
+  color: var(--color-white);
+  padding: 4.5rem 2rem;
+  margin: 0;
+  border-top: 1px solid var(--border-gray);
+  border-bottom: 1px solid var(--border-gray);
 }
 
 .savings-container {
@@ -21,34 +23,37 @@
   letter-spacing: -1px;
   line-height: 1.1;
   margin-bottom: 1rem;
-  color: #000000;
+  color: var(--color-white);
 }
 
 .savings-desc {
   font-size: 1.05rem;
-  color: #475569;
+  color: var(--text-sub);
   margin-bottom: 1.8rem;
 }
 
 .btn-dark-pill {
-  background-color: #000000;
-  color: #FFFFFF;
+  background-color: var(--color-black);
+  color: var(--color-white);
   font-size: 0.95rem;
   font-weight: 700;
   padding: 0.8rem 1.8rem;
-  border-radius: var(--radius-input);
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border-light);
   display: inline-block;
-  transition: background-color 0.15s ease;
+  transition: all 0.15s ease;
 }
 
 .btn-dark-pill:hover {
-  background-color: #1E293B;
+  background-color: #1F232B;
+  color: var(--color-white);
 }
 
 .savings-img-right {
   height: 280px;
   border-radius: 16px;
   overflow: hidden;
+  border: 1px solid var(--border-light);
 }
 
 .savings-img {
@@ -59,8 +64,8 @@
 
 /* Earn with SmartMove */
 .uber-earn-section {
-  background-color: var(--bg-deep-charcoal);
-  padding: 4rem 2rem 6rem 2rem;
+  background-color: var(--bg-gray-main);
+  padding: 4.5rem 2rem 6rem 2rem;
   max-width: 1280px;
   margin: 0 auto;
 }
@@ -71,7 +76,7 @@
   border-radius: 20px;
   overflow: hidden;
   margin-bottom: 3.5rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--border-light);
 }
 
 .panoramic-banner-img {
@@ -85,7 +90,7 @@
   font-weight: 800;
   letter-spacing: -0.8px;
   margin-bottom: 2.2rem;
-  color: #FFFFFF;
+  color: var(--color-white);
 }
 
 .earn-cards-grid {
@@ -104,7 +109,8 @@
   border-radius: 12px;
   overflow: hidden;
   margin-bottom: 1.2rem;
-  border: 1px solid var(--blue-border);
+  border: 1px solid var(--border-light);
+  background-color: var(--bg-card-dark);
 }
 
 .earn-img {
@@ -116,7 +122,7 @@
 .earn-card-title {
   font-size: 1.15rem;
   font-weight: 700;
-  color: #FFFFFF;
+  color: var(--color-white);
   margin-bottom: 0.5rem;
 }
 
@@ -130,9 +136,10 @@
 .earn-link {
   font-size: 0.92rem;
   font-weight: 700;
-  color: #FFFFFF;
+  color: var(--color-white);
   text-decoration: underline;
   text-underline-offset: 4px;
+  transition: color 0.15s ease;
 }
 
 .earn-link:hover {
@@ -141,8 +148,13 @@
 
 /* About Us & Social Impact */
 .about-impact-section {
-  background-color: var(--bg-deep-charcoal);
-  padding: 4rem 2rem 6rem 2rem;
+  background-color: var(--bg-gray-section);
+  padding: 4.5rem 2rem 6rem 2rem;
+  width: 100%;
+  border-top: 1px solid var(--border-gray);
+}
+
+.about-impact-container {
   max-width: 1280px;
   margin: 0 auto;
 }
@@ -159,7 +171,7 @@
   height: 340px;
   border-radius: 20px;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--border-light);
 }
 
 .about-img {
@@ -169,8 +181,8 @@
 }
 
 .about-card-col, .impact-card-col {
-  background-color: var(--bg-surface-dark);
-  border: 1px solid var(--blue-border);
+  background-color: var(--bg-card-dark);
+  border: 1px solid var(--border-light);
   border-radius: 24px;
   padding: 3rem;
   display: flex;
@@ -182,7 +194,7 @@
   font-size: 2.4rem;
   font-weight: 800;
   margin-bottom: 1rem;
-  color: #FFFFFF;
+  color: var(--color-white);
   letter-spacing: -0.8px;
 }
 
@@ -194,18 +206,20 @@
 }
 
 .btn-learn-more {
-  background-color: #FFFFFF;
-  color: #000000;
+  background-color: var(--color-white);
+  color: var(--color-black);
   font-size: 0.92rem;
   font-weight: 700;
   padding: 0.7rem 1.6rem;
   border-radius: var(--radius-pill);
   width: fit-content;
-  transition: background-color 0.15s ease;
+  border: 1px solid var(--color-white);
+  transition: all 0.15s ease;
 }
 
 .btn-learn-more:hover {
   background-color: #E2E8F0;
+  color: var(--color-black);
 }
 
 @media (max-width: 992px) {

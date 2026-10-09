@@ -5,7 +5,7 @@
       <img src="../img/banner_chauffeur.jpg" alt="Chauffeur passenger experience" class="panoramic-banner-img">
     </div>
 
-    <h2 class="earn-headline">Earn with SmartMove</h2>
+    <h2 class="earn-headline">Earn with <span class="blue-text">SmartMove</span></h2>
 
     <div class="earn-cards-grid">
       

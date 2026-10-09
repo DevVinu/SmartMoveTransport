@@ -1,6 +1,6 @@
 <section class="uber-steps-section">
   <div class="steps-container">
-    <h2 class="steps-headline">How to request a ride</h2>
+    <h2 class="steps-headline">Ride in comfort in <span class="blue-text">3 simple steps</span></h2>
 
     <div class="steps-carousel-wrapper">
       

@@ -1,12 +1,12 @@
 /* Navigation bar */
 .uber-header {
-  background-color: rgba(11, 15, 23, 0.96);
+  background-color: rgba(24, 26, 32, 0.94);
   backdrop-filter: blur(12px);
   width: 100%;
   position: sticky;
   top: 0;
   z-index: 1000;
-  border-bottom: 1px solid var(--blue-border);
+  border-bottom: 1px solid var(--border-gray);
 }
 
 .uber-nav-container {
@@ -28,14 +28,14 @@
   font-size: 1.6rem;
   font-weight: 800;
   letter-spacing: -0.5px;
-  color: var(--text-white);
+  color: var(--color-white);
   display: flex;
   align-items: center;
   white-space: nowrap;
 }
 
 .blue-dot {
-  color: var(--blue-primary);
+  color: var(--blue-light);
 }
 
 .nav-menu-links {
@@ -48,7 +48,7 @@
 .nav-menu-links a {
   font-size: 0.95rem;
   font-weight: 600;
-  color: #CBD5E1;
+  color: var(--text-sub);
   padding: 0.5rem 0.9rem;
   border-radius: var(--radius-pill);
   transition: all 0.15s ease;
@@ -59,8 +59,8 @@
 }
 
 .nav-menu-links a:hover {
-  color: #FFFFFF;
-  background-color: rgba(37, 99, 235, 0.15);
+  color: var(--blue-light);
+  background-color: rgba(59, 130, 246, 0.1);
 }
 
 .nav-right-group {
@@ -72,7 +72,7 @@
 .nav-link-item {
   font-size: 0.95rem;
   font-weight: 600;
-  color: #CBD5E1;
+  color: var(--text-sub);
   padding: 0.5rem 0.9rem;
   border-radius: var(--radius-pill);
   transition: all 0.15s ease;
@@ -83,19 +83,19 @@
 }
 
 .nav-link-item:hover {
-  color: #FFFFFF;
-  background-color: rgba(255, 255, 255, 0.08);
+  color: var(--blue-light);
+  background-color: rgba(255, 255, 255, 0.06);
 }
 
 .btn-signup-pill {
-  background-color: var(--blue-primary);
-  color: #FFFFFF;
+  background-color: var(--color-white);
+  color: var(--color-black);
   font-size: 0.92rem;
   font-weight: 700;
   padding: 0.6rem 1.4rem;
   border-radius: var(--radius-pill);
-  transition: background-color 0.15s ease;
-  border: none;
+  transition: all 0.15s ease;
+  border: 1px solid var(--color-white);
   white-space: nowrap;
   line-height: 1;
   display: inline-flex;
@@ -103,13 +103,14 @@
 }
 
 .btn-signup-pill:hover {
-  background-color: var(--blue-hover);
+  background-color: #E2E8F0;
+  color: var(--color-black);
 }
 
 .mobile-toggle {
   display: none;
   font-size: 1.4rem;
-  color: var(--text-white);
+  color: var(--color-white);
   cursor: pointer;
   padding: 0.3rem 0.6rem;
 }

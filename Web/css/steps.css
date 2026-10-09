@@ -1,12 +1,15 @@
 /* How to request a ride steps */
 .uber-steps-section {
-  background-color: var(--bg-deep-charcoal);
-  padding: 4rem 2rem 5rem 2rem;
-  max-width: 1280px;
-  margin: 0 auto;
+  background-color: var(--bg-gray-section);
+  padding: 4.5rem 2rem 5.5rem 2rem;
+  max-width: 100%;
+  border-top: 1px solid var(--border-gray);
+  border-bottom: 1px solid var(--border-gray);
 }
 
 .steps-container {
+  max-width: 1280px;
+  margin: 0 auto;
   position: relative;
 }
 
@@ -15,7 +18,7 @@
   font-weight: 800;
   letter-spacing: -0.8px;
   margin-bottom: 2.2rem;
-  color: #FFFFFF;
+  color: var(--color-white);
 }
 
 .steps-carousel-wrapper {
@@ -59,7 +62,8 @@
   border-radius: 12px;
   overflow: hidden;
   margin-bottom: 1.2rem;
-  background-color: #121824;
+  background-color: var(--bg-card-dark);
+  border: 1px solid var(--border-light);
 }
 
 .step-img {
@@ -73,8 +77,8 @@
   position: absolute;
   bottom: -10px;
   left: 1rem;
-  background-color: #FFFFFF;
-  color: #000000;
+  background-color: var(--color-white);
+  color: var(--color-black);
   width: 44px;
   height: 44px;
   border-radius: 10px;
@@ -82,14 +86,15 @@
   align-items: center;
   justify-content: center;
   font-size: 1.2rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+  border: 1px solid var(--border-light);
   z-index: 2;
 }
 
 .step-title {
   font-size: 1.15rem;
   font-weight: 700;
-  color: #FFFFFF;
+  color: var(--color-white);
   margin-top: 0.8rem;
   margin-bottom: 0.4rem;
 }
@@ -118,8 +123,8 @@
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  background-color: #FFFFFF;
-  color: #000000;
+  background-color: var(--color-white);
+  color: var(--color-black);
   border: none;
   font-size: 1.4rem;
   font-weight: 700;
@@ -127,11 +132,12 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: background-color 0.15s ease;
+  transition: all 0.15s ease;
 }
 
 .btn-arrow-circle:hover {
   background-color: #E2E8F0;
+  color: var(--color-black);
 }
 
 @media (max-width: 992px) {

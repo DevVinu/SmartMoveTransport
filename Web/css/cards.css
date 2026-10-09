@@ -22,21 +22,22 @@
 
 .explore-card {
   background-color: var(--bg-card-dark);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--border-light);
   border-radius: var(--radius-card);
   padding: 2rem;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  transition: background-color 0.15s ease, border-color 0.15s ease;
+  transition: background-color 0.15s ease;
   min-height: 190px;
   position: relative;
   overflow: hidden;
+  transform: none;
 }
 
 .explore-card:hover {
   background-color: var(--bg-card-hover);
-  border-color: var(--blue-primary);
+  transform: none;
 }
 
 .card-left-info {
@@ -53,7 +54,7 @@
   font-size: 1.3rem;
   font-weight: 800;
   margin-bottom: 0.4rem;
-  color: #FFFFFF;
+  color: var(--color-white);
 }
 
 .card-desc {
@@ -64,9 +65,9 @@
 }
 
 .btn-details-pill {
-  background-color: rgba(37, 99, 235, 0.12);
-  color: var(--blue-light);
-  border: 1px solid var(--blue-border);
+  background-color: var(--color-black);
+  color: var(--color-white);
+  border: 1px solid var(--border-light);
   font-size: 0.85rem;
   font-weight: 700;
   padding: 0.5rem 1.3rem;
@@ -76,9 +77,9 @@
 }
 
 .btn-details-pill:hover {
-  background-color: var(--blue-primary);
-  color: #FFFFFF;
-  border-color: var(--blue-primary);
+  background-color: var(--blue-light);
+  color: var(--color-white);
+  border-color: var(--blue-light);
 }
 
 @media (max-width: 992px) {

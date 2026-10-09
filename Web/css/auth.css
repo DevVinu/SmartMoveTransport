@@ -13,7 +13,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid var(--blue-border);
+  border-bottom: 1px solid var(--border-gray);
+  background-color: var(--bg-surface-dark);
 }
 
 .btn-ghost-light {
@@ -25,21 +26,24 @@
 }
 
 .btn-ghost-light:hover {
-  color: #FFFFFF;
+  color: var(--color-white);
   background-color: rgba(255, 255, 255, 0.08);
 }
 
 .btn-pill-primary {
-  background-color: var(--blue-primary);
-  color: #FFFFFF;
+  background-color: var(--color-white);
+  color: var(--color-black);
   font-size: 0.92rem;
   font-weight: 700;
   padding: 0.55rem 1.3rem;
   border-radius: var(--radius-pill);
+  border: 1px solid var(--color-white);
+  transition: all 0.15s ease;
 }
 
 .btn-pill-primary:hover {
-  background-color: var(--blue-hover);
+  background-color: #E2E8F0;
+  color: var(--color-black);
 }
 
 .auth-container {
@@ -50,8 +54,8 @@
 }
 
 .auth-card {
-  background-color: var(--bg-surface-dark);
-  border: 1px solid var(--blue-border);
+  background-color: var(--bg-card-dark);
+  border: 1px solid var(--border-light);
   border-radius: var(--radius-card);
   padding: 2.5rem;
 }
@@ -60,6 +64,7 @@
   font-size: 1.8rem;
   font-weight: 800;
   margin-bottom: 0.5rem;
+  color: var(--color-white);
 }
 
 .auth-subtitle {
@@ -71,10 +76,10 @@
 .role-tabs {
   display: flex;
   gap: 0.5rem;
-  background-color: var(--bg-deep-charcoal);
+  background-color: var(--bg-surface-dark);
   padding: 0.3rem;
   border-radius: var(--radius-input);
-  border: 1px solid var(--blue-border);
+  border: 1px solid var(--border-light);
   margin-bottom: 1.8rem;
 }
 
@@ -92,8 +97,8 @@
 }
 
 .role-btn.active {
-  background-color: var(--blue-primary);
-  color: #FFFFFF;
+  background-color: var(--color-white);
+  color: var(--color-black);
   font-weight: 800;
 }
 
@@ -112,40 +117,42 @@
 .form-label {
   font-size: 0.85rem;
   font-weight: 600;
-  color: #CBD5E1;
+  color: var(--text-sub);
 }
 
 .form-control {
   width: 100%;
   padding: 0.85rem 1rem;
-  background-color: var(--bg-input-gray);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: var(--bg-surface-dark);
+  border: 1px solid var(--border-light);
   border-radius: var(--radius-input);
-  color: #FFFFFF;
+  color: var(--color-white);
   font-size: 0.95rem;
   outline: none;
+  transition: border-color 0.15s ease;
 }
 
 .form-control:focus {
-  border-color: var(--blue-primary);
+  border-color: var(--blue-light);
 }
 
 .btn-auth-submit {
   width: 100%;
   padding: 0.9rem;
-  background-color: var(--blue-primary);
-  color: #FFFFFF;
+  background-color: var(--color-white);
+  color: var(--color-black);
   font-size: 1rem;
   font-weight: 800;
   border-radius: var(--radius-pill);
   cursor: pointer;
-  border: none;
+  border: 1px solid var(--color-white);
   margin-top: 0.5rem;
-  transition: background-color 0.15s ease;
+  transition: all 0.15s ease;
 }
 
 .btn-auth-submit:hover {
-  background-color: var(--blue-hover);
+  background-color: #E2E8F0;
+  color: var(--color-black);
 }
 
 .auth-footer-text {

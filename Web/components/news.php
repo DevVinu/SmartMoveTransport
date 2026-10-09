@@ -1,7 +1,7 @@
 <section class="latest-news-section">
   <div class="news-container">
     <div class="news-header-row">
-      <h2 class="news-headline">Latest News</h2>
+      <h2 class="news-headline">Latest <span class="blue-text">News</span></h2>
       <a href="#about" class="view-all-link">View All →</a>
     </div>
 

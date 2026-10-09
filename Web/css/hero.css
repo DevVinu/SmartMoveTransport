@@ -1,7 +1,7 @@
 /* Hero section */
 .uber-hero {
   position: relative;
-  background: linear-gradient(to right, rgba(11, 15, 23, 0.96) 0%, rgba(11, 15, 23, 0.85) 48%, rgba(11, 15, 23, 0.45) 100%), url('../../img/mit_smart_bg.jpg') no-repeat center center / cover;
+  background: linear-gradient(to right, rgba(24, 26, 32, 0.97) 0%, rgba(24, 26, 32, 0.86) 45%, rgba(24, 26, 32, 0.38) 75%, rgba(24, 26, 32, 0.55) 100%), url('../../img/hero_bg.jpg') no-repeat center right / cover;
   padding: 5.5rem 2rem 6.5rem 2rem;
   width: 100%;
   min-height: 82vh;
@@ -28,9 +28,9 @@
   gap: 0.6rem;
   font-size: 0.9rem;
   font-weight: 600;
-  color: #FFFFFF;
-  background-color: rgba(37, 99, 235, 0.12);
-  border: 1px solid var(--blue-border);
+  color: var(--color-white);
+  background-color: var(--bg-card-dark);
+  border: 1px solid var(--border-light);
   padding: 0.4rem 1rem;
   border-radius: var(--radius-pill);
   width: fit-content;
@@ -46,7 +46,7 @@
   font-weight: 800;
   letter-spacing: -1.5px;
   line-height: 1.08;
-  color: #FFFFFF;
+  color: var(--color-white);
 }
 
 .blue-text {
@@ -57,25 +57,25 @@
   display: inline-flex;
   align-items: center;
   gap: 0.6rem;
-  background-color: var(--bg-surface-dark);
-  color: #FFFFFF;
+  background-color: var(--bg-card-dark);
+  color: var(--color-white);
   padding: 0.65rem 1.3rem;
   border-radius: var(--radius-pill);
   font-size: 0.92rem;
   font-weight: 600;
   cursor: pointer;
   width: fit-content;
-  border: 1px solid var(--blue-border);
+  border: 1px solid var(--border-light);
   transition: border-color 0.15s ease;
 }
 
 .pickup-time-pill:hover {
-  border-color: var(--blue-primary);
+  border-color: rgba(255, 255, 255, 0.35);
 }
 
 .connected-inputs-box {
-  background-color: var(--bg-surface-dark);
-  border: 1px solid var(--blue-border);
+  background-color: var(--bg-card-dark);
+  border: 1px solid var(--border-light);
   border-radius: var(--radius-card);
   padding: 1.2rem;
   display: flex;
@@ -96,21 +96,21 @@
 .circle-hollow {
   width: 12px;
   height: 12px;
-  border: 2px solid var(--blue-primary);
-  background-color: var(--bg-deep-charcoal);
+  border: 2px solid var(--blue-light);
+  background-color: var(--bg-card-dark);
   border-radius: 50%;
 }
 
 .vertical-line-stub {
   width: 2px;
   height: 42px;
-  background-color: var(--blue-border);
+  background-color: var(--border-gray);
 }
 
 .square-solid {
   width: 10px;
   height: 10px;
-  background-color: var(--blue-primary);
+  background-color: var(--color-white);
 }
 
 .inputs-container-stack {
@@ -127,9 +127,9 @@
 
 .uber-input-field {
   width: 100%;
-  background-color: var(--bg-input-gray);
-  color: var(--text-white);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: var(--bg-surface-dark);
+  color: var(--color-white);
+  border: 1px solid var(--border-light);
   border-radius: var(--radius-input);
   padding: 0.85rem 1.1rem;
   font-size: 0.95rem;
@@ -138,12 +138,12 @@
 }
 
 .uber-input-field::placeholder {
-  color: var(--text-sub);
+  color: var(--text-muted);
 }
 
 .uber-input-field:focus {
-  border-color: var(--blue-primary);
-  background-color: #1A2333;
+  border-color: var(--blue-light);
+  background-color: #1A1D25;
 }
 
 .input-icon-right {
@@ -162,31 +162,32 @@
 }
 
 .btn-see-prices {
-  background-color: var(--blue-primary);
-  color: #FFFFFF;
+  background-color: var(--color-white);
+  color: var(--color-black);
   font-size: 1rem;
   font-weight: 700;
   padding: 0.9rem 2.2rem;
   border-radius: var(--radius-pill);
-  border: none;
+  border: 1px solid var(--color-white);
   cursor: pointer;
-  transition: background-color 0.15s ease;
+  transition: all 0.15s ease;
 }
 
 .btn-see-prices:hover {
-  background-color: var(--blue-hover);
+  background-color: #E2E8F0;
+  color: var(--color-black);
 }
 
 .activity-link {
   font-size: 0.92rem;
   font-weight: 600;
-  color: #CBD5E1;
+  color: var(--color-white);
   text-decoration: underline;
   text-underline-offset: 4px;
 }
 
 .activity-link:hover {
-  color: #FFFFFF;
+  color: var(--blue-light);
 }
 
 @media (max-width: 640px) {
