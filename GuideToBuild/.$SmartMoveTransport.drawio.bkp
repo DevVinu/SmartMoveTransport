@@ -1,6 +1,6 @@
 <mxfile host="Electron">
   <diagram name="SmartMove_EER" id="smartmove-eer-v2">
-    <mxGraphModel dx="6680" dy="832" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1.7" pageWidth="3300" pageHeight="2339" math="0" shadow="0">
+    <mxGraphModel dx="6704" dy="661" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1.7" pageWidth="3300" pageHeight="2339" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -666,7 +666,7 @@
           <mxGeometry height="39.75240715268226" width="67.170582226762" x="279.87742594484166" y="241.16460339293906" as="geometry" />
         </mxCell>
         <mxCell id="l43EUh83d0RJLH_MpWBK-34" connectable="0" parent="1" style="group;fontSize=15;" value="" vertex="1">
-          <mxGeometry height="229.24" width="470.19407558733394" x="-4156.807967313585" y="2564.3695552498857" as="geometry" />
+          <mxGeometry height="229.23888124713434" width="470.19407558733394" x="-4156.807967313585" y="2564.3695552498857" as="geometry" />
         </mxCell>
         <mxCell id="node_FuelLog" parent="l43EUh83d0RJLH_MpWBK-34" style="rounded=0;whiteSpace=wrap;html=1;fontSize=15;" value="FuelLog" vertex="1">
           <mxGeometry height="79.50481430536452" width="179.12155260469862" x="145.53626149131765" as="geometry" />
@@ -684,7 +684,7 @@
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="attr_FuelLog_2" parent="l43EUh83d0RJLH_MpWBK-34" style="ellipse;whiteSpace=wrap;html=1;fontSize=15;" value="fuelQuantityLiters" vertex="1">
-          <mxGeometry height="42.4" width="153.15" x="25.97" y="186.84" as="geometry" />
+          <mxGeometry height="42.402567629527745" width="123.14606741573031" x="55.97548518896833" y="186.8363136176066" as="geometry" />
         </mxCell>
         <mxCell id="edge_FuelLog_2" edge="1" parent="l43EUh83d0RJLH_MpWBK-34" source="node_FuelLog" style="edgeStyle=none;endArrow=none;fontSize=15;" target="attr_FuelLog_2">
           <mxGeometry relative="1" as="geometry" />
@@ -696,7 +696,7 @@
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="attr_FuelLog_4" parent="l43EUh83d0RJLH_MpWBK-34" style="ellipse;whiteSpace=wrap;html=1;fontSize=15;" value="odometerReading" vertex="1">
-          <mxGeometry height="42.4" width="153.15" x="-30" y="42.4" as="geometry" />
+          <mxGeometry height="42.402567629527745" width="123.14606741573031" y="42.402567629527745" as="geometry" />
         </mxCell>
         <mxCell id="edge_FuelLog_4" edge="1" parent="l43EUh83d0RJLH_MpWBK-34" source="node_FuelLog" style="edgeStyle=none;endArrow=none;fontSize=15;" target="attr_FuelLog_4">
           <mxGeometry relative="1" as="geometry" />
@@ -924,13 +924,13 @@
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="attr_Maintenance_1" parent="l43EUh83d0RJLH_MpWBK-32" style="ellipse;whiteSpace=wrap;html=1;fontSize=15;" value="maintenanceDate" vertex="1">
-          <mxGeometry height="42.4" width="141.51" x="60" y="348.24" as="geometry" />
+          <mxGeometry height="42.40256762952774" width="123.14606741573031" x="78.36567926455567" y="336.5703805593764" as="geometry" />
         </mxCell>
         <mxCell id="edge_Maintenance_1" edge="1" parent="l43EUh83d0RJLH_MpWBK-32" source="node_Maintenance" style="edgeStyle=none;endArrow=none;fontSize=15;" target="attr_Maintenance_1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="attr_Maintenance_2" parent="l43EUh83d0RJLH_MpWBK-32" style="ellipse;whiteSpace=wrap;html=1;fontSize=15;" value="maintenanceType" vertex="1">
-          <mxGeometry height="42.4" width="151.13" x="16.79" y="106.01" as="geometry" />
+          <mxGeometry height="42.40256762952774" width="123.14606741573031" x="44.780388151174655" y="106.00641907381934" as="geometry" />
         </mxCell>
         <mxCell id="edge_Maintenance_2" edge="1" parent="l43EUh83d0RJLH_MpWBK-32" source="node_Maintenance" style="edgeStyle=none;endArrow=none;fontSize=15;" target="attr_Maintenance_2">
           <mxGeometry relative="1" as="geometry" />
@@ -942,19 +942,19 @@
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="attr_Maintenance_4" parent="l43EUh83d0RJLH_MpWBK-32" style="ellipse;whiteSpace=wrap;html=1;fontSize=15;" value="cost" vertex="1">
-          <mxGeometry height="42.40256762952774" width="123.14606741573031" x="30.785781409601633" y="170.93962861072902" as="geometry" />
+          <mxGeometry height="42.40256762952774" width="123.14606741573031" x="32.46578140960163" y="159.009628610729" as="geometry" />
         </mxCell>
         <mxCell id="edge_Maintenance_4" edge="1" parent="l43EUh83d0RJLH_MpWBK-32" source="node_Maintenance" style="edgeStyle=none;endArrow=none;fontSize=15;" target="attr_Maintenance_4">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="attr_Maintenance_5" parent="l43EUh83d0RJLH_MpWBK-32" style="ellipse;whiteSpace=wrap;html=1;fontSize=15;" value="maintenanceStatus" vertex="1">
-          <mxGeometry height="42.4" width="169.05" x="134.34" y="63.6" as="geometry" />
+          <mxGeometry height="42.40256762952774" width="123.14606741573031" x="134.341164453524" y="63.603851444291614" as="geometry" />
         </mxCell>
         <mxCell id="edge_Maintenance_5" edge="1" parent="l43EUh83d0RJLH_MpWBK-32" source="node_Maintenance" style="edgeStyle=none;endArrow=none;fontSize=15;" target="attr_Maintenance_5">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="attr_Maintenance_6" parent="l43EUh83d0RJLH_MpWBK-32" style="ellipse;whiteSpace=wrap;html=1;fontSize=15;" value="nextServiceDate" vertex="1">
-          <mxGeometry height="42.40256762952774" width="123.14606741573031" x="257.4919407558733" y="116.60706098120129" as="geometry" />
+          <mxGeometry height="42.40256762952774" width="123.14606741573031" x="223.9019407558733" y="116.60706098120129" as="geometry" />
         </mxCell>
         <mxCell id="edge_Maintenance_6" edge="1" parent="l43EUh83d0RJLH_MpWBK-32" source="node_Maintenance" style="edgeStyle=none;endArrow=none;fontSize=15;" target="attr_Maintenance_6">
           <mxGeometry relative="1" as="geometry" />
