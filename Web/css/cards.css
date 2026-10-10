@@ -1,0 +1,95 @@
+/* Explore service cards */
+.uber-explore-section {
+  background-color: var(--bg-deep-charcoal);
+  padding: 4.5rem 2rem 5rem 2rem;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.explore-headline {
+  font-size: 2.3rem;
+  font-weight: 800;
+  letter-spacing: -0.8px;
+  margin-bottom: 2.5rem;
+  color: #FFFFFF;
+}
+
+.explore-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+.explore-card {
+  background-color: var(--bg-card-dark);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-card);
+  padding: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  transition: background-color 0.15s ease;
+  min-height: 190px;
+  position: relative;
+  overflow: hidden;
+  transform: none;
+}
+
+.explore-card:hover {
+  background-color: var(--bg-card-hover);
+  transform: none;
+}
+
+.card-left-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  width: 100%;
+  max-width: 100%;
+  z-index: 2;
+}
+
+.card-title {
+  font-size: 1.3rem;
+  font-weight: 800;
+  margin-bottom: 0.4rem;
+  color: var(--color-white);
+}
+
+.card-desc {
+  font-size: 0.9rem;
+  color: var(--text-sub);
+  line-height: 1.5;
+  margin-bottom: 1.2rem;
+}
+
+.btn-details-pill {
+  background-color: var(--color-black);
+  color: var(--color-white);
+  border: 1px solid var(--border-light);
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 0.5rem 1.3rem;
+  border-radius: var(--radius-pill);
+  width: fit-content;
+  transition: all 0.15s ease;
+}
+
+.btn-details-pill:hover {
+  background-color: var(--blue-light);
+  color: var(--color-white);
+  border-color: var(--blue-light);
+}
+
+@media (max-width: 992px) {
+  .explore-cards-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .explore-cards-grid {
+    grid-template-columns: 1fr;
+  }
+}
