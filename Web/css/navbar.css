@@ -1,0 +1,131 @@
+/* Navigation bar */
+.uber-header {
+  background-color: rgba(24, 26, 32, 0.94);
+  backdrop-filter: blur(12px);
+  width: 100%;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  border-bottom: 1px solid var(--border-gray);
+}
+
+.uber-nav-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 1rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.nav-left-group {
+  display: flex;
+  align-items: center;
+  gap: 2.5rem;
+}
+
+.brand-logo {
+  font-size: 1.6rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: var(--color-white);
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.blue-dot {
+  color: var(--blue-light);
+}
+
+.nav-menu-links {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  list-style: none;
+}
+
+.nav-menu-links a {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-sub);
+  padding: 0.5rem 0.9rem;
+  border-radius: var(--radius-pill);
+  transition: all 0.15s ease;
+  white-space: nowrap;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+}
+
+.nav-menu-links a:hover {
+  color: var(--blue-light);
+  background-color: rgba(59, 130, 246, 0.1);
+}
+
+.nav-right-group {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.nav-link-item {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-sub);
+  padding: 0.5rem 0.9rem;
+  border-radius: var(--radius-pill);
+  transition: all 0.15s ease;
+  white-space: nowrap;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+}
+
+.nav-link-item:hover {
+  color: var(--blue-light);
+  background-color: rgba(255, 255, 255, 0.06);
+}
+
+.btn-signup-pill {
+  background-color: var(--color-white);
+  color: var(--color-black);
+  font-size: 0.92rem;
+  font-weight: 700;
+  padding: 0.6rem 1.4rem;
+  border-radius: var(--radius-pill);
+  transition: all 0.15s ease;
+  border: 1px solid var(--color-white);
+  white-space: nowrap;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+}
+
+.btn-signup-pill:hover {
+  background-color: #E2E8F0;
+  color: var(--color-black);
+}
+
+.mobile-toggle {
+  display: none;
+  font-size: 1.4rem;
+  color: var(--color-white);
+  cursor: pointer;
+  padding: 0.3rem 0.6rem;
+}
+
+@media (max-width: 992px) {
+  .nav-menu-links {
+    display: none;
+  }
+  .mobile-toggle {
+    display: block;
+  }
+}
+
+@media (max-width: 640px) {
+  .uber-nav-container {
+    padding: 0.8rem 1.2rem;
+  }
+}
