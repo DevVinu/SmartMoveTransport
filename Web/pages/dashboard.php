@@ -1,5 +1,9 @@
 <?php
-$pageTitle = "Operations Dashboard | SmartMove Transport";
+/**
+ * SmartMove Transport — Shadcn Admin (Vite + ShadcnUI Replica)
+ * Complete Dark Slate Dashboard Implementation
+ */
+$pageTitle = "Shadcn Admin — Vite + ShadcnUI";
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -8,585 +12,1337 @@ $pageTitle = "Operations Dashboard | SmartMove Transport";
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><?php echo htmlspecialchars($pageTitle); ?></title>
   
-  <link rel="stylesheet" href="../css/variables.css">
-  <link rel="stylesheet" href="../css/base.css">
   <link rel="stylesheet" href="../css/dashboard.css">
 </head>
 <body class="dashboard-body">
 
-  <!-- Left Sidebar (NO ICONS inside menu items as requested) -->
-  <aside class="dash-sidebar" id="dashSidebar">
-    
-    <!-- Sidebar Header / Logo -->
-    <div class="sidebar-header">
-      <div class="sidebar-logo-badge">SM</div>
-      <div class="sidebar-brand-text">
-        <span>SmartMove<span class="blue-dot">.</span></span>
-        <span class="sidebar-brand-version">Portal</span>
-      </div>
-    </div>
+<div class="app-wrapper">
 
-    <!-- Scrollable Navigation Groups -->
-    <div class="sidebar-scrollable">
-      
-      <!-- GENERAL Group -->
-      <div>
-        <div class="sidebar-group-title">GENERAL</div>
-        <ul class="sidebar-nav-list">
-          <li class="sidebar-nav-item active">
-            <a href="#">
-              <span class="item-label">Dashboards</span>
-              <span class="sidebar-chevron">›</span>
-            </a>
-          </li>
-          <li class="sidebar-nav-item">
-            <a href="#">
-              <span class="item-label">Forms</span>
-              <span class="sidebar-badge-hot">Hot</span>
-              <span class="sidebar-chevron">›</span>
-            </a>
-          </li>
-          <li class="sidebar-nav-item">
-            <a href="#">
-              <span class="item-label">Tables</span>
-              <span class="sidebar-chevron">›</span>
-            </a>
-          </li>
-          <li class="sidebar-nav-item">
-            <a href="#">
-              <span class="item-label">Charts</span>
-              <span class="sidebar-badge-new">New</span>
-              <span class="sidebar-chevron">›</span>
-            </a>
-          </li>
-          <li class="sidebar-nav-item">
-            <a href="#">
-              <span class="item-label">Calendar</span>
-            </a>
-          </li>
-          <li class="sidebar-nav-item">
-            <a href="#">
-              <span class="item-label">Map</span>
-            </a>
-          </li>
-        </ul>
-      </div>
-
-      <!-- APPS Group -->
-      <div>
-        <div class="sidebar-group-title">APPS</div>
-        <ul class="sidebar-nav-list">
-          <li class="sidebar-nav-item">
-            <a href="#">
-              <span class="item-label">Chat</span>
-              <span class="sidebar-badge-count">3</span>
-            </a>
-          </li>
-          <li class="sidebar-nav-item">
-            <a href="#">
-              <span class="item-label">Inbox</span>
-            </a>
-          </li>
-          <li class="sidebar-nav-item">
-            <a href="#">
-              <span class="item-label">Kanban</span>
-            </a>
-          </li>
-          <li class="sidebar-nav-item">
-            <a href="#">
-              <span class="item-label">Files</span>
-            </a>
-          </li>
-          <li class="sidebar-nav-item">
-            <a href="#">
-              <span class="item-label">Notifications</span>
-            </a>
-          </li>
-        </ul>
-      </div>
-
-      <!-- E-COMMERCE / MOBILITY Group -->
-      <div>
-        <div class="sidebar-group-title">FLEET & E-COMMERCE</div>
-        <ul class="sidebar-nav-list">
-          <li class="sidebar-nav-item">
-            <a href="#">
-              <span class="item-label">Storefront</span>
-            </a>
-          </li>
-          <li class="sidebar-nav-item">
-            <a href="#">
-              <span class="item-label">Product / Fleet</span>
-            </a>
-          </li>
-          <li class="sidebar-nav-item">
-            <a href="#">
-              <span class="item-label">Orders</span>
-              <span class="sidebar-chevron">›</span>
-            </a>
-          </li>
-          <li class="sidebar-nav-item">
-            <a href="#">
-              <span class="item-label">Invoice</span>
-            </a>
-          </li>
-        </ul>
-      </div>
-
-    </div>
-
-    <!-- Sidebar Bottom User Profile -->
-    <div class="sidebar-user-footer">
-      <div class="user-avatar-circle">VD</div>
-      <div class="user-info-text">
-        <div class="user-info-name">Vinu Dissanayake</div>
-        <div class="user-info-role">Fleet Admin</div>
-      </div>
-      <a href="../index.php" title="Back to Home" style="color: var(--dash-text-muted); font-size: 1rem; text-decoration: none;">↗</a>
-    </div>
-
-  </aside>
-
-  <!-- Main Content Area -->
-  <div class="dash-main-area">
-
-    <!-- Top Navigation Bar -->
-    <header class="dash-topbar">
-      
-      <div class="topbar-left">
-        <button class="btn-hamburger" id="hamburgerBtn" title="Toggle Sidebar" aria-label="Toggle navigation">
-          ☰
-        </button>
-        <div class="breadcrumb-path">
-          <a href="../index.php">Home</a>
-          <span>›</span>
-          <span class="current">Dashboard</span>
+  <!-- =========================================================================
+       SIDEBAR NAVIGATION
+       ========================================================================= -->
+  <aside class="sidebar" id="sidebar">
+    <!-- Brand / Workspace Switcher -->
+    <div class="sidebar-header" title="Switch workspace">
+      <div class="sidebar-brand-wrapper">
+        <div class="brand-icon-box">⌘</div>
+        <div class="sidebar-header-text">
+          <span class="brand-name">Shadcn Admin</span>
+          <span class="brand-subtext">Vite + ShadcnUI</span>
         </div>
       </div>
+      <div class="brand-arrows">⇅</div>
+    </div>
 
-      <!-- Center Search -->
-      <div class="topbar-search-container">
-        <span class="search-icon-svg">🔍</span>
-        <input type="text" class="topbar-search-input" id="dashSearch" placeholder="Search pages or run a comm...">
-        <span class="kbd-shortcut">⌘K</span>
-      </div>
-
-      <!-- Right Actions & User Avatar -->
-      <div class="topbar-right">
-        <a href="#docs" class="btn-docs-pill">
-          <span>📄</span>
-          <span>Docs</span>
+    <!-- Nav List -->
+    <nav class="sidebar-nav">
+      <!-- General Section -->
+      <div class="sidebar-group">
+        <div class="sidebar-group-title">General</div>
+        
+        <a class="nav-item active" data-view="dashboardView" title="Dashboard">
+          <div class="nav-item-icon">
+            <svg viewBox="0 0 24 24"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+          </div>
+          <span>Dashboard</span>
         </a>
 
-        <button class="btn-topbar-icon" title="Toggle Theme" aria-label="Toggle theme">
-          ☼
-        </button>
+        <a class="nav-item" data-view="tasksView" title="Tasks">
+          <div class="nav-item-icon">
+            <svg viewBox="0 0 24 24"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect width="8" height="4" x="8" y="2" rx="1"/><path d="m9 14 2 2 4-4"/></svg>
+          </div>
+          <span>Tasks</span>
+        </a>
 
-        <button class="btn-topbar-icon" title="Notifications" aria-label="Notifications" style="position: relative;">
-          🔔
-          <span style="position: absolute; top: 7px; right: 7px; width: 6px; height: 6px; background-color: var(--dash-blue); border-radius: 50%;"></span>
-        </button>
+        <a class="nav-item" data-view="appsView" title="Apps">
+          <div class="nav-item-icon">
+            <svg viewBox="0 0 24 24"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>
+          </div>
+          <span>Apps</span>
+        </a>
 
-        <button class="btn-topbar-icon" title="Messages" aria-label="Messages">
-          ✉
-        </button>
+        <a class="nav-item" data-view="dashboardView" title="Chats">
+          <div class="nav-item-icon">
+            <svg viewBox="0 0 24 24"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg>
+          </div>
+          <span>Chats</span>
+          <span class="nav-badge">3</span>
+        </a>
 
-        <div class="topbar-user-avatar" title="Vinu Dissanayake (Admin)">
-          VD
+        <a class="nav-item" data-view="usersView" title="Users">
+          <div class="nav-item-icon">
+            <svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+          <span>Users</span>
+        </a>
+
+        <a class="nav-item has-submenu" title="Secured by Clerk">
+          <div class="nav-item-icon">
+            <svg viewBox="0 0 24 24"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </div>
+          <span>Secured by Clerk</span>
+          <div class="nav-chevron">›</div>
+        </a>
+        <div class="sidebar-submenu">
+          <a class="submenu-item">Sign In</a>
+          <a class="submenu-item">Sign Up</a>
+          <a class="submenu-item">User Management</a>
         </div>
       </div>
 
+      <!-- Pages Section -->
+      <div class="sidebar-group">
+        <div class="sidebar-group-title">Pages</div>
+
+        <a class="nav-item has-submenu" title="Auth">
+          <div class="nav-item-icon">
+            <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/></svg>
+          </div>
+          <span>Auth</span>
+          <div class="nav-chevron">›</div>
+        </a>
+        <div class="sidebar-submenu">
+          <a class="submenu-item">Login</a>
+          <a class="submenu-item">Register</a>
+          <a class="submenu-item">Forgot Password</a>
+        </div>
+
+        <a class="nav-item has-submenu" title="Errors">
+          <div class="nav-item-icon">
+            <svg viewBox="0 0 24 24"><path d="m8 2 1.88 1.88"/><path d="M14.12 3.88 16 2"/><path d="M9 7.13v-1a3.003 3.003 0 1 1 6 0v1"/><path d="M12 20c-3.3 0-6-2.7-6-6v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3c0 3.3-2.7 6-6 6"/><path d="M12 20v-9"/><path d="M6.53 9C4.6 8.8 3 7.1 3 5"/><path d="M6 13H2"/><path d="M3 21c0-2.1 1.7-3.9 3.8-4"/><path d="M20.97 5c0 2.1-1.6 3.8-3.5 4"/><path d="M22 13h-4"/><path d="M17.2 17c2.1.1 3.8 1.9 3.8 4"/></svg>
+          </div>
+          <span>Errors</span>
+          <div class="nav-chevron">›</div>
+        </a>
+        <div class="sidebar-submenu">
+          <a class="submenu-item">404 Not Found</a>
+          <a class="submenu-item">500 Server Error</a>
+          <a class="submenu-item">Maintenance</a>
+        </div>
+      </div>
+
+      <!-- Other Section -->
+      <div class="sidebar-group">
+        <div class="sidebar-group-title">Other</div>
+
+        <a class="nav-item" data-view="settingsView" title="Settings">
+          <div class="nav-item-icon">
+            <svg viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+          </div>
+          <span>Settings</span>
+          <div class="nav-chevron">›</div>
+        </a>
+
+        <a class="nav-item" title="Help Center">
+          <div class="nav-item-icon">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+          </div>
+          <span>Help Center</span>
+        </a>
+      </div>
+    </nav>
+
+    <!-- Sidebar Footer / User Profile -->
+    <div class="sidebar-footer">
+      <button class="user-profile-btn" id="sidebarUserBtn" type="button">
+        <div class="user-avatar">SN</div>
+        <div class="user-details">
+          <span class="user-name">satnaing</span>
+          <span class="user-email">satnaingdev@gmail.com</span>
+        </div>
+        <div class="user-arrows">⇅</div>
+      </button>
+
+      <!-- Sidebar Footer User Popover Menu -->
+      <div class="popover-menu" id="sidebarUserMenu">
+        <div class="popover-header">
+          <span class="pop-title">satnaing</span>
+          <span class="pop-sub">satnaingdev@gmail.com</span>
+        </div>
+        <a class="popover-item">
+          <span>⚡ Upgrade to Pro</span>
+        </a>
+        <div class="popover-divider"></div>
+        <a class="popover-item">
+          <span>Account</span>
+          <span class="popover-shortcut">⇧⌘P</span>
+        </a>
+        <a class="popover-item">
+          <span>Billing</span>
+          <span class="popover-shortcut">⌘B</span>
+        </a>
+        <a class="popover-item">
+          <span>Notifications</span>
+          <span class="popover-shortcut">⌘S</span>
+        </a>
+        <div class="popover-divider"></div>
+        <a class="popover-item danger">
+          <span>Log out</span>
+        </a>
+      </div>
+    </div>
+  </aside>
+
+  <!-- =========================================================================
+       MAIN VIEWPORT & TOPBAR
+       ========================================================================= -->
+  <main class="main-viewport">
+    
+    <!-- Topbar -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="sidebar-toggle-btn" id="toggleSidebarBtn" title="Toggle Sidebar">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/></svg>
+        </button>
+      </div>
+
+      <div class="topbar-right">
+        <!-- Search bar with ⌘K badge -->
+        <div class="topbar-search-box" onclick="document.getElementById('globalSearchInput').focus()">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          <input type="text" id="globalSearchInput" placeholder="Search" style="background:transparent; border:none; outline:none; color:inherit; font-size:12.5px; width:100px;">
+          <span class="kbd-badge">⌘K</span>
+        </div>
+
+        <!-- Moon / Dark Mode Icon -->
+        <button class="topbar-icon-btn" title="Toggle Dark Mode">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+        </button>
+
+        <!-- Settings Icon -->
+        <button class="topbar-icon-btn" title="Settings" onclick="document.querySelector('[data-view=\'settingsView\']').click()">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
+
+        <!-- Top Right Avatar with Dropdown -->
+        <button class="topbar-avatar-btn" id="topbarAvatarBtn" title="User Menu">
+          <div class="user-avatar">SN</div>
+        </button>
+
+        <!-- Top Right Popover Menu -->
+        <div class="popover-menu" id="topbarUserMenu">
+          <div class="popover-header">
+            <span class="pop-title">satnaing</span>
+            <span class="pop-sub">satnaingdev@gmail.com</span>
+          </div>
+          <a class="popover-item">
+            <span>Profile</span>
+            <span class="popover-shortcut">⇧⌘P</span>
+          </a>
+          <a class="popover-item">
+            <span>Billing</span>
+            <span class="popover-shortcut">⌘B</span>
+          </a>
+          <a class="popover-item">
+            <span>Settings</span>
+            <span class="popover-shortcut">⌘S</span>
+          </a>
+          <a class="popover-item">
+            <span>New Team</span>
+          </a>
+          <div class="popover-divider"></div>
+          <a class="popover-item danger">
+            <span>Sign out</span>
+            <span class="popover-shortcut">⇧⌘Q</span>
+          </a>
+        </div>
+      </div>
     </header>
 
-    <!-- Main Workspace Content -->
-    <main class="dash-content">
+    <!-- Content Container -->
+    <div class="content-container">
 
-      <!-- Header: Overview / Actions -->
-      <div class="dash-overview-row">
-        <div class="overview-title-group">
-          <div class="sub-label">OVERVIEW</div>
-          <h1 class="main-title">Operations <span class="blue-text">Dashboard</span></h1>
-        </div>
-
-        <div class="overview-actions">
-          <button class="btn-new-view">+ New view</button>
-          <button class="btn-create-report">+ Create report</button>
-        </div>
-      </div>
-
-      <!-- Top 6 Metric Cards (2 rows x 3 columns) -->
-      <section class="metrics-grid-2x3">
-        
-        <!-- Card 1: Total Users -->
-        <div class="metric-card-box">
-          <div class="metric-card-content">
-            <div class="metric-icon-square icon-blue-primary-theme">
-              👥
+      <!-- =====================================================================
+           VIEW 1: DASHBOARD OVERVIEW
+           ===================================================================== -->
+      <section class="page-view active-view" id="dashboardView">
+        <div class="view-header">
+          <div class="view-title-group">
+            <h1>Dashboard</h1>
+          </div>
+          <div class="view-actions">
+            <!-- Sub-tabs -->
+            <div class="subtabs-nav">
+              <div class="subtab-item active">Overview</div>
+              <div class="subtab-item">Analytics</div>
+              <div class="subtab-item">Reports</div>
+              <div class="subtab-item">Notifications</div>
             </div>
-            <div class="metric-details-stack">
-              <span class="metric-label-top">TOTAL USERS</span>
-              <div class="metric-num-row">
-                <span class="metric-big-value">2,500</span>
-                <span class="metric-growth-pill">+ 12%</span>
+            <!-- Download Button -->
+            <button class="btn-primary" type="button">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+              Download
+            </button>
+          </div>
+        </div>
+
+        <!-- KPI Cards Grid -->
+        <div class="kpi-grid">
+          <!-- Total Revenue -->
+          <div class="kpi-card">
+            <div class="kpi-card-header">
+              <span class="kpi-label">Total Revenue</span>
+              <svg class="kpi-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" x2="12" y1="2" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            </div>
+            <div class="kpi-value">$45,231.89</div>
+            <div class="kpi-subtext">+20.1% from last month</div>
+          </div>
+
+          <!-- Subscriptions -->
+          <div class="kpi-card">
+            <div class="kpi-card-header">
+              <span class="kpi-label">Subscriptions</span>
+              <svg class="kpi-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            </div>
+            <div class="kpi-value">+2350</div>
+            <div class="kpi-subtext">+180.1% from last month</div>
+          </div>
+
+          <!-- Sales -->
+          <div class="kpi-card">
+            <div class="kpi-card-header">
+              <span class="kpi-label">Sales</span>
+              <svg class="kpi-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+            </div>
+            <div class="kpi-value">+12,234</div>
+            <div class="kpi-subtext">+19% from last month</div>
+          </div>
+
+          <!-- Active Now -->
+          <div class="kpi-card">
+            <div class="kpi-card-header">
+              <span class="kpi-label">Active Now</span>
+              <svg class="kpi-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+            </div>
+            <div class="kpi-value">+573</div>
+            <div class="kpi-subtext">+201 since last hour</div>
+          </div>
+        </div>
+
+        <!-- Charts & Recent Sales Grid -->
+        <div class="dash-overview-grid">
+          <!-- Overview Bar Chart Panel -->
+          <div class="dash-panel">
+            <div class="panel-header">
+              <div class="panel-title">Overview</div>
+            </div>
+            <div class="chart-container">
+              <svg class="chart-svg" viewBox="0 0 600 270" preserveAspectRatio="none">
+                <!-- Horizontal Grid Lines -->
+                <line x1="45" y1="20" x2="590" y2="20" class="chart-grid-line" />
+                <line x1="45" y1="75" x2="590" y2="75" class="chart-grid-line" />
+                <line x1="45" y1="130" x2="590" y2="130" class="chart-grid-line" />
+                <line x1="45" y1="185" x2="590" y2="185" class="chart-grid-line" />
+                <line x1="45" y1="240" x2="590" y2="240" class="chart-grid-line" />
+
+                <!-- Y-Axis Labels -->
+                <text x="35" y="24" text-anchor="end" class="chart-axis-label">$6000</text>
+                <text x="35" y="79" text-anchor="end" class="chart-axis-label">$4500</text>
+                <text x="35" y="134" text-anchor="end" class="chart-axis-label">$3000</text>
+                <text x="35" y="189" text-anchor="end" class="chart-axis-label">$1500</text>
+                <text x="35" y="244" text-anchor="end" class="chart-axis-label">$0</text>
+
+                <!-- Month Bars (Crisp White rounded bars) -->
+                <!-- Jan (height: 100) -->
+                <rect x="58" y="140" width="30" height="100" class="chart-bar"><title>Jan: $2,727</title></rect>
+                <text x="73" y="260" text-anchor="middle" class="chart-axis-label">Jan</text>
+
+                <!-- Feb (height: 45) -->
+                <rect x="103" y="195" width="30" height="45" class="chart-bar"><title>Feb: $1,227</title></rect>
+                <text x="118" y="260" text-anchor="middle" class="chart-axis-label">Feb</text>
+
+                <!-- Mar (height: 155) -->
+                <rect x="148" y="85" width="30" height="155" class="chart-bar"><title>Mar: $4,227</title></rect>
+                <text x="163" y="260" text-anchor="middle" class="chart-axis-label">Mar</text>
+
+                <!-- Apr (height: 140) -->
+                <rect x="193" y="100" width="30" height="140" class="chart-bar"><title>Apr: $3,818</title></rect>
+                <text x="208" y="260" text-anchor="middle" class="chart-axis-label">Apr</text>
+
+                <!-- May (height: 205) -->
+                <rect x="238" y="35" width="30" height="205" class="chart-bar"><title>May: $5,590</title></rect>
+                <text x="253" y="260" text-anchor="middle" class="chart-axis-label">May</text>
+
+                <!-- Jun (height: 110) -->
+                <rect x="283" y="130" width="30" height="110" class="chart-bar"><title>Jun: $3,000</title></rect>
+                <text x="298" y="260" text-anchor="middle" class="chart-axis-label">Jun</text>
+
+                <!-- Jul (height: 125) -->
+                <rect x="328" y="115" width="30" height="125" class="chart-bar"><title>Jul: $3,409</title></rect>
+                <text x="343" y="260" text-anchor="middle" class="chart-axis-label">Jul</text>
+
+                <!-- Aug (height: 175) -->
+                <rect x="373" y="65" width="30" height="175" class="chart-bar"><title>Aug: $4,772</title></rect>
+                <text x="388" y="260" text-anchor="middle" class="chart-axis-label">Aug</text>
+
+                <!-- Sep (height: 215) -->
+                <rect x="418" y="25" width="30" height="215" class="chart-bar"><title>Sep: $5,863</title></rect>
+                <text x="433" y="260" text-anchor="middle" class="chart-axis-label">Sep</text>
+
+                <!-- Oct (height: 150) -->
+                <rect x="463" y="90" width="30" height="150" class="chart-bar"><title>Oct: $4,090</title></rect>
+                <text x="478" y="260" text-anchor="middle" class="chart-axis-label">Oct</text>
+
+                <!-- Nov (height: 80) -->
+                <rect x="508" y="160" width="30" height="80" class="chart-bar"><title>Nov: $2,181</title></rect>
+                <text x="523" y="260" text-anchor="middle" class="chart-axis-label">Nov</text>
+
+                <!-- Dec (height: 180) -->
+                <rect x="553" y="60" width="30" height="180" class="chart-bar"><title>Dec: $4,909</title></rect>
+                <text x="568" y="260" text-anchor="middle" class="chart-axis-label">Dec</text>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Recent Sales Panel -->
+          <div class="dash-panel">
+            <div class="panel-header">
+              <div class="panel-title">Recent Sales</div>
+              <div class="panel-subtitle">You made 265 sales this month.</div>
+            </div>
+            <div class="sales-list">
+              <!-- Item 1 -->
+              <div class="sale-item">
+                <div class="sale-customer">
+                  <div class="sale-avatar">OM</div>
+                  <div class="sale-info">
+                    <span class="sale-name">Olivia Martin</span>
+                    <span class="sale-email">olivia.martin@email.com</span>
+                  </div>
+                </div>
+                <div class="sale-amount">+$1,999.00</div>
               </div>
-              <span class="metric-sub-note">342 new this week</span>
-            </div>
-          </div>
-          <!-- Mini sparkline bars -->
-          <div class="metric-sparkbars-wrap">
-            <span class="spark-bar spark-blue-primary" style="height: 12px;"></span>
-            <span class="spark-bar spark-blue-primary" style="height: 16px;"></span>
-            <span class="spark-bar spark-blue-primary" style="height: 14px;"></span>
-            <span class="spark-bar spark-blue-primary" style="height: 22px;"></span>
-            <span class="spark-bar spark-blue-primary" style="height: 30px;"></span>
-            <span class="spark-bar spark-blue-primary" style="height: 26px;"></span>
-          </div>
-        </div>
 
-        <!-- Card 2: Avg Session -->
-        <div class="metric-card-box">
-          <div class="metric-card-content">
-            <div class="metric-icon-square icon-blue-light-theme">
-              ⏱
-            </div>
-            <div class="metric-details-stack">
-              <span class="metric-label-top">AVG SESSION</span>
-              <div class="metric-num-row">
-                <span class="metric-big-value">123.5<span style="font-size: 0.9rem; font-weight: 500;">min</span></span>
-                <span class="metric-growth-pill">+ 8%</span>
+              <!-- Item 2 -->
+              <div class="sale-item">
+                <div class="sale-customer">
+                  <div class="sale-avatar">JL</div>
+                  <div class="sale-info">
+                    <span class="sale-name">Jackson Lee</span>
+                    <span class="sale-email">jackson.lee@email.com</span>
+                  </div>
+                </div>
+                <div class="sale-amount">+$39.00</div>
               </div>
-              <span class="metric-sub-note">+14min from last week</span>
-            </div>
-          </div>
-          <div class="metric-sparkbars-wrap">
-            <span class="spark-bar spark-blue-light" style="height: 14px;"></span>
-            <span class="spark-bar spark-blue-light" style="height: 18px;"></span>
-            <span class="spark-bar spark-blue-light" style="height: 24px;"></span>
-            <span class="spark-bar spark-blue-light" style="height: 28px;"></span>
-            <span class="spark-bar spark-blue-light" style="height: 22px;"></span>
-          </div>
-        </div>
 
-        <!-- Card 3: Orders -->
-        <div class="metric-card-box">
-          <div class="metric-card-content">
-            <div class="metric-icon-square icon-white-accent-theme">
-              💼
-            </div>
-            <div class="metric-details-stack">
-              <span class="metric-label-top">ORDERS</span>
-              <div class="metric-num-row">
-                <span class="metric-big-value">1,240</span>
-                <span class="metric-growth-pill">+ 3%</span>
+              <!-- Item 3 -->
+              <div class="sale-item">
+                <div class="sale-customer">
+                  <div class="sale-avatar">IN</div>
+                  <div class="sale-info">
+                    <span class="sale-name">Isabella Nguyen</span>
+                    <span class="sale-email">isabella.nguyen@email.com</span>
+                  </div>
+                </div>
+                <div class="sale-amount">+$299.00</div>
               </div>
-              <span class="metric-sub-note">78 shipped today</span>
-            </div>
-          </div>
-          <div class="metric-sparkbars-wrap">
-            <span class="spark-bar spark-white" style="height: 18px;"></span>
-            <span class="spark-bar spark-white" style="height: 22px;"></span>
-            <span class="spark-bar spark-white" style="height: 15px;"></span>
-            <span class="spark-bar spark-white" style="height: 26px;"></span>
-            <span class="spark-bar spark-white" style="height: 28px;"></span>
-          </div>
-        </div>
 
-        <!-- Card 4: Revenue (with Blue Primary bottom bar) -->
-        <div class="metric-card-box">
-          <div class="metric-card-content">
-            <div class="metric-icon-square icon-blue-primary-theme">
-              $
-            </div>
-            <div class="metric-details-stack">
-              <span class="metric-label-top">REVENUE</span>
-              <div class="metric-num-row">
-                <span class="metric-big-value">$24,567</span>
-                <span class="metric-growth-pill">+ 18%</span>
+              <!-- Item 4 -->
+              <div class="sale-item">
+                <div class="sale-customer">
+                  <div class="sale-avatar">WK</div>
+                  <div class="sale-info">
+                    <span class="sale-name">William Kim</span>
+                    <span class="sale-email">will@email.com</span>
+                  </div>
+                </div>
+                <div class="sale-amount">+$99.00</div>
               </div>
-              <span class="metric-sub-note">$3,218 today</span>
-            </div>
-          </div>
-          <div class="metric-progress-line line-blue-primary"></div>
-        </div>
 
-        <!-- Card 5: Conversions (with Blue Light bottom bar) -->
-        <div class="metric-card-box">
-          <div class="metric-card-content">
-            <div class="metric-icon-square icon-blue-light-theme">
-              📉
-            </div>
-            <div class="metric-details-stack">
-              <span class="metric-label-top">CONVERSIONS</span>
-              <div class="metric-num-row">
-                <span class="metric-big-value">2,315</span>
-                <span class="metric-growth-pill">+ 5%</span>
+              <!-- Item 5 -->
+              <div class="sale-item">
+                <div class="sale-customer">
+                  <div class="sale-avatar">SD</div>
+                  <div class="sale-info">
+                    <span class="sale-name">Sofia Davis</span>
+                    <span class="sale-email">sofia.davis@email.com</span>
+                  </div>
+                </div>
+                <div class="sale-amount">+$39.00</div>
               </div>
-              <span class="metric-sub-note">Rate: 4.2%</span>
             </div>
           </div>
-          <div class="metric-progress-line line-blue-light"></div>
         </div>
-
-        <!-- Card 6: Page Views (with White Accent bottom bar) -->
-        <div class="metric-card-box">
-          <div class="metric-card-content">
-            <div class="metric-icon-square icon-white-accent-theme">
-              👁
-            </div>
-            <div class="metric-details-stack">
-              <span class="metric-label-top">PAGE VIEWS</span>
-              <div class="metric-num-row">
-                <span class="metric-big-value">47,325</span>
-                <span class="metric-growth-pill">+ 22%</span>
-              </div>
-              <span class="metric-sub-note">6,854 unique visitors</span>
-            </div>
-          </div>
-          <div class="metric-progress-line line-white-accent"></div>
-        </div>
-
       </section>
 
-      <!-- Middle Two-Column Grid: Network Activities Chart & Recent Activity List -->
-      <section class="dash-middle-two-col">
-
-        <!-- Left: Network Activities Chart Card -->
-        <div class="chart-card-box">
-          
-          <div class="chart-card-header">
-            <div class="chart-title-area">
-              <h2 class="chart-title">Network Activities</h2>
-              <div class="chart-num-row">
-                <span class="chart-big-num" id="networkMetricNum">6,782</span>
-                <span class="chart-badge">+ 7%</span>
-              </div>
-              <div class="chart-sub-label">Total fleet telemetry sessions this week</div>
-            </div>
-
-            <!-- Time segment switcher -->
-            <div class="chart-segmented-control" id="timeRangeControl">
-              <button class="segment-btn active" data-days="7">7 days</button>
-              <button class="segment-btn" data-days="30">30 days</button>
-              <button class="segment-btn" data-days="90">90 days</button>
-            </div>
+      <!-- =====================================================================
+           VIEW 2: TASKS PAGE
+           ===================================================================== -->
+      <section class="page-view" id="tasksView">
+        <div class="view-header">
+          <div class="view-title-group">
+            <h1>Tasks</h1>
+            <p>Here's a list of your tasks for this month!</p>
           </div>
-
-          <!-- Scalable Vector Line Chart in Blue & White Theme -->
-          <div class="chart-viewport-wrap">
-            <svg class="svg-chart-container" viewBox="0 0 650 220" preserveAspectRatio="none">
-              <defs>
-                <!-- Blue area gradient glow matching website theme -->
-                <linearGradient id="blueGlowGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stop-color="#3B82F6" stop-opacity="0.28"/>
-                  <stop offset="100%" stop-color="#3B82F6" stop-opacity="0.0"/>
-                </linearGradient>
-              </defs>
-
-              <!-- Y-Axis Grid Lines & Labels -->
-              <!-- 800 -->
-              <text x="32" y="20" fill="#94A3B8" font-size="10" text-anchor="end">800</text>
-              <line x1="45" y1="16" x2="640" y2="16" stroke="rgba(255, 255, 255, 0.05)" stroke-dasharray="3,3" stroke-width="1"/>
-
-              <!-- 600 -->
-              <text x="32" y="65" fill="#94A3B8" font-size="10" text-anchor="end">600</text>
-              <line x1="45" y1="61" x2="640" y2="61" stroke="rgba(255, 255, 255, 0.05)" stroke-dasharray="3,3" stroke-width="1"/>
-
-              <!-- 400 -->
-              <text x="32" y="110" fill="#94A3B8" font-size="10" text-anchor="end">400</text>
-              <line x1="45" y1="106" x2="640" y2="106" stroke="rgba(255, 255, 255, 0.05)" stroke-dasharray="3,3" stroke-width="1"/>
-
-              <!-- 200 -->
-              <text x="32" y="155" fill="#94A3B8" font-size="10" text-anchor="end">200</text>
-              <line x1="45" y1="151" x2="640" y2="151" stroke="rgba(255, 255, 255, 0.05)" stroke-dasharray="3,3" stroke-width="1"/>
-
-              <!-- 0 -->
-              <text x="32" y="195" fill="#94A3B8" font-size="10" text-anchor="end">0</text>
-              <line x1="45" y1="191" x2="640" y2="191" stroke="rgba(255, 255, 255, 0.05)" stroke-width="1"/>
-
-              <!-- X-Axis Labels -->
-              <text x="50" y="212" fill="#CBD5E1" font-size="10">Mon</text>
-              <text x="145" y="212" fill="#CBD5E1" font-size="10">Tue</text>
-              <text x="240" y="212" fill="#CBD5E1" font-size="10">Wed</text>
-              <text x="335" y="212" fill="#CBD5E1" font-size="10">Thu</text>
-              <text x="430" y="212" fill="#CBD5E1" font-size="10">Fri</text>
-              <text x="525" y="212" fill="#CBD5E1" font-size="10">Sat</text>
-              <text x="615" y="212" fill="#CBD5E1" font-size="10">Sun</text>
-
-              <!-- Blue Filled Gradient Area -->
-              <path id="blueAreaPath" d="M 50 148 C 110 135, 170 120, 240 122 C 300 125, 335 70, 420 50 C 490 35, 545 65, 630 68 L 630 191 L 50 191 Z" fill="url(#blueGlowGradient)" />
-
-              <!-- Blue Solid Curve: Sessions -->
-              <path id="blueLinePath" d="M 50 148 C 110 135, 170 120, 240 122 C 300 125, 335 70, 420 50 C 490 35, 545 65, 630 68" fill="none" stroke="#3B82F6" stroke-width="2.6" stroke-linecap="round" />
-
-              <!-- White Dashed Curve: Page Views -->
-              <path id="whiteLinePath" d="M 50 162 C 110 152, 170 138, 240 140 C 300 142, 335 95, 420 85 C 490 75, 545 92, 630 96" fill="none" stroke="#FFFFFF" stroke-width="1.8" stroke-dasharray="5,5" stroke-linecap="round" opacity="0.85" />
-            </svg>
+          <div class="view-actions">
+            <button class="btn-outline" type="button">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+              Import
+            </button>
+            <button class="btn-primary" type="button">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" x2="12" y1="5" y2="19"/><line x1="5" x2="19" y1="12" y2="12"/></svg>
+              Create
+            </button>
           </div>
-
-          <!-- Chart Legend -->
-          <div class="chart-legend-row">
-            <div class="legend-item">
-              <span class="legend-indicator-line line-solid-blue"></span>
-              <span>Sessions</span>
-            </div>
-            <div class="legend-item">
-              <span class="legend-indicator-line line-dashed-white"></span>
-              <span>Page views</span>
-            </div>
-          </div>
-
         </div>
 
-        <!-- Right: Recent Activity Card -->
-        <div class="activity-card-box">
-          
-          <div class="activity-header">
-            <h2 class="activity-title">Recent Activity</h2>
-            <button class="activity-minimize-btn" title="Collapse" aria-label="Minimize">―</button>
-          </div>
-
-          <div class="activity-list">
+        <!-- Filter Toolbar -->
+        <div class="toolbar-row">
+          <div class="toolbar-left">
+            <input type="text" class="table-search-input" id="taskSearchInput" placeholder="Filter by title or ID...">
             
-            <!-- Item 1: Sarah K. (Royal Blue) -->
-            <div class="activity-item">
-              <div class="activity-avatar avatar-blue-pri">SK</div>
-              <div class="activity-content">
-                <div class="activity-text">
-                  <strong>Sarah K.</strong> placed a new booking for $245.00
-                </div>
-                <div class="activity-timestamp">2 min ago</div>
-              </div>
-            </div>
+            <!-- + Status Button -->
+            <button class="filter-dropdown-btn" id="statusFilterBtn" type="button">
+              <span>⊕ Status</span>
+            </button>
 
-            <!-- Item 2: Michael R. (Luminous Blue) -->
-            <div class="activity-item">
-              <div class="activity-avatar avatar-blue-light">MR</div>
-              <div class="activity-content">
-                <div class="activity-text">
-                  <strong>Michael R.</strong> registered a passenger account
-                </div>
-                <div class="activity-timestamp">18 min ago</div>
-              </div>
-            </div>
+            <!-- + Priority Button -->
+            <button class="filter-dropdown-btn" id="priorityFilterBtn" type="button">
+              <span>⊕ Priority</span>
+            </button>
 
-            <!-- Item 3: Payment (Black & Blue outline) -->
-            <div class="activity-item">
-              <div class="activity-avatar avatar-black-solid">SY</div>
-              <div class="activity-content">
-                <div class="activity-text">
-                  <strong>Payment</strong> processed — Invoice #4521
-                </div>
-                <div class="activity-timestamp">45 min ago</div>
-              </div>
-            </div>
+            <!-- Active filter badges container -->
+            <div id="activeFiltersBadges" style="display:flex; gap:4px; align-items:center;"></div>
 
-            <!-- Item 4: Jeffie L. (Dark Gray) -->
-            <div class="activity-item">
-              <div class="activity-avatar avatar-gray-dark">JL</div>
-              <div class="activity-content">
-                <div class="activity-text">
-                  <strong>Jeffie L.</strong> reviewed <strong>SmartMove Fleet</strong>
-                </div>
-                <div class="activity-timestamp">1 hour ago</div>
-              </div>
-            </div>
-
-            <!-- Item 5: Emmy L. (Deep Blue) -->
-            <div class="activity-item">
-              <div class="activity-avatar avatar-blue-hover">EL</div>
-              <div class="activity-content">
-                <div class="activity-text">
-                  <strong>Emmy L.</strong> scheduled dispatch <strong>Airport CMB</strong>
-                </div>
-                <div class="activity-timestamp">4 hours ago</div>
-              </div>
-            </div>
-
-            <!-- Item 6: Shipment (Crisp White) -->
-            <div class="activity-item">
-              <div class="activity-avatar avatar-white-solid">DS</div>
-              <div class="activity-content">
-                <div class="activity-text">
-                  <strong>Chauffeur</strong> dispatched — Trip #3847
-                </div>
-                <div class="activity-timestamp">6 hours ago</div>
-              </div>
-            </div>
-
+            <!-- Reset Button -->
+            <button class="filter-reset-btn" id="resetFiltersBtn" style="display:none;" type="button">
+              Reset ✕
+            </button>
           </div>
 
+          <div class="toolbar-right">
+            <button class="btn-outline" style="padding:6px 10px; font-size:12.5px;" type="button">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+              View
+            </button>
+          </div>
         </div>
 
+        <!-- Tasks Table -->
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th style="width: 40px;">
+                  <input type="checkbox" class="row-check" id="selectAllTasksCheck">
+                </th>
+                <th style="width: 120px;">Task</th>
+                <th>Title <span style="font-size:11px;">⇅</span></th>
+                <th style="width: 140px;">Status <span style="font-size:11px;">⇅</span></th>
+                <th style="width: 110px;">Priority <span style="font-size:11px;">⇅</span></th>
+                <th style="width: 50px;"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Row 1 -->
+              <tr class="task-table-row" data-task-id="TASK-9366" data-title="Auctus bardus minus pariatur vobis solitudo tamquam solitudo." data-status="Canceled" data-priority="Low">
+                <td><input type="checkbox" class="row-check task-row-check"></td>
+                <td style="color:var(--text-muted); font-size:12.5px;">TASK-9366</td>
+                <td>
+                  <span class="type-badge">Documentation</span>
+                  <span style="margin-left: 8px;">Auctus bardus minus pariatur vobis solitudo tamquam solitudo.</span>
+                </td>
+                <td>
+                  <span class="status-cell">
+                    <span class="status-icon" style="color:#64748B;">⊘</span>
+                    <span>Canceled</span>
+                  </span>
+                </td>
+                <td>
+                  <span class="priority-cell">
+                    <span class="priority-icon" style="color:#94A3B8;">↓</span>
+                    <span>Low</span>
+                  </span>
+                </td>
+                <td style="text-align: right; position: relative;">
+                  <button class="row-action-btn" type="button">•••</button>
+                  <div class="popover-menu" style="width:140px;">
+                    <a class="popover-item"><span>Edit</span></a>
+                    <a class="popover-item"><span>Make a copy</span></a>
+                    <a class="popover-item"><span>Favorite</span></a>
+                    <a class="popover-item"><span>Labels ›</span></a>
+                    <div class="popover-divider"></div>
+                    <a class="popover-item danger"><span>Delete</span></a>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- Row 2 -->
+              <tr class="task-table-row" data-task-id="TASK-5736" data-title="Admoneo vehemens suscipit toties desidero tollo allatus blanditiis caute delibero degenero." data-status="Canceled" data-priority="Medium">
+                <td><input type="checkbox" class="row-check task-row-check"></td>
+                <td style="color:var(--text-muted); font-size:12.5px;">TASK-5736</td>
+                <td>
+                  <span class="type-badge">Bug</span>
+                  <span style="margin-left: 8px;">Admoneo vehemens suscipit toties desidero tollo allatus blanditiis caute delibero degenero.</span>
+                </td>
+                <td>
+                  <span class="status-cell">
+                    <span class="status-icon" style="color:#64748B;">⊘</span>
+                    <span>Canceled</span>
+                  </span>
+                </td>
+                <td>
+                  <span class="priority-cell">
+                    <span class="priority-icon" style="color:#F59E0B;">→</span>
+                    <span>Medium</span>
+                  </span>
+                </td>
+                <td style="text-align: right; position: relative;">
+                  <button class="row-action-btn" type="button">•••</button>
+                  <div class="popover-menu" style="width:140px;">
+                    <a class="popover-item"><span>Edit</span></a>
+                    <a class="popover-item"><span>Make a copy</span></a>
+                    <a class="popover-item"><span>Favorite</span></a>
+                    <a class="popover-item"><span>Labels ›</span></a>
+                    <div class="popover-divider"></div>
+                    <a class="popover-item danger"><span>Delete</span></a>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- Row 3 -->
+              <tr class="task-table-row" data-task-id="TASK-3204" data-title="Deputo veritas vinculum expedita casus supplanto corona deserunt calamitas considero soleo coma..." data-status="Canceled" data-priority="High">
+                <td><input type="checkbox" class="row-check task-row-check"></td>
+                <td style="color:var(--text-muted); font-size:12.5px;">TASK-3204</td>
+                <td>
+                  <span class="type-badge">Documentation</span>
+                  <span style="margin-left: 8px;">Deputo veritas vinculum expedita casus supplanto corona deserunt calamitas considero soleo coma...</span>
+                </td>
+                <td>
+                  <span class="status-cell">
+                    <span class="status-icon" style="color:#64748B;">⊘</span>
+                    <span>Canceled</span>
+                  </span>
+                </td>
+                <td>
+                  <span class="priority-cell">
+                    <span class="priority-icon" style="color:#EF4444;">↑</span>
+                    <span>High</span>
+                  </span>
+                </td>
+                <td style="text-align: right; position: relative;">
+                  <button class="row-action-btn" type="button">•••</button>
+                  <div class="popover-menu" style="width:140px;">
+                    <a class="popover-item"><span>Edit</span></a>
+                    <a class="popover-item"><span>Make a copy</span></a>
+                    <a class="popover-item"><span>Favorite</span></a>
+                    <a class="popover-item"><span>Labels ›</span></a>
+                    <div class="popover-divider"></div>
+                    <a class="popover-item danger"><span>Delete</span></a>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- Row 4 -->
+              <tr class="task-table-row" data-task-id="TASK-7141" data-title="Vester ducimus aequus minima possimus vilis cuppedia celo alter depereo." data-status="Done" data-priority="High">
+                <td><input type="checkbox" class="row-check task-row-check"></td>
+                <td style="color:var(--text-muted); font-size:12.5px;">TASK-7141</td>
+                <td>
+                  <span class="type-badge">Bug</span>
+                  <span style="margin-left: 8px;">Vester ducimus aequus minima possimus vilis cuppedia celo alter depereo.</span>
+                </td>
+                <td>
+                  <span class="status-cell">
+                    <span class="status-icon" style="color:#10B981;">✓</span>
+                    <span>Done</span>
+                  </span>
+                </td>
+                <td>
+                  <span class="priority-cell">
+                    <span class="priority-icon" style="color:#EF4444;">↑</span>
+                    <span>High</span>
+                  </span>
+                </td>
+                <td style="text-align: right; position: relative;">
+                  <button class="row-action-btn" type="button">•••</button>
+                  <div class="popover-menu" style="width:140px;">
+                    <a class="popover-item"><span>Edit</span></a>
+                    <a class="popover-item"><span>Make a copy</span></a>
+                    <a class="popover-item"><span>Favorite</span></a>
+                    <a class="popover-item"><span>Labels ›</span></a>
+                    <div class="popover-divider"></div>
+                    <a class="popover-item danger"><span>Delete</span></a>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- Row 5 -->
+              <tr class="task-table-row" data-task-id="TASK-8689" data-title="Admoveo nihil denique acer corrumpo cupio peccatus spectaculum tumultus tergum cui thalassinus v..." data-status="Backlog" data-priority="Medium">
+                <td><input type="checkbox" class="row-check task-row-check"></td>
+                <td style="color:var(--text-muted); font-size:12.5px;">TASK-8689</td>
+                <td>
+                  <span class="type-badge">Documentation</span>
+                  <span style="margin-left: 8px;">Admoveo nihil denique acer corrumpo cupio peccatus spectaculum tumultus tergum cui thalassinus v...</span>
+                </td>
+                <td>
+                  <span class="status-cell">
+                    <span class="status-icon" style="color:#64748B;">?</span>
+                    <span>Backlog</span>
+                  </span>
+                </td>
+                <td>
+                  <span class="priority-cell">
+                    <span class="priority-icon" style="color:#F59E0B;">→</span>
+                    <span>Medium</span>
+                  </span>
+                </td>
+                <td style="text-align: right; position: relative;">
+                  <button class="row-action-btn" type="button">•••</button>
+                  <div class="popover-menu" style="width:140px;">
+                    <a class="popover-item"><span>Edit</span></a>
+                    <a class="popover-item"><span>Make a copy</span></a>
+                    <a class="popover-item"><span>Favorite</span></a>
+                    <a class="popover-item"><span>Labels ›</span></a>
+                    <div class="popover-divider"></div>
+                    <a class="popover-item danger"><span>Delete</span></a>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- Row 6 -->
+              <tr class="task-table-row" data-task-id="TASK-3359" data-title="Carus minus uberrime crapula damnatio tristis correptius adhaero itaque defendo." data-status="Canceled" data-priority="High">
+                <td><input type="checkbox" class="row-check task-row-check"></td>
+                <td style="color:var(--text-muted); font-size:12.5px;">TASK-3359</td>
+                <td>
+                  <span class="type-badge">Feature</span>
+                  <span style="margin-left: 8px;">Carus minus uberrime crapula damnatio tristis correptius adhaero itaque defendo.</span>
+                </td>
+                <td>
+                  <span class="status-cell">
+                    <span class="status-icon" style="color:#64748B;">⊘</span>
+                    <span>Canceled</span>
+                  </span>
+                </td>
+                <td>
+                  <span class="priority-cell">
+                    <span class="priority-icon" style="color:#EF4444;">↑</span>
+                    <span>High</span>
+                  </span>
+                </td>
+                <td style="text-align: right; position: relative;">
+                  <button class="row-action-btn" type="button">•••</button>
+                  <div class="popover-menu" style="width:140px;">
+                    <a class="popover-item"><span>Edit</span></a>
+                    <a class="popover-item"><span>Make a copy</span></a>
+                    <a class="popover-item"><span>Favorite</span></a>
+                    <a class="popover-item"><span>Labels ›</span></a>
+                    <div class="popover-divider"></div>
+                    <a class="popover-item danger"><span>Delete</span></a>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- Row 7 -->
+              <tr class="task-table-row" data-task-id="TASK-4715" data-title="Solutio cohaero baiulus brevis animadverto adfero adeo callide calco quibusdam vapulus tergum." data-status="Canceled" data-priority="Medium">
+                <td><input type="checkbox" class="row-check task-row-check"></td>
+                <td style="color:var(--text-muted); font-size:12.5px;">TASK-4715</td>
+                <td>
+                  <span class="type-badge">Bug</span>
+                  <span style="margin-left: 8px;">Solutio cohaero baiulus brevis animadverto adfero adeo callide calco quibusdam vapulus tergum.</span>
+                </td>
+                <td>
+                  <span class="status-cell">
+                    <span class="status-icon" style="color:#64748B;">⊘</span>
+                    <span>Canceled</span>
+                  </span>
+                </td>
+                <td>
+                  <span class="priority-cell">
+                    <span class="priority-icon" style="color:#F59E0B;">→</span>
+                    <span>Medium</span>
+                  </span>
+                </td>
+                <td style="text-align: right; position: relative;">
+                  <button class="row-action-btn" type="button">•••</button>
+                  <div class="popover-menu" style="width:140px;">
+                    <a class="popover-item"><span>Edit</span></a>
+                    <a class="popover-item"><span>Make a copy</span></a>
+                    <a class="popover-item"><span>Favorite</span></a>
+                    <a class="popover-item"><span>Labels ›</span></a>
+                    <div class="popover-divider"></div>
+                    <a class="popover-item danger"><span>Delete</span></a>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- Row 8 -->
+              <tr class="task-table-row" data-task-id="TASK-7138" data-title="Usitas tardus aliquid comprehendo cupiditas a patria statim copiose crux." data-status="Done" data-priority="Low">
+                <td><input type="checkbox" class="row-check task-row-check"></td>
+                <td style="color:var(--text-muted); font-size:12.5px;">TASK-7138</td>
+                <td>
+                  <span class="type-badge">Feature</span>
+                  <span style="margin-left: 8px;">Usitas tardus aliquid comprehendo cupiditas a patria statim copiose crux.</span>
+                </td>
+                <td>
+                  <span class="status-cell">
+                    <span class="status-icon" style="color:#10B981;">✓</span>
+                    <span>Done</span>
+                  </span>
+                </td>
+                <td>
+                  <span class="priority-cell">
+                    <span class="priority-icon" style="color:#94A3B8;">↓</span>
+                    <span>Low</span>
+                  </span>
+                </td>
+                <td style="text-align: right; position: relative;">
+                  <button class="row-action-btn" type="button">•••</button>
+                  <div class="popover-menu" style="width:140px;">
+                    <a class="popover-item"><span>Edit</span></a>
+                    <a class="popover-item"><span>Make a copy</span></a>
+                    <a class="popover-item"><span>Favorite</span></a>
+                    <a class="popover-item"><span>Labels ›</span></a>
+                    <div class="popover-divider"></div>
+                    <a class="popover-item danger"><span>Delete</span></a>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- Row 9 -->
+              <tr class="task-table-row" data-task-id="TASK-1373" data-title="Peior alias comedo pel averto stultus caries." data-status="Canceled" data-priority="Low">
+                <td><input type="checkbox" class="row-check task-row-check"></td>
+                <td style="color:var(--text-muted); font-size:12.5px;">TASK-1373</td>
+                <td>
+                  <span class="type-badge">Feature</span>
+                  <span style="margin-left: 8px;">Peior alias comedo pel averto stultus caries.</span>
+                </td>
+                <td>
+                  <span class="status-cell">
+                    <span class="status-icon" style="color:#64748B;">⊘</span>
+                    <span>Canceled</span>
+                  </span>
+                </td>
+                <td>
+                  <span class="priority-cell">
+                    <span class="priority-icon" style="color:#94A3B8;">↓</span>
+                    <span>Low</span>
+                  </span>
+                </td>
+                <td style="text-align: right; position: relative;">
+                  <button class="row-action-btn" type="button">•••</button>
+                  <div class="popover-menu" style="width:140px;">
+                    <a class="popover-item"><span>Edit</span></a>
+                    <a class="popover-item"><span>Make a copy</span></a>
+                    <a class="popover-item"><span>Favorite</span></a>
+                    <a class="popover-item"><span>Labels ›</span></a>
+                    <div class="popover-divider"></div>
+                    <a class="popover-item danger"><span>Delete</span></a>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- Row 10 -->
+              <tr class="task-table-row" data-task-id="TASK-4140" data-title="Eius bibo vulgaris cenaculum sponte est." data-status="Done" data-priority="Low">
+                <td><input type="checkbox" class="row-check task-row-check"></td>
+                <td style="color:var(--text-muted); font-size:12.5px;">TASK-4140</td>
+                <td>
+                  <span class="type-badge">Feature</span>
+                  <span style="margin-left: 8px;">Eius bibo vulgaris cenaculum sponte est.</span>
+                </td>
+                <td>
+                  <span class="status-cell">
+                    <span class="status-icon" style="color:#10B981;">✓</span>
+                    <span>Done</span>
+                  </span>
+                </td>
+                <td>
+                  <span class="priority-cell">
+                    <span class="priority-icon" style="color:#94A3B8;">↓</span>
+                    <span>Low</span>
+                  </span>
+                </td>
+                <td style="text-align: right; position: relative;">
+                  <button class="row-action-btn" type="button">•••</button>
+                  <div class="popover-menu" style="width:140px;">
+                    <a class="popover-item"><span>Edit</span></a>
+                    <a class="popover-item"><span>Make a copy</span></a>
+                    <a class="popover-item"><span>Favorite</span></a>
+                    <a class="popover-item"><span>Labels ›</span></a>
+                    <div class="popover-divider"></div>
+                    <a class="popover-item danger"><span>Delete</span></a>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- Row 11: Todo -->
+              <tr class="task-table-row" data-task-id="TASK-8202" data-title="Beatus um varietas tracto calco tracto aptus dens." data-status="Todo" data-priority="Medium">
+                <td><input type="checkbox" class="row-check task-row-check"></td>
+                <td style="color:var(--text-muted); font-size:12.5px;">TASK-8202</td>
+                <td>
+                  <span class="type-badge">Feature</span>
+                  <span style="margin-left: 8px;">Beatus um varietas tracto calco tracto aptus dens.</span>
+                </td>
+                <td>
+                  <span class="status-cell">
+                    <span class="status-icon" style="color:#94A3B8;">○</span>
+                    <span>Todo</span>
+                  </span>
+                </td>
+                <td>
+                  <span class="priority-cell">
+                    <span class="priority-icon" style="color:#F59E0B;">→</span>
+                    <span>Medium</span>
+                  </span>
+                </td>
+                <td style="text-align: right; position: relative;">
+                  <button class="row-action-btn" type="button">•••</button>
+                  <div class="popover-menu" style="width:140px;">
+                    <a class="popover-item"><span>Edit</span></a>
+                    <a class="popover-item"><span>Make a copy</span></a>
+                    <a class="popover-item"><span>Favorite</span></a>
+                    <a class="popover-item"><span>Labels ›</span></a>
+                    <div class="popover-divider"></div>
+                    <a class="popover-item danger"><span>Delete</span></a>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- Row 12: In Progress -->
+              <tr class="task-table-row" data-task-id="TASK-9953" data-title="Tunc a go tabesco aliquam claro certe aequitas sponte." data-status="In Progress" data-priority="High">
+                <td><input type="checkbox" class="row-check task-row-check"></td>
+                <td style="color:var(--text-muted); font-size:12.5px;">TASK-9953</td>
+                <td>
+                  <span class="type-badge">Feature</span>
+                  <span style="margin-left: 8px;">Tunc a go tabesco aliquam claro certe aequitas sponte.</span>
+                </td>
+                <td>
+                  <span class="status-cell">
+                    <span class="status-icon" style="color:#3B82F6;">◐</span>
+                    <span>In Progress</span>
+                  </span>
+                </td>
+                <td>
+                  <span class="priority-cell">
+                    <span class="priority-icon" style="color:#EF4444;">↑</span>
+                    <span>High</span>
+                  </span>
+                </td>
+                <td style="text-align: right; position: relative;">
+                  <button class="row-action-btn" type="button">•••</button>
+                  <div class="popover-menu" style="width:140px;">
+                    <a class="popover-item"><span>Edit</span></a>
+                    <a class="popover-item"><span>Make a copy</span></a>
+                    <a class="popover-item"><span>Favorite</span></a>
+                    <a class="popover-item"><span>Labels ›</span></a>
+                    <div class="popover-divider"></div>
+                    <a class="popover-item danger"><span>Delete</span></a>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Floating Popover: Status Filter -->
+        <div class="popover-menu filter-popover-box" id="statusFilterMenu">
+          <div class="filter-popover-search">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+            <input type="text" placeholder="Status">
+          </div>
+          <div class="filter-options-list">
+            <div class="filter-option-row status-filter-option" data-val="Backlog">
+              <span class="filter-checkbox"></span>
+              <div class="filter-option-label">
+                <span style="color:#64748B;">?</span>
+                <span>Backlog</span>
+              </div>
+              <span class="filter-option-count">18</span>
+            </div>
+            <div class="filter-option-row status-filter-option" data-val="Todo">
+              <span class="filter-checkbox"></span>
+              <div class="filter-option-label">
+                <span style="color:#94A3B8;">○</span>
+                <span>Todo</span>
+              </div>
+              <span class="filter-option-count">16</span>
+            </div>
+            <div class="filter-option-row status-filter-option" data-val="In Progress">
+              <span class="filter-checkbox"></span>
+              <div class="filter-option-label">
+                <span style="color:#3B82F6;">◐</span>
+                <span>In Progress</span>
+              </div>
+              <span class="filter-option-count">24</span>
+            </div>
+            <div class="filter-option-row status-filter-option" data-val="Done">
+              <span class="filter-checkbox"></span>
+              <div class="filter-option-label">
+                <span style="color:#10B981;">✓</span>
+                <span>Done</span>
+              </div>
+              <span class="filter-option-count">18</span>
+            </div>
+            <div class="filter-option-row status-filter-option" data-val="Canceled">
+              <span class="filter-checkbox"></span>
+              <div class="filter-option-label">
+                <span style="color:#64748B;">⊘</span>
+                <span>Canceled</span>
+              </div>
+              <span class="filter-option-count">24</span>
+            </div>
+          </div>
+          <div class="filter-clear-btn" id="clearStatusFiltersBtn">Clear filters</div>
+        </div>
+
+        <!-- Floating Popover: Priority Filter -->
+        <div class="popover-menu filter-popover-box" id="priorityFilterMenu">
+          <div class="filter-popover-search">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+            <input type="text" placeholder="Priority">
+          </div>
+          <div class="filter-options-list">
+            <div class="filter-option-row priority-filter-option" data-val="Low">
+              <span class="filter-checkbox"></span>
+              <div class="filter-option-label">
+                <span style="color:#94A3B8;">↓</span>
+                <span>Low</span>
+              </div>
+              <span class="filter-option-count">29</span>
+            </div>
+            <div class="filter-option-row priority-filter-option" data-val="Medium">
+              <span class="filter-checkbox"></span>
+              <div class="filter-option-label">
+                <span style="color:#F59E0B;">→</span>
+                <span>Medium</span>
+              </div>
+              <span class="filter-option-count">31</span>
+            </div>
+            <div class="filter-option-row priority-filter-option" data-val="High">
+              <span class="filter-checkbox"></span>
+              <div class="filter-option-label">
+                <span style="color:#EF4444;">↑</span>
+                <span>High</span>
+              </div>
+              <span class="filter-option-count">40</span>
+            </div>
+            <div class="filter-option-row priority-filter-option" data-val="Critical">
+              <span class="filter-checkbox"></span>
+              <div class="filter-option-label">
+                <span style="color:#DC2626;">!</span>
+                <span>Critical</span>
+              </div>
+              <span class="filter-option-count">8</span>
+            </div>
+          </div>
+        </div>
       </section>
 
-    </main>
+      <!-- =====================================================================
+           VIEW 3: APPS / INTEGRATIONS
+           ===================================================================== -->
+      <section class="page-view" id="appsView">
+        <div class="view-header">
+          <div class="view-title-group">
+            <h1>App Integrations</h1>
+            <p>Here's a list of your apps for the integration!</p>
+          </div>
+        </div>
 
-  </div>
+        <div class="toolbar-row">
+          <div class="toolbar-left">
+            <input type="text" class="table-search-input" placeholder="Filter apps...">
+            <select class="settings-select" style="padding:6px 12px; font-size:12.5px;">
+              <option>All Apps</option>
+              <option>Connected</option>
+              <option>Not Connected</option>
+            </select>
+          </div>
+          <div class="toolbar-right">
+            <button class="btn-outline" style="padding:6px 10px; font-size:12.5px;">Ascending ⇅</button>
+          </div>
+        </div>
 
-  <!-- Interactive JavaScript logic -->
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      // Sidebar Mobile Toggle
-      const hamburger = document.getElementById('hamburgerBtn');
-      const sidebar = document.getElementById('dashSidebar');
-      if (hamburger && sidebar) {
-        hamburger.addEventListener('click', () => {
-          sidebar.classList.toggle('open');
-        });
-      }
+        <div class="apps-grid">
+          <!-- Discord -->
+          <div class="app-card">
+            <div>
+              <div class="app-card-top">
+                <div class="app-icon-wrapper" style="color:#5865F2;">💬</div>
+                <button class="app-connect-btn connected" type="button">Connected</button>
+              </div>
+              <div class="app-title">Discord</div>
+              <div class="app-description">Connect with Discord to notify relevant teams directly within dedicated server channels.</div>
+            </div>
+          </div>
 
-      // Time Range Segment Switcher & Chart Morph Simulation
-      const segmentBtns = document.querySelectorAll('.segment-btn');
-      const metricNum = document.getElementById('networkMetricNum');
-      const blueLine = document.getElementById('blueLinePath');
-      const blueArea = document.getElementById('blueAreaPath');
-      const whiteLine = document.getElementById('whiteLinePath');
+          <!-- Docker -->
+          <div class="app-card">
+            <div>
+              <div class="app-card-top">
+                <div class="app-icon-wrapper" style="color:#2496ED;">🐳</div>
+                <button class="app-connect-btn" type="button">Connect</button>
+              </div>
+              <div class="app-title">Docker</div>
+              <div class="app-description">Automate application container deployment and fleet telemetry pipeline builds.</div>
+            </div>
+          </div>
 
-      const chartData = {
-        '7': {
-          num: '6,782',
-          blue: 'M 50 148 C 110 135, 170 120, 240 122 C 300 125, 335 70, 420 50 C 490 35, 545 65, 630 68',
-          area: 'M 50 148 C 110 135, 170 120, 240 122 C 300 125, 335 70, 420 50 C 490 35, 545 65, 630 68 L 630 191 L 50 191 Z',
-          white: 'M 50 162 C 110 152, 170 138, 240 140 C 300 142, 335 95, 420 85 C 490 75, 545 92, 630 96'
-        },
-        '30': {
-          num: '28,490',
-          blue: 'M 50 120 C 120 90, 190 140, 260 80 C 330 60, 400 95, 480 40 C 530 30, 580 50, 630 45',
-          area: 'M 50 120 C 120 90, 190 140, 260 80 C 330 60, 400 95, 480 40 C 530 30, 580 50, 630 45 L 630 191 L 50 191 Z',
-          white: 'M 50 140 C 120 115, 190 160, 260 105 C 330 85, 400 115, 480 65 C 530 55, 580 75, 630 70'
-        },
-        '90': {
-          num: '84,120',
-          blue: 'M 50 160 C 130 110, 200 70, 290 85 C 370 100, 450 50, 520 30 C 560 25, 600 40, 630 35',
-          area: 'M 50 160 C 130 110, 200 70, 290 85 C 370 100, 450 50, 520 30 C 560 25, 600 40, 630 35 L 630 191 L 50 191 Z',
-          white: 'M 50 180 C 130 135, 200 95, 290 110 C 370 125, 450 75, 520 55 C 560 50, 600 65, 630 60'
-        }
-      };
+          <!-- Figma -->
+          <div class="app-card">
+            <div>
+              <div class="app-card-top">
+                <div class="app-icon-wrapper" style="color:#F24E1E;">🎨</div>
+                <button class="app-connect-btn connected" type="button">Connected</button>
+              </div>
+              <div class="app-title">Figma</div>
+              <div class="app-description">Sync UI design assets and review interactive mobile prototype mockups directly.</div>
+            </div>
+          </div>
 
-      segmentBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-          segmentBtns.forEach(b => b.classList.remove('active'));
-          btn.classList.add('active');
-          const days = btn.getAttribute('data-days');
-          if (chartData[days]) {
-            if (metricNum) metricNum.textContent = chartData[days].num;
-            if (blueLine) blueLine.setAttribute('d', chartData[days].blue);
-            if (blueArea) blueArea.setAttribute('d', chartData[days].area);
-            if (whiteLine) whiteLine.setAttribute('d', chartData[days].white);
-          }
-        });
-      });
+          <!-- GitHub -->
+          <div class="app-card">
+            <div>
+              <div class="app-card-top">
+                <div class="app-icon-wrapper" style="color:#FFFFFF;">🐙</div>
+                <button class="app-connect-btn connected" type="button">Connected</button>
+              </div>
+              <div class="app-title">GitHub</div>
+              <div class="app-description">Link commits and pull requests to automatic issue tracking and CI/CD pipelines.</div>
+            </div>
+          </div>
 
-      // Search bar shortcut keybind (⌘K or Ctrl+K)
-      const searchInput = document.getElementById('dashSearch');
-      document.addEventListener('keydown', (e) => {
-        if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-          e.preventDefault();
-          if (searchInput) searchInput.focus();
-        }
-      });
-    });
-  </script>
+          <!-- GitLab -->
+          <div class="app-card">
+            <div>
+              <div class="app-card-top">
+                <div class="app-icon-wrapper" style="color:#FC6D26;">🦊</div>
+                <button class="app-connect-btn" type="button">Connect</button>
+              </div>
+              <div class="app-title">GitLab</div>
+              <div class="app-description">Continuous integration, code reviews and Git repository management for enterprise teams.</div>
+            </div>
+          </div>
 
+          <!-- Gmail -->
+          <div class="app-card">
+            <div>
+              <div class="app-card-top">
+                <div class="app-icon-wrapper" style="color:#EA4335;">✉</div>
+                <button class="app-connect-btn connected" type="button">Connected</button>
+              </div>
+              <div class="app-title">Gmail</div>
+              <div class="app-description">Send booking confirmations, PDF receipts, and cancellation notices directly to users.</div>
+            </div>
+          </div>
+
+          <!-- Google Drive -->
+          <div class="app-card">
+            <div>
+              <div class="app-card-top">
+                <div class="app-icon-wrapper" style="color:#34A853;">📁</div>
+                <button class="app-connect-btn" type="button">Connect</button>
+              </div>
+              <div class="app-title">Google Drive</div>
+              <div class="app-description">Store uploaded vehicle inspection reports, registration documents and driver licenses.</div>
+            </div>
+          </div>
+
+          <!-- Slack -->
+          <div class="app-card">
+            <div>
+              <div class="app-card-top">
+                <div class="app-icon-wrapper" style="color:#E01E5A;">#</div>
+                <button class="app-connect-btn connected" type="button">Connected</button>
+              </div>
+              <div class="app-title">Slack</div>
+              <div class="app-description">Instant alerts for driver delays, emergency maintenance orders and booking spikes.</div>
+            </div>
+          </div>
+
+          <!-- Notion -->
+          <div class="app-card">
+            <div>
+              <div class="app-card-top">
+                <div class="app-icon-wrapper" style="color:#FFFFFF;">📓</div>
+                <button class="app-connect-btn" type="button">Connect</button>
+              </div>
+              <div class="app-title">Notion</div>
+              <div class="app-description">Centralize SOPs, fleet maintenance guidelines, and customer onboarding docs.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =====================================================================
+           VIEW 4: USER LIST
+           ===================================================================== -->
+      <section class="page-view" id="usersView">
+        <div class="view-header">
+          <div class="view-title-group">
+            <h1>User List</h1>
+            <p>Manage your users and their roles here.</p>
+          </div>
+          <div class="view-actions">
+            <button class="btn-outline" type="button">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              Invite User
+            </button>
+            <button class="btn-primary" type="button">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/></svg>
+              Add User
+            </button>
+          </div>
+        </div>
+
+        <div class="toolbar-row">
+          <div class="toolbar-left">
+            <input type="text" class="table-search-input" placeholder="Filter users...">
+            <select class="settings-select" style="padding:6px 12px; font-size:12.5px;">
+              <option>All Roles</option>
+              <option>Admin</option>
+              <option>Manager</option>
+              <option>Driver</option>
+              <option>Passenger</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th style="width: 40px;"><input type="checkbox" class="row-check"></th>
+                <th>Username</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone Number</th>
+                <th>Status</th>
+                <th>Role</th>
+                <th style="width: 40px;"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><input type="checkbox" class="row-check"></td>
+                <td style="font-weight:600;">satnaing</td>
+                <td>Sat Naing</td>
+                <td style="color:var(--text-muted);">satnaingdev@gmail.com</td>
+                <td style="color:var(--text-muted);">+1 (555) 234-5678</td>
+                <td><span class="user-status-pill active">● Active</span></td>
+                <td><span class="role-badge">Superadmin</span></td>
+                <td><button class="row-action-btn">•••</button></td>
+              </tr>
+              <tr>
+                <td><input type="checkbox" class="row-check"></td>
+                <td style="font-weight:600;">d_perera</td>
+                <td>Damith Perera</td>
+                <td style="color:var(--text-muted);">damith@smartmove.lk</td>
+                <td style="color:var(--text-muted);">+94 77 123 4567</td>
+                <td><span class="user-status-pill active">● Active</span></td>
+                <td><span class="role-badge">Admin</span></td>
+                <td><button class="row-action-btn">•••</button></td>
+              </tr>
+              <tr>
+                <td><input type="checkbox" class="row-check"></td>
+                <td style="font-weight:600;">k_silva</td>
+                <td>Kasun Silva</td>
+                <td style="color:var(--text-muted);">kasun@smartmove.lk</td>
+                <td style="color:var(--text-muted);">+94 71 987 6543</td>
+                <td><span class="user-status-pill active">● Active</span></td>
+                <td><span class="role-badge">Driver</span></td>
+                <td><button class="row-action-btn">•••</button></td>
+              </tr>
+              <tr>
+                <td><input type="checkbox" class="row-check"></td>
+                <td style="font-weight:600;">n_fernando</td>
+                <td>Nadeesha Fernando</td>
+                <td style="color:var(--text-muted);">nadeesha@gmail.com</td>
+                <td style="color:var(--text-muted);">+94 76 345 6789</td>
+                <td><span class="user-status-pill invited">● Invited</span></td>
+                <td><span class="role-badge">Passenger</span></td>
+                <td><button class="row-action-btn">•••</button></td>
+              </tr>
+              <tr>
+                <td><input type="checkbox" class="row-check"></td>
+                <td style="font-weight:600;">m_kamal</td>
+                <td>Mohamed Kamal</td>
+                <td style="color:var(--text-muted);">kamal@techfleet.io</td>
+                <td style="color:var(--text-muted);">+94 70 555 1212</td>
+                <td><span class="user-status-pill suspended">● Suspended</span></td>
+                <td><span class="role-badge">Driver</span></td>
+                <td><button class="row-action-btn">•••</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- =====================================================================
+           VIEW 5: SETTINGS PAGE
+           ===================================================================== -->
+      <section class="page-view" id="settingsView">
+        <div class="view-header" style="flex-direction:column; align-items:flex-start;">
+          <div class="view-title-group">
+            <h1>Settings</h1>
+            <p>Manage your account settings and set e-mail preferences.</p>
+          </div>
+        </div>
+
+        <div style="height:1px; background-color:var(--border-subtle); margin: 6px 0 16px 0;"></div>
+
+        <div class="settings-layout">
+          <!-- Left Sub-navigation Pills -->
+          <div class="settings-nav">
+            <a class="settings-nav-item active">Profile</a>
+            <a class="settings-nav-item">Account</a>
+            <a class="settings-nav-item">Appearance</a>
+            <a class="settings-nav-item">Notifications</a>
+            <a class="settings-nav-item">Display</a>
+          </div>
+
+          <!-- Right Content Form -->
+          <div class="settings-form-panel">
+            <div>
+              <h2 style="font-size:18px; font-weight:600; color:var(--text-white);">Profile</h2>
+              <p style="font-size:13px; color:var(--text-muted); margin-top:2px;">This is how others will see you on the site.</p>
+            </div>
+
+            <div style="height:1px; background-color:var(--border-subtle);"></div>
+
+            <!-- Username -->
+            <div class="settings-form-group">
+              <label class="settings-label">Username</label>
+              <input type="text" class="settings-input" value="shadcn">
+              <span class="settings-desc">This is your public display name. It can be your real name or a pseudonym. You can only change this once every 30 days.</span>
+            </div>
+
+            <!-- Email -->
+            <div class="settings-form-group">
+              <label class="settings-label">Email</label>
+              <select class="settings-select">
+                <option>Select a verified email to display ⌄</option>
+                <option selected>satnaingdev@gmail.com</option>
+                <option>admin@smartmove.lk</option>
+              </select>
+              <span class="settings-desc">You can manage verified email addresses in your email settings.</span>
+            </div>
+
+            <!-- Bio -->
+            <div class="settings-form-group">
+              <label class="settings-label">Bio</label>
+              <textarea class="settings-textarea">I own a computer.</textarea>
+              <span class="settings-desc">You can @mention other users and organizations to link to them.</span>
+            </div>
+
+            <!-- URLs -->
+            <div class="settings-form-group">
+              <label class="settings-label">URLs</label>
+              <input type="text" class="settings-input" placeholder="https://example.com" value="https://smartmove.lk">
+              <span class="settings-desc">Add links to your website, blog, or social media profiles.</span>
+            </div>
+
+            <div style="margin-top: 10px;">
+              <button class="btn-primary" type="button">Update profile</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+</div>
+
+<script src="../js/dashboard.js"></script>
 </body>
 </html>
