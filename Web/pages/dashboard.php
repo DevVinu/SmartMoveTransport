@@ -14,417 +14,509 @@ $pageTitle = "Operations Dashboard | SmartMove Transport";
 </head>
 <body class="dashboard-body">
 
-  <!-- Left Sidebar -->
+  <!-- Left Sidebar (NO ICONS inside menu items as requested) -->
   <aside class="dash-sidebar" id="dashSidebar">
-    <div>
-      <div class="sidebar-brand-row">
-        <a href="../index.php" class="sidebar-logo">SmartMove<span class="blue-dot">.</span></a>
-        <span class="badge-portal">Operations</span>
+    
+    <!-- Sidebar Header / Logo -->
+    <div class="sidebar-header">
+      <div class="sidebar-logo-badge">SM</div>
+      <div class="sidebar-brand-text">
+        <span>SmartMove<span class="blue-dot">.</span></span>
+        <span class="sidebar-brand-version">Portal</span>
       </div>
-
-      <ul class="sidebar-nav-list">
-        <li class="sidebar-nav-item active">
-          <a href="#" data-view="overview">
-            <span class="nav-icon">📊</span>
-            <span>Overview</span>
-          </a>
-        </li>
-        <li class="sidebar-nav-item">
-          <a href="#" data-view="dispatch">
-            <span class="nav-icon">🗺️</span>
-            <span>Live Dispatch</span>
-            <span class="sidebar-badge">8 Live</span>
-          </a>
-        </li>
-        <li class="sidebar-nav-item">
-          <a href="#" data-view="fleet">
-            <span class="nav-icon">🚘</span>
-            <span>Fleet & Drivers</span>
-          </a>
-        </li>
-        <li class="sidebar-nav-item">
-          <a href="#" data-view="bookings">
-            <span class="nav-icon">📑</span>
-            <span>Booking History</span>
-          </a>
-        </li>
-        <li class="sidebar-nav-item">
-          <a href="#" data-view="revenue">
-            <span class="nav-icon">💳</span>
-            <span>Billing & Revenue</span>
-          </a>
-        </li>
-        <li class="sidebar-nav-item">
-          <a href="#" data-view="settings">
-            <span class="nav-icon">⚙️</span>
-            <span>Settings</span>
-          </a>
-        </li>
-      </ul>
     </div>
 
-    <!-- User Profile Card -->
-    <div class="sidebar-footer-card">
-      <div class="passenger-avatar" style="width: 38px; height: 38px; font-size: 1rem;">VD</div>
-      <div class="user-meta">
-        <div class="user-name">Vinu Dissanayake</div>
-        <div class="user-role">Fleet Director</div>
+    <!-- Scrollable Navigation Groups -->
+    <div class="sidebar-scrollable">
+      
+      <!-- GENERAL Group -->
+      <div>
+        <div class="sidebar-group-title">GENERAL</div>
+        <ul class="sidebar-nav-list">
+          <li class="sidebar-nav-item active">
+            <a href="#">
+              <span class="item-label">Dashboards</span>
+              <span class="sidebar-chevron">›</span>
+            </a>
+          </li>
+          <li class="sidebar-nav-item">
+            <a href="#">
+              <span class="item-label">Forms</span>
+              <span class="sidebar-badge-hot">Hot</span>
+              <span class="sidebar-chevron">›</span>
+            </a>
+          </li>
+          <li class="sidebar-nav-item">
+            <a href="#">
+              <span class="item-label">Tables</span>
+              <span class="sidebar-chevron">›</span>
+            </a>
+          </li>
+          <li class="sidebar-nav-item">
+            <a href="#">
+              <span class="item-label">Charts</span>
+              <span class="sidebar-badge-new">New</span>
+              <span class="sidebar-chevron">›</span>
+            </a>
+          </li>
+          <li class="sidebar-nav-item">
+            <a href="#">
+              <span class="item-label">Calendar</span>
+            </a>
+          </li>
+          <li class="sidebar-nav-item">
+            <a href="#">
+              <span class="item-label">Map</span>
+            </a>
+          </li>
+        </ul>
       </div>
-      <a href="../index.php" class="btn-exit-portal" title="Return to Public Site">↗</a>
+
+      <!-- APPS Group -->
+      <div>
+        <div class="sidebar-group-title">APPS</div>
+        <ul class="sidebar-nav-list">
+          <li class="sidebar-nav-item">
+            <a href="#">
+              <span class="item-label">Chat</span>
+              <span class="sidebar-badge-count">3</span>
+            </a>
+          </li>
+          <li class="sidebar-nav-item">
+            <a href="#">
+              <span class="item-label">Inbox</span>
+            </a>
+          </li>
+          <li class="sidebar-nav-item">
+            <a href="#">
+              <span class="item-label">Kanban</span>
+            </a>
+          </li>
+          <li class="sidebar-nav-item">
+            <a href="#">
+              <span class="item-label">Files</span>
+            </a>
+          </li>
+          <li class="sidebar-nav-item">
+            <a href="#">
+              <span class="item-label">Notifications</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- E-COMMERCE / MOBILITY Group -->
+      <div>
+        <div class="sidebar-group-title">FLEET & E-COMMERCE</div>
+        <ul class="sidebar-nav-list">
+          <li class="sidebar-nav-item">
+            <a href="#">
+              <span class="item-label">Storefront</span>
+            </a>
+          </li>
+          <li class="sidebar-nav-item">
+            <a href="#">
+              <span class="item-label">Product / Fleet</span>
+            </a>
+          </li>
+          <li class="sidebar-nav-item">
+            <a href="#">
+              <span class="item-label">Orders</span>
+              <span class="sidebar-chevron">›</span>
+            </a>
+          </li>
+          <li class="sidebar-nav-item">
+            <a href="#">
+              <span class="item-label">Invoice</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+
     </div>
+
+    <!-- Sidebar Bottom User Profile -->
+    <div class="sidebar-user-footer">
+      <div class="user-avatar-circle">VD</div>
+      <div class="user-info-text">
+        <div class="user-info-name">Vinu Dissanayake</div>
+        <div class="user-info-role">Fleet Admin</div>
+      </div>
+      <a href="../index.php" title="Back to Home" style="color: var(--dash-text-muted); font-size: 1rem; text-decoration: none;">↗</a>
+    </div>
+
   </aside>
 
-  <!-- Main Area -->
+  <!-- Main Content Area -->
   <div class="dash-main-area">
 
     <!-- Top Navigation Bar -->
     <header class="dash-topbar">
+      
       <div class="topbar-left">
-        <button id="toggleSidebarBtn" style="background:none; border:none; color:#FFFFFF; font-size:1.3rem; cursor:pointer; display:none;" aria-label="Toggle menu">☰</button>
-        <div class="page-heading-group">
-          <h1>Operations <span class="blue-text">Dashboard</span></h1>
-          <p>Real-time mobility telematics & dispatch monitoring • Colombo Central</p>
+        <button class="btn-hamburger" id="hamburgerBtn" title="Toggle Sidebar" aria-label="Toggle navigation">
+          ☰
+        </button>
+        <div class="breadcrumb-path">
+          <a href="../index.php">Home</a>
+          <span>›</span>
+          <span class="current">Dashboard</span>
         </div>
       </div>
 
+      <!-- Center Search -->
+      <div class="topbar-search-container">
+        <span class="search-icon-svg">🔍</span>
+        <input type="text" class="topbar-search-input" id="dashSearch" placeholder="Search pages or run a comm...">
+        <span class="kbd-shortcut">⌘K</span>
+      </div>
+
+      <!-- Right Actions & User Avatar -->
       <div class="topbar-right">
-        <!-- Search bar -->
-        <div class="topbar-search-box">
-          <span style="color: var(--blue-light);">🔍</span>
-          <input type="text" class="topbar-search-input" id="globalSearchInput" placeholder="Search ride, driver, or fleet ID...">
-          <span class="search-shortcut">⌘K</span>
-        </div>
+        <a href="#docs" class="btn-docs-pill">
+          <span>📄</span>
+          <span>Docs</span>
+        </a>
 
-        <!-- Live status -->
-        <div class="live-pill-tag">
-          <span class="live-dot-pulse"></span>
-          <span>Fleet Online</span>
-        </div>
-
-        <!-- Role preview selector -->
-        <div class="role-switcher-group" id="roleSwitcher">
-          <button type="button" class="role-tab-btn active" data-role="Admin">Admin</button>
-          <button type="button" class="role-tab-btn" data-role="Driver">Driver</button>
-          <button type="button" class="role-tab-btn" data-role="Passenger">Passenger</button>
-        </div>
-
-        <button class="btn-icon-square" title="Notifications" aria-label="Notifications">
-          🔔
-          <span class="notif-dot-blue"></span>
+        <button class="btn-topbar-icon" title="Toggle Theme" aria-label="Toggle theme">
+          ☼
         </button>
 
-        <a href="../index.php" class="btn-table-action" style="padding: 0.55rem 1.1rem; text-decoration: none;">← Exit to Home</a>
+        <button class="btn-topbar-icon" title="Notifications" aria-label="Notifications" style="position: relative;">
+          🔔
+          <span style="position: absolute; top: 7px; right: 7px; width: 6px; height: 6px; background-color: var(--dash-blue); border-radius: 50%;"></span>
+        </button>
+
+        <button class="btn-topbar-icon" title="Messages" aria-label="Messages">
+          ✉
+        </button>
+
+        <div class="topbar-user-avatar" title="Vinu Dissanayake (Admin)">
+          VD
+        </div>
       </div>
+
     </header>
 
-    <!-- Main Content Body -->
-    <main class="dash-content-container">
+    <!-- Main Workspace Content -->
+    <main class="dash-content">
 
-      <!-- Metrics Row (4 Cards) -->
-      <section class="metrics-cards-grid">
+      <!-- Header: Overview / Actions -->
+      <div class="dash-overview-row">
+        <div class="overview-title-group">
+          <div class="sub-label">OVERVIEW</div>
+          <h1 class="main-title">Operations <span class="blue-text">Dashboard</span></h1>
+        </div>
+
+        <div class="overview-actions">
+          <button class="btn-new-view">+ New view</button>
+          <button class="btn-create-report">+ Create report</button>
+        </div>
+      </div>
+
+      <!-- Top 6 Metric Cards (2 rows x 3 columns) -->
+      <section class="metrics-grid-2x3">
         
-        <div class="metric-card">
-          <div class="metric-top-row">
-            <span class="metric-title">Active Fleet Vehicles</span>
-            <div class="metric-icon-wrap">🚘</div>
+        <!-- Card 1: Total Users -->
+        <div class="metric-card-box">
+          <div class="metric-card-content">
+            <div class="metric-icon-square icon-blue-primary-theme">
+              👥
+            </div>
+            <div class="metric-details-stack">
+              <span class="metric-label-top">TOTAL USERS</span>
+              <div class="metric-num-row">
+                <span class="metric-big-value">2,500</span>
+                <span class="metric-growth-pill">+ 12%</span>
+              </div>
+              <span class="metric-sub-note">342 new this week</span>
+            </div>
           </div>
-          <div class="metric-value-row">
-            <span class="metric-big-num" id="activeFleetCounter">148</span>
-            <span class="metric-badge-blue">+12.4%</span>
+          <!-- Mini sparkline bars -->
+          <div class="metric-sparkbars-wrap">
+            <span class="spark-bar spark-blue-primary" style="height: 12px;"></span>
+            <span class="spark-bar spark-blue-primary" style="height: 16px;"></span>
+            <span class="spark-bar spark-blue-primary" style="height: 14px;"></span>
+            <span class="spark-bar spark-blue-primary" style="height: 22px;"></span>
+            <span class="spark-bar spark-blue-primary" style="height: 30px;"></span>
+            <span class="spark-bar spark-blue-primary" style="height: 26px;"></span>
           </div>
-          <span class="metric-caption">12 dispatched in the last 15 mins</span>
         </div>
 
-        <div class="metric-card">
-          <div class="metric-top-row">
-            <span class="metric-title">Today's Completed Trips</span>
-            <div class="metric-icon-wrap">🏁</div>
+        <!-- Card 2: Avg Session -->
+        <div class="metric-card-box">
+          <div class="metric-card-content">
+            <div class="metric-icon-square icon-blue-light-theme">
+              ⏱
+            </div>
+            <div class="metric-details-stack">
+              <span class="metric-label-top">AVG SESSION</span>
+              <div class="metric-num-row">
+                <span class="metric-big-value">123.5<span style="font-size: 0.9rem; font-weight: 500;">min</span></span>
+                <span class="metric-growth-pill">+ 8%</span>
+              </div>
+              <span class="metric-sub-note">+14min from last week</span>
+            </div>
           </div>
-          <div class="metric-value-row">
-            <span class="metric-big-num">1,284</span>
-            <span class="metric-badge-blue">+18.2%</span>
+          <div class="metric-sparkbars-wrap">
+            <span class="spark-bar spark-blue-light" style="height: 14px;"></span>
+            <span class="spark-bar spark-blue-light" style="height: 18px;"></span>
+            <span class="spark-bar spark-blue-light" style="height: 24px;"></span>
+            <span class="spark-bar spark-blue-light" style="height: 28px;"></span>
+            <span class="spark-bar spark-blue-light" style="height: 22px;"></span>
           </div>
-          <span class="metric-caption">99.4% on-time arrival rate</span>
         </div>
 
-        <div class="metric-card">
-          <div class="metric-top-row">
-            <span class="metric-title">Gross Mobility Revenue</span>
-            <div class="metric-icon-wrap">💳</div>
+        <!-- Card 3: Orders -->
+        <div class="metric-card-box">
+          <div class="metric-card-content">
+            <div class="metric-icon-square icon-white-accent-theme">
+              💼
+            </div>
+            <div class="metric-details-stack">
+              <span class="metric-label-top">ORDERS</span>
+              <div class="metric-num-row">
+                <span class="metric-big-value">1,240</span>
+                <span class="metric-growth-pill">+ 3%</span>
+              </div>
+              <span class="metric-sub-note">78 shipped today</span>
+            </div>
           </div>
-          <div class="metric-value-row">
-            <span class="metric-big-num">$38,420</span>
-            <span class="metric-badge-blue">+8.5%</span>
+          <div class="metric-sparkbars-wrap">
+            <span class="spark-bar spark-white" style="height: 18px;"></span>
+            <span class="spark-bar spark-white" style="height: 22px;"></span>
+            <span class="spark-bar spark-white" style="height: 15px;"></span>
+            <span class="spark-bar spark-white" style="height: 26px;"></span>
+            <span class="spark-bar spark-white" style="height: 28px;"></span>
           </div>
-          <span class="metric-caption">Exceeding daily target by $4,200</span>
         </div>
 
-        <div class="metric-card">
-          <div class="metric-top-row">
-            <span class="metric-title">Average Pickup Response</span>
-            <div class="metric-icon-wrap">⏱️</div>
+        <!-- Card 4: Revenue (with Blue Primary bottom bar) -->
+        <div class="metric-card-box">
+          <div class="metric-card-content">
+            <div class="metric-icon-square icon-blue-primary-theme">
+              $
+            </div>
+            <div class="metric-details-stack">
+              <span class="metric-label-top">REVENUE</span>
+              <div class="metric-num-row">
+                <span class="metric-big-value">$24,567</span>
+                <span class="metric-growth-pill">+ 18%</span>
+              </div>
+              <span class="metric-sub-note">$3,218 today</span>
+            </div>
           </div>
-          <div class="metric-value-row">
-            <span class="metric-big-num">3.8 <span style="font-size: 1.1rem; font-weight: 600; color: var(--text-sub);">min</span></span>
-            <span class="metric-badge-blue">-0.7m</span>
+          <div class="metric-progress-line line-blue-primary"></div>
+        </div>
+
+        <!-- Card 5: Conversions (with Blue Light bottom bar) -->
+        <div class="metric-card-box">
+          <div class="metric-card-content">
+            <div class="metric-icon-square icon-blue-light-theme">
+              📉
+            </div>
+            <div class="metric-details-stack">
+              <span class="metric-label-top">CONVERSIONS</span>
+              <div class="metric-num-row">
+                <span class="metric-big-value">2,315</span>
+                <span class="metric-growth-pill">+ 5%</span>
+              </div>
+              <span class="metric-sub-note">Rate: 4.2%</span>
+            </div>
           </div>
-          <span class="metric-caption">Fastest response in Colombo sector</span>
+          <div class="metric-progress-line line-blue-light"></div>
+        </div>
+
+        <!-- Card 6: Page Views (with White Accent bottom bar) -->
+        <div class="metric-card-box">
+          <div class="metric-card-content">
+            <div class="metric-icon-square icon-white-accent-theme">
+              👁
+            </div>
+            <div class="metric-details-stack">
+              <span class="metric-label-top">PAGE VIEWS</span>
+              <div class="metric-num-row">
+                <span class="metric-big-value">47,325</span>
+                <span class="metric-growth-pill">+ 22%</span>
+              </div>
+              <span class="metric-sub-note">6,854 unique visitors</span>
+            </div>
+          </div>
+          <div class="metric-progress-line line-white-accent"></div>
         </div>
 
       </section>
 
-      <!-- Two Column Layout: Radar Dispatch + Quick Dispatch Box -->
-      <section class="dash-two-col-grid">
-        
-        <!-- Live Dispatch Map Radar Simulator -->
-        <div class="dispatch-map-card">
-          <div class="card-header-bar">
-            <h2 class="card-title-main">
-              <span>📡</span> Live Fleet Radar & Telematics
-            </h2>
-            <div style="display: flex; gap: 0.6rem; align-items: center;">
-              <span class="metric-badge-blue" id="radarSectorBadge">Sector: Colombo Central</span>
-              <button class="btn-table-action" id="refreshRadarBtn">Refresh</button>
+      <!-- Middle Two-Column Grid: Network Activities Chart & Recent Activity List -->
+      <section class="dash-middle-two-col">
+
+        <!-- Left: Network Activities Chart Card -->
+        <div class="chart-card-box">
+          
+          <div class="chart-card-header">
+            <div class="chart-title-area">
+              <h2 class="chart-title">Network Activities</h2>
+              <div class="chart-num-row">
+                <span class="chart-big-num" id="networkMetricNum">6,782</span>
+                <span class="chart-badge">+ 7%</span>
+              </div>
+              <div class="chart-sub-label">Total fleet telemetry sessions this week</div>
+            </div>
+
+            <!-- Time segment switcher -->
+            <div class="chart-segmented-control" id="timeRangeControl">
+              <button class="segment-btn active" data-days="7">7 days</button>
+              <button class="segment-btn" data-days="30">30 days</button>
+              <button class="segment-btn" data-days="90">90 days</button>
             </div>
           </div>
 
-          <!-- Mock Map Container -->
-          <div class="map-viewport-mock" id="mapMock">
-            <div class="map-grid-overlay"></div>
-            <div class="map-radar-circle"></div>
+          <!-- Scalable Vector Line Chart in Blue & White Theme -->
+          <div class="chart-viewport-wrap">
+            <svg class="svg-chart-container" viewBox="0 0 650 220" preserveAspectRatio="none">
+              <defs>
+                <!-- Blue area gradient glow matching website theme -->
+                <linearGradient id="blueGlowGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#3B82F6" stop-opacity="0.28"/>
+                  <stop offset="100%" stop-color="#3B82F6" stop-opacity="0.0"/>
+                </linearGradient>
+              </defs>
 
-            <!-- Simulated live vehicle pins -->
-            <div class="vehicle-map-pin" style="top: 28%; left: 22%;">
-              <span class="pin-dot-blue"></span>
-              <span>Sedan #104 • In Transit</span>
+              <!-- Y-Axis Grid Lines & Labels -->
+              <!-- 800 -->
+              <text x="32" y="20" fill="#94A3B8" font-size="10" text-anchor="end">800</text>
+              <line x1="45" y1="16" x2="640" y2="16" stroke="rgba(255, 255, 255, 0.05)" stroke-dasharray="3,3" stroke-width="1"/>
+
+              <!-- 600 -->
+              <text x="32" y="65" fill="#94A3B8" font-size="10" text-anchor="end">600</text>
+              <line x1="45" y1="61" x2="640" y2="61" stroke="rgba(255, 255, 255, 0.05)" stroke-dasharray="3,3" stroke-width="1"/>
+
+              <!-- 400 -->
+              <text x="32" y="110" fill="#94A3B8" font-size="10" text-anchor="end">400</text>
+              <line x1="45" y1="106" x2="640" y2="106" stroke="rgba(255, 255, 255, 0.05)" stroke-dasharray="3,3" stroke-width="1"/>
+
+              <!-- 200 -->
+              <text x="32" y="155" fill="#94A3B8" font-size="10" text-anchor="end">200</text>
+              <line x1="45" y1="151" x2="640" y2="151" stroke="rgba(255, 255, 255, 0.05)" stroke-dasharray="3,3" stroke-width="1"/>
+
+              <!-- 0 -->
+              <text x="32" y="195" fill="#94A3B8" font-size="10" text-anchor="end">0</text>
+              <line x1="45" y1="191" x2="640" y2="191" stroke="rgba(255, 255, 255, 0.05)" stroke-width="1"/>
+
+              <!-- X-Axis Labels -->
+              <text x="50" y="212" fill="#CBD5E1" font-size="10">Mon</text>
+              <text x="145" y="212" fill="#CBD5E1" font-size="10">Tue</text>
+              <text x="240" y="212" fill="#CBD5E1" font-size="10">Wed</text>
+              <text x="335" y="212" fill="#CBD5E1" font-size="10">Thu</text>
+              <text x="430" y="212" fill="#CBD5E1" font-size="10">Fri</text>
+              <text x="525" y="212" fill="#CBD5E1" font-size="10">Sat</text>
+              <text x="615" y="212" fill="#CBD5E1" font-size="10">Sun</text>
+
+              <!-- Blue Filled Gradient Area -->
+              <path id="blueAreaPath" d="M 50 148 C 110 135, 170 120, 240 122 C 300 125, 335 70, 420 50 C 490 35, 545 65, 630 68 L 630 191 L 50 191 Z" fill="url(#blueGlowGradient)" />
+
+              <!-- Blue Solid Curve: Sessions -->
+              <path id="blueLinePath" d="M 50 148 C 110 135, 170 120, 240 122 C 300 125, 335 70, 420 50 C 490 35, 545 65, 630 68" fill="none" stroke="#3B82F6" stroke-width="2.6" stroke-linecap="round" />
+
+              <!-- White Dashed Curve: Page Views -->
+              <path id="whiteLinePath" d="M 50 162 C 110 152, 170 138, 240 140 C 300 142, 335 95, 420 85 C 490 75, 545 92, 630 96" fill="none" stroke="#FFFFFF" stroke-width="1.8" stroke-dasharray="5,5" stroke-linecap="round" opacity="0.85" />
+            </svg>
+          </div>
+
+          <!-- Chart Legend -->
+          <div class="chart-legend-row">
+            <div class="legend-item">
+              <span class="legend-indicator-line line-solid-blue"></span>
+              <span>Sessions</span>
             </div>
-
-            <div class="vehicle-map-pin" style="top: 55%; left: 62%;">
-              <span class="pin-dot-blue"></span>
-              <span>Van #208 • En Route</span>
-            </div>
-
-            <div class="vehicle-map-pin" style="top: 36%; left: 74%;">
-              <span class="pin-dot-blue"></span>
-              <span>Airport #012 • Boarding</span>
-            </div>
-
-            <div class="vehicle-map-pin" style="top: 70%; left: 34%;">
-              <span class="pin-dot-blue"></span>
-              <span>Courier #339 • Delivering</span>
-            </div>
-
-            <!-- Bottom Floating Map Stats -->
-            <div class="map-overlay-stats-bar">
-              <div class="map-stat-item">
-                <div class="stat-num">148</div>
-                <div class="stat-lbl">Active Vehicles</div>
-              </div>
-              <div class="map-stat-item">
-                <div class="stat-num blue-text">4.9 ★</div>
-                <div class="stat-lbl">Fleet Rating</div>
-              </div>
-              <div class="map-stat-item">
-                <div class="stat-num">18</div>
-                <div class="stat-lbl">Available Now</div>
-              </div>
-              <div class="map-stat-item">
-                <div class="stat-num blue-text">0 Incidents</div>
-                <div class="stat-lbl">Safety Score 100%</div>
-              </div>
+            <div class="legend-item">
+              <span class="legend-indicator-line line-dashed-white"></span>
+              <span>Page views</span>
             </div>
           </div>
+
         </div>
 
-        <!-- Quick Dispatch Ride Form -->
-        <div class="quick-dispatch-card">
-          <div class="card-header-bar">
-            <h2 class="card-title-main">
-              <span>⚡</span> Fast Dispatch Request
-            </h2>
-            <span class="badge-portal">Direct Booking</span>
+        <!-- Right: Recent Activity Card -->
+        <div class="activity-card-box">
+          
+          <div class="activity-header">
+            <h2 class="activity-title">Recent Activity</h2>
+            <button class="activity-minimize-btn" title="Collapse" aria-label="Minimize">―</button>
           </div>
 
-          <form id="quickDispatchForm" onsubmit="event.preventDefault(); handleQuickDispatch();">
-            <div class="dispatch-form-group">
-              <label class="dispatch-label" for="dispatchPickup">Pickup Location</label>
-              <input type="text" id="dispatchPickup" class="dispatch-input" value="Colombo Fort Central" required>
-            </div>
-
-            <div class="dispatch-form-group" style="margin-top: 0.8rem;">
-              <label class="dispatch-label" for="dispatchDropoff">Destination</label>
-              <input type="text" id="dispatchDropoff" class="dispatch-input" value="Bandaranaike Int. Airport (CMB)" required>
-            </div>
-
-            <div class="dispatch-form-group" style="margin-top: 0.8rem;">
-              <label class="dispatch-label">Vehicle Tier</label>
-              <div class="vehicle-choice-row">
-                <div class="vehicle-choice-btn selected" data-tier="sedan" data-fare="42.50">
-                  <span class="choice-icon">🚘</span>
-                  <span class="choice-name">Sedan</span>
-                  <span class="choice-fare">$42.50</span>
+          <div class="activity-list">
+            
+            <!-- Item 1: Sarah K. (Royal Blue) -->
+            <div class="activity-item">
+              <div class="activity-avatar avatar-blue-pri">SK</div>
+              <div class="activity-content">
+                <div class="activity-text">
+                  <strong>Sarah K.</strong> placed a new booking for $245.00
                 </div>
-                <div class="vehicle-choice-btn" data-tier="van" data-fare="68.00">
-                  <span class="choice-icon">🚐</span>
-                  <span class="choice-name">Van</span>
-                  <span class="choice-fare">$68.00</span>
-                </div>
-                <div class="vehicle-choice-btn" data-tier="bus" data-fare="120.00">
-                  <span class="choice-icon">🚌</span>
-                  <span class="choice-name">Bus</span>
-                  <span class="choice-fare">$120.00</span>
-                </div>
+                <div class="activity-timestamp">2 min ago</div>
               </div>
             </div>
 
-            <div class="fare-estimate-box" style="margin-top: 1rem;">
-              <div>
-                <div style="font-size: 0.76rem; color: var(--text-sub); text-transform: uppercase; font-weight: 700;">Estimated Total</div>
-                <div style="font-size: 0.78rem; color: var(--text-muted);">Includes tax & toll fees</div>
+            <!-- Item 2: Michael R. (Luminous Blue) -->
+            <div class="activity-item">
+              <div class="activity-avatar avatar-blue-light">MR</div>
+              <div class="activity-content">
+                <div class="activity-text">
+                  <strong>Michael R.</strong> registered a passenger account
+                </div>
+                <div class="activity-timestamp">18 min ago</div>
               </div>
-              <div class="fare-total-num blue-text" id="fareTotalDisplay">$42.50</div>
             </div>
 
-            <button type="submit" class="btn-dispatch-submit" style="margin-top: 1.2rem;" id="dispatchSubmitBtn">
-              Confirm & Dispatch Driver
-            </button>
-          </form>
-        </div>
+            <!-- Item 3: Payment (Black & Blue outline) -->
+            <div class="activity-item">
+              <div class="activity-avatar avatar-black-solid">SY</div>
+              <div class="activity-content">
+                <div class="activity-text">
+                  <strong>Payment</strong> processed — Invoice #4521
+                </div>
+                <div class="activity-timestamp">45 min ago</div>
+              </div>
+            </div>
 
-      </section>
+            <!-- Item 4: Jeffie L. (Dark Gray) -->
+            <div class="activity-item">
+              <div class="activity-avatar avatar-gray-dark">JL</div>
+              <div class="activity-content">
+                <div class="activity-text">
+                  <strong>Jeffie L.</strong> reviewed <strong>SmartMove Fleet</strong>
+                </div>
+                <div class="activity-timestamp">1 hour ago</div>
+              </div>
+            </div>
 
-      <!-- Recent Trips / Bookings Table Section -->
-      <section class="bookings-section-card">
-        <div class="card-header-bar">
-          <h2 class="card-title-main">
-            <span>📋</span> Active & Recent Dispatches
-          </h2>
-          <div style="display: flex; gap: 0.8rem;">
-            <button class="btn-table-action" id="filterAllBtn">All (148)</button>
-            <button class="btn-table-action" id="filterTransitBtn">In Transit (12)</button>
+            <!-- Item 5: Emmy L. (Deep Blue) -->
+            <div class="activity-item">
+              <div class="activity-avatar avatar-blue-hover">EL</div>
+              <div class="activity-content">
+                <div class="activity-text">
+                  <strong>Emmy L.</strong> scheduled dispatch <strong>Airport CMB</strong>
+                </div>
+                <div class="activity-timestamp">4 hours ago</div>
+              </div>
+            </div>
+
+            <!-- Item 6: Shipment (Crisp White) -->
+            <div class="activity-item">
+              <div class="activity-avatar avatar-white-solid">DS</div>
+              <div class="activity-content">
+                <div class="activity-text">
+                  <strong>Chauffeur</strong> dispatched — Trip #3847
+                </div>
+                <div class="activity-timestamp">6 hours ago</div>
+              </div>
+            </div>
+
           </div>
+
         </div>
 
-        <div class="table-responsive-wrapper">
-          <table class="dash-table" id="bookingsTable">
-            <thead>
-              <tr>
-                <th>Booking ID</th>
-                <th>Passenger / Client</th>
-                <th>Category</th>
-                <th>Pickup → Destination</th>
-                <th>Status</th>
-                <th>Fare</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td class="trip-id-code">#SM-9824</td>
-                <td>
-                  <div class="passenger-cell">
-                    <div class="passenger-avatar">AK</div>
-                    <div>
-                      <div style="font-weight: 700; color: #FFFFFF;">Anura Kumara</div>
-                      <div style="font-size: 0.74rem; color: var(--text-sub);">Passenger VIP</div>
-                    </div>
-                  </div>
-                </td>
-                <td><span style="color: #FFFFFF; font-weight: 600;">Executive Sedan</span></td>
-                <td>Galle Face Hotel → Cinnamon Grand</td>
-                <td>
-                  <span class="status-badge-pill status-in-transit">
-                    <span class="pin-dot-blue"></span> In Transit
-                  </span>
-                </td>
-                <td style="font-weight: 800; color: #FFFFFF;">$32.50</td>
-                <td><button class="btn-table-action" onclick="alert('Viewing telemetry details for Booking #SM-9824');">Details</button></td>
-              </tr>
-
-              <tr>
-                <td class="trip-id-code">#SM-9823</td>
-                <td>
-                  <div class="passenger-cell">
-                    <div class="passenger-avatar">SR</div>
-                    <div>
-                      <div style="font-weight: 700; color: #FFFFFF;">Sarah Reynolds</div>
-                      <div style="font-size: 0.74rem; color: var(--text-sub);">Corporate Account</div>
-                    </div>
-                  </div>
-                </td>
-                <td><span style="color: #FFFFFF; font-weight: 600;">Chauffeur Van</span></td>
-                <td>World Trade Center → Airport CMB</td>
-                <td>
-                  <span class="status-badge-pill status-in-transit">
-                    <span class="pin-dot-blue"></span> In Transit
-                  </span>
-                </td>
-                <td style="font-weight: 800; color: #FFFFFF;">$78.00</td>
-                <td><button class="btn-table-action" onclick="alert('Viewing telemetry details for Booking #SM-9823');">Details</button></td>
-              </tr>
-
-              <tr>
-                <td class="trip-id-code">#SM-9822</td>
-                <td>
-                  <div class="passenger-cell">
-                    <div class="passenger-avatar">DL</div>
-                    <div>
-                      <div style="font-weight: 700; color: #FFFFFF;">Devinda Lokuge</div>
-                      <div style="font-size: 0.74rem; color: var(--text-sub);">Standard Passenger</div>
-                    </div>
-                  </div>
-                </td>
-                <td><span style="color: #FFFFFF; font-weight: 600;">City Express</span></td>
-                <td>Mount Lavinia Beach → Colombo 03</td>
-                <td>
-                  <span class="status-badge-pill status-completed">Completed</span>
-                </td>
-                <td style="font-weight: 800; color: #FFFFFF;">$14.20</td>
-                <td><button class="btn-table-action" onclick="alert('Viewing receipt for Booking #SM-9822');">Receipt</button></td>
-              </tr>
-
-              <tr>
-                <td class="trip-id-code">#SM-9821</td>
-                <td>
-                  <div class="passenger-cell">
-                    <div class="passenger-avatar">MK</div>
-                    <div>
-                      <div style="font-weight: 700; color: #FFFFFF;">Marcus Knight</div>
-                      <div style="font-size: 0.74rem; color: var(--text-sub);">International Flight</div>
-                    </div>
-                  </div>
-                </td>
-                <td><span style="color: #FFFFFF; font-weight: 600;">Airport Transfer</span></td>
-                <td>Negombo Lagoon Resort → CMB Terminal 1</td>
-                <td>
-                  <span class="status-badge-pill status-completed">Completed</span>
-                </td>
-                <td style="font-weight: 800; color: #FFFFFF;">$55.00</td>
-                <td><button class="btn-table-action" onclick="alert('Viewing receipt for Booking #SM-9821');">Receipt</button></td>
-              </tr>
-
-              <tr>
-                <td class="trip-id-code">#SM-9820</td>
-                <td>
-                  <div class="passenger-cell">
-                    <div class="passenger-avatar">TC</div>
-                    <div>
-                      <div style="font-weight: 700; color: #FFFFFF;">TechCorp Lanka</div>
-                      <div style="font-size: 0.74rem; color: var(--text-sub);">Staff Shuttle</div>
-                    </div>
-                  </div>
-                </td>
-                <td><span style="color: #FFFFFF; font-weight: 600;">Intercity Bus</span></td>
-                <td>Kandy Road Junction → Colombo Fort</td>
-                <td>
-                  <span class="status-badge-pill status-scheduled">Scheduled (15:00)</span>
-                </td>
-                <td style="font-weight: 800; color: #FFFFFF;">$180.00</td>
-                <td><button class="btn-table-action" onclick="alert('Viewing scheduled manifest for Booking #SM-9820');">Manifest</button></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
       </section>
 
     </main>
@@ -434,79 +526,66 @@ $pageTitle = "Operations Dashboard | SmartMove Transport";
   <!-- Interactive JavaScript logic -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      // Vehicle Tier choice selection
-      const vehicleBtns = document.querySelectorAll('.vehicle-choice-btn');
-      const fareDisplay = document.getElementById('fareTotalDisplay');
-
-      vehicleBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-          vehicleBtns.forEach(b => b.classList.remove('selected'));
-          btn.classList.add('selected');
-          const fare = btn.getAttribute('data-fare');
-          if (fare && fareDisplay) {
-            fareDisplay.textContent = '$' + parseFloat(fare).toFixed(2);
-          }
+      // Sidebar Mobile Toggle
+      const hamburger = document.getElementById('hamburgerBtn');
+      const sidebar = document.getElementById('dashSidebar');
+      if (hamburger && sidebar) {
+        hamburger.addEventListener('click', () => {
+          sidebar.classList.toggle('open');
         });
-      });
+      }
 
-      // Role switcher toggle
-      const roleBtns = document.querySelectorAll('.role-tab-btn');
-      roleBtns.forEach(btn => {
+      // Time Range Segment Switcher & Chart Morph Simulation
+      const segmentBtns = document.querySelectorAll('.segment-btn');
+      const metricNum = document.getElementById('networkMetricNum');
+      const blueLine = document.getElementById('blueLinePath');
+      const blueArea = document.getElementById('blueAreaPath');
+      const whiteLine = document.getElementById('whiteLinePath');
+
+      const chartData = {
+        '7': {
+          num: '6,782',
+          blue: 'M 50 148 C 110 135, 170 120, 240 122 C 300 125, 335 70, 420 50 C 490 35, 545 65, 630 68',
+          area: 'M 50 148 C 110 135, 170 120, 240 122 C 300 125, 335 70, 420 50 C 490 35, 545 65, 630 68 L 630 191 L 50 191 Z',
+          white: 'M 50 162 C 110 152, 170 138, 240 140 C 300 142, 335 95, 420 85 C 490 75, 545 92, 630 96'
+        },
+        '30': {
+          num: '28,490',
+          blue: 'M 50 120 C 120 90, 190 140, 260 80 C 330 60, 400 95, 480 40 C 530 30, 580 50, 630 45',
+          area: 'M 50 120 C 120 90, 190 140, 260 80 C 330 60, 400 95, 480 40 C 530 30, 580 50, 630 45 L 630 191 L 50 191 Z',
+          white: 'M 50 140 C 120 115, 190 160, 260 105 C 330 85, 400 115, 480 65 C 530 55, 580 75, 630 70'
+        },
+        '90': {
+          num: '84,120',
+          blue: 'M 50 160 C 130 110, 200 70, 290 85 C 370 100, 450 50, 520 30 C 560 25, 600 40, 630 35',
+          area: 'M 50 160 C 130 110, 200 70, 290 85 C 370 100, 450 50, 520 30 C 560 25, 600 40, 630 35 L 630 191 L 50 191 Z',
+          white: 'M 50 180 C 130 135, 200 95, 290 110 C 370 125, 450 75, 520 55 C 560 50, 600 65, 630 60'
+        }
+      };
+
+      segmentBtns.forEach(btn => {
         btn.addEventListener('click', () => {
-          roleBtns.forEach(b => b.classList.remove('active'));
+          segmentBtns.forEach(b => b.classList.remove('active'));
           btn.classList.add('active');
-          const role = btn.getAttribute('data-role');
-          const heading = document.querySelector('.page-heading-group h1');
-          if (heading) {
-            heading.innerHTML = role + ' <span class="blue-text">Portal View</span>';
+          const days = btn.getAttribute('data-days');
+          if (chartData[days]) {
+            if (metricNum) metricNum.textContent = chartData[days].num;
+            if (blueLine) blueLine.setAttribute('d', chartData[days].blue);
+            if (blueArea) blueArea.setAttribute('d', chartData[days].area);
+            if (whiteLine) whiteLine.setAttribute('d', chartData[days].white);
           }
         });
       });
 
-      // Radar refresh simulation
-      const refreshBtn = document.getElementById('refreshRadarBtn');
-      if (refreshBtn) {
-        refreshBtn.addEventListener('click', () => {
-          refreshBtn.textContent = 'Updating...';
-          setTimeout(() => {
-            refreshBtn.textContent = 'Refreshed ✓';
-            setTimeout(() => { refreshBtn.textContent = 'Refresh'; }, 1500);
-          }, 400);
-        });
-      }
-
-      // Quick filter buttons for table
-      const filterAll = document.getElementById('filterAllBtn');
-      const filterTransit = document.getElementById('filterTransitBtn');
-      const rows = document.querySelectorAll('#bookingsTable tbody tr');
-
-      if (filterAll && filterTransit) {
-        filterAll.addEventListener('click', () => {
-          rows.forEach(r => r.style.display = '');
-        });
-        filterTransit.addEventListener('click', () => {
-          rows.forEach(r => {
-            const hasTransit = r.querySelector('.status-in-transit');
-            r.style.display = hasTransit ? '' : 'none';
-          });
-        });
-      }
+      // Search bar shortcut keybind (⌘K or Ctrl+K)
+      const searchInput = document.getElementById('dashSearch');
+      document.addEventListener('keydown', (e) => {
+        if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+          e.preventDefault();
+          if (searchInput) searchInput.focus();
+        }
+      });
     });
-
-    // Quick Dispatch simulation handler
-    function handleQuickDispatch() {
-      const pickup = document.getElementById('dispatchPickup').value;
-      const dropoff = document.getElementById('dispatchDropoff').value;
-      const fare = document.getElementById('fareTotalDisplay').textContent;
-      const counter = document.getElementById('activeFleetCounter');
-
-      alert(`🚀 Vehicle Dispatched!\n\nPickup: ${pickup}\nDestination: ${dropoff}\nFare: ${fare}\nStatus: Driver notified via GPS telematics.`);
-
-      if (counter) {
-        let count = parseInt(counter.textContent) || 148;
-        counter.textContent = count + 1;
-      }
-    }
   </script>
 
 </body>
