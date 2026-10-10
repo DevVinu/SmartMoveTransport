@@ -1,0 +1,46 @@
+/* Footer */
+.uber-footer {
+  background-color: #0B0F17;
+  border-top: 1px solid rgba(37, 99, 235, 0.3);
+  padding: 3.5rem 2rem;
+  width: 100%;
+}
+
+.footer-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #94A3B8;
+  font-size: 0.9rem;
+}
+
+.footer-brand {
+  color: #FFFFFF;
+  font-size: 1.3rem;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.footer-links {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.footer-links a {
+  color: #F8FAFC;
+}
+
+.footer-links a.signup-link {
+  color: var(--blue-light);
+  font-weight: 700;
+}
+
+@media (max-width: 640px) {
+  .footer-container {
+    flex-direction: column;
+    gap: 1.5rem;
+    align-items: flex-start;
+  }
+}

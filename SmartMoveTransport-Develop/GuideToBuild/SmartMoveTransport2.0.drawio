@@ -1,6 +1,6 @@
 <mxfile host="Electron">
   <diagram name="SmartMove_EER" id="smartmove-eer-v2">
-    <mxGraphModel dx="7630" dy="1201" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1.7" pageWidth="3300" pageHeight="2339" math="0" shadow="0">
+    <mxGraphModel dx="6928" dy="796" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1.7" pageWidth="3300" pageHeight="2339" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -519,7 +519,7 @@
         <mxCell id="edge_User_1" edge="1" parent="l43EUh83d0RJLH_MpWBK-28" source="node_User" style="edgeStyle=none;endArrow=none;fontSize=15;" target="attr_User_1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="attr_User_2" parent="l43EUh83d0RJLH_MpWBK-28" style="ellipse;whiteSpace=wrap;html=1;fontSize=15;" value="passwordHash" vertex="1">
+        <mxCell id="attr_User_2" parent="l43EUh83d0RJLH_MpWBK-28" style="ellipse;whiteSpace=wrap;html=1;fontSize=15;" value="password" vertex="1">
           <mxGeometry height="42.402567629527745" width="123.14606741573031" x="2.2390194075587333" y="178.88583218707015" as="geometry" />
         </mxCell>
         <mxCell id="edge_User_2" edge="1" parent="l43EUh83d0RJLH_MpWBK-28" source="node_User" style="edgeStyle=none;endArrow=none;fontSize=15;" target="attr_User_2">
@@ -1509,6 +1509,9 @@
         </mxCell>
         <mxCell id="WStUvvGQb_oEhfN6yjl3-11" parent="1" style="ellipse;whiteSpace=wrap;html=1;fontSize=15;" value="latitude" vertex="1">
           <mxGeometry height="42.2252719665272" width="123.14488486175416" x="-5210" y="1280" as="geometry" />
+        </mxCell>
+        <mxCell id="darq20p-1SLO3p-LtEtG-1" parent="1" style="rhombus;whiteSpace=wrap;html=1;shapeInside=1;fontSize=15;" value="has" vertex="1">
+          <mxGeometry height="137.8" width="115.31" x="-5065.29" y="1693.87" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
