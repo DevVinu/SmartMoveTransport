@@ -350,6 +350,88 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  // --- URL View Navigation ---
+  const urlParams = new URLSearchParams(window.location.search);
+  const viewParam = urlParams.get('view');
+  if (urlParams.has('report')) {
+    const reportItem = document.querySelector('.nav-item[data-view="reportsView"]');
+    if (reportItem) reportItem.click();
+  } else if (urlParams.has('keyword') || viewParam === 'mongoView') {
+    const mongoItem = document.querySelector('.nav-item[data-view="mongoView"]');
+    if (mongoItem) mongoItem.click();
+  } else if (viewParam) {
+    const targetItem = document.querySelector(`.nav-item[data-view="${viewParam}"]`);
+    if (targetItem) targetItem.click();
+  }
+
   // Initial render
   updateTaskFiltering();
 });
+
+// --- Modal Control Functions ---
+window.openModal = function(id) {
+  const el = document.getElementById(id);
+  if (el) el.style.display = 'flex';
+};
+
+window.closeModal = function(id) {
+  const el = document.getElementById(id);
+  if (el) el.style.display = 'none';
+};
+
+// --- Filter Table Functions ---
+window.filterFleet = function(type, btn) {
+  document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  const rows = document.querySelectorAll('.fleet-row');
+  rows.forEach(r => {
+    if (type === 'ALL' || r.dataset.type === type) {
+      r.style.display = '';
+    } else {
+      r.style.display = 'none';
+    }
+  });
+};
+
+window.filterUsers = function(role, btn) {
+  document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  const rows = document.querySelectorAll('.user-row');
+  rows.forEach(r => {
+    if (role === 'ALL' || r.dataset.role === role) {
+      r.style.display = '';
+    } else {
+      r.style.display = 'none';
+    }
+  });
+};
+
+window.filterTrips = function(status, btn) {
+  const container = btn.closest('.filter-pills-bar') || document;
+  container.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  const rows = document.querySelectorAll('.trip-row');
+  rows.forEach(r => {
+    if (status === 'ALL' || r.dataset.status === status) {
+      r.style.display = '';
+    } else {
+      r.style.display = 'none';
+    }
+  });
+};
+
+window.filterShifts = function(status, btn) {
+  const container = btn.closest('.filter-pills-bar') || document;
+  container.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  const rows = document.querySelectorAll('.shift-row');
+  rows.forEach(r => {
+    if (status === 'ALL' || r.dataset.status === status) {
+      r.style.display = '';
+    } else {
+      r.style.display = 'none';
+    }
+  });
+};
+
+

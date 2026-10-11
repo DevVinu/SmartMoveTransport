@@ -12,7 +12,7 @@
             <h3 class="card-title"><?php echo htmlspecialchars($item['name']); ?></h3>
             <p class="card-desc"><?php echo htmlspecialchars($item['description']); ?></p>
           </div>
-          <a href="pages/login.php" class="btn-details-pill">Details</a>
+          <a href="pages/signin.php" class="btn-details-pill">Details</a>
         </div>
       </article>
     <?php endforeach; ?>

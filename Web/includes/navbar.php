@@ -13,7 +13,7 @@
     </div>
 
     <div class="nav-right-group">
-      <a href="pages/login.php" class="nav-link-item">Log in</a>
+      <a href="pages/signin.php" class="nav-link-item">Sign in</a>
       <a href="pages/signup.php" class="btn-signup-pill">Sign up</a>
       <div class="mobile-toggle" id="mobileNavToggle" aria-label="Toggle mobile menu">☰</div>
     </div>

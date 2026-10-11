@@ -37,7 +37,7 @@ class Auth {
         }
 
         if (!self::check()) {
-            header('Location: login.php?error=unauthorized');
+            header('Location: signin.php?error=unauthorized');
             exit;
         }
 
@@ -45,7 +45,7 @@ class Auth {
         $allowed = array_map('strtoupper', $roles);
 
         if (!in_array($userRole, $allowed)) {
-            header('Location: login.php?error=forbidden');
+            header('Location: signin.php?error=forbidden');
             exit;
         }
     }
