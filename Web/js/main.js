@@ -36,8 +36,8 @@ function initSeePricesAction() {
       return;
     }
 
-    alert(`🎉 Route Found!\n\nPickup: ${pickupVal || 'Current Location'}\nDropoff: ${dropoffVal}\n\nRedirecting to login/passenger account to finalize booking...`);
-    window.location.href = 'pages/login.php';
+    alert(`🎉 Route Found!\n\nPickup: ${pickupVal || 'Current Location'}\nDropoff: ${dropoffVal}\n\nRedirecting to sign in account to finalize booking...`);
+    window.location.href = 'pages/signin.php';
   });
 }
 
