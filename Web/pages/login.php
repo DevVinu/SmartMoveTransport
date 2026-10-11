@@ -4,6 +4,13 @@ require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../models/User.php';
 
+// Handle explicit logout request
+if (isset($_GET['logout'])) {
+    Auth::logout();
+    header('Location: ../index.php');
+    exit;
+}
+
 // If already logged in, redirect straight to dashboard
 if (Auth::check()) {
     header('Location: dashboard.php');

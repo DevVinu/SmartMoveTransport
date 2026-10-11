@@ -458,6 +458,7 @@ $pageTitle = "SmartMove — Enterprise Admin Portal";
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><?php echo htmlspecialchars($pageTitle); ?></title>
   
+  <link rel="stylesheet" href="../css/variables.css">
   <link rel="stylesheet" href="../css/dashboard.css">
   <style>
     .badge-status {
@@ -472,7 +473,7 @@ $pageTitle = "SmartMove — Enterprise Admin Portal";
     .badge-urgent { background: rgba(239, 68, 68, 0.15); color: #F87171; border: 1px solid rgba(239, 68, 68, 0.3); }
     .badge-warning { background: rgba(245, 158, 11, 0.15); color: #FBBF24; border: 1px solid rgba(245, 158, 11, 0.3); }
     .badge-info { background: rgba(59, 130, 246, 0.15); color: #60A5FA; border: 1px solid rgba(59, 130, 246, 0.3); }
-    .badge-neutral { background: rgba(255, 255, 255, 0.08); color: #94A3B8; border: 1px solid rgba(255, 255, 255, 0.12); }
+    .badge-neutral { background: rgba(255, 255, 255, 0.08); color: #94A3B8; border: 1px solid var(--border-subtle); }
     
     .db-status-pill {
       display: flex;
@@ -481,8 +482,8 @@ $pageTitle = "SmartMove — Enterprise Admin Portal";
       font-size: 0.78rem;
       padding: 0.35rem 0.75rem;
       border-radius: 9999px;
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: var(--bg-card-inner);
+      border: 1px solid var(--border-subtle);
     }
     .status-dot {
       width: 7px;
@@ -517,26 +518,29 @@ $pageTitle = "SmartMove — Enterprise Admin Portal";
       color: var(--text-white);
     }
     .report-tab-btn.active {
-      background: var(--accent-blue);
+      background: var(--blue-primary);
       color: #FFFFFF;
-      border-color: var(--accent-blue);
+      border-color: var(--blue-primary);
+      box-shadow: 0 2px 8px rgba(37, 99, 235, 0.35);
     }
     .search-input-box {
-      background: var(--bg-canvas);
+      background: var(--bg-input);
       border: 1px solid var(--border-subtle);
       border-radius: var(--radius-md);
       padding: 0.6rem 1rem;
-      color: #fff;
+      color: #FFFFFF;
       font-size: 0.85rem;
       outline: none;
       width: 100%;
       max-width: 400px;
+      transition: border-color 0.15s, box-shadow 0.15s;
     }
     .search-input-box:focus {
-      border-color: var(--accent-blue);
+      border-color: var(--blue-light);
+      box-shadow: 0 0 0 2px var(--blue-glow);
     }
 
-    /* Metric KPI Cards & Grid (Shadcn Slate Flat Design) */
+    /* Metric KPI Cards & Grid */
     .stats-grid,
     .kpi-grid {
       display: grid;
@@ -558,7 +562,7 @@ $pageTitle = "SmartMove — Enterprise Admin Portal";
     .kpi-card {
       background-color: var(--bg-card) !important;
       border: 1px solid var(--border-subtle) !important;
-      border-radius: var(--radius-lg) !important;
+      border-radius: var(--radius-card) !important;
       padding: 20px !important;
       display: flex !important;
       flex-direction: column !important;
@@ -567,13 +571,14 @@ $pageTitle = "SmartMove — Enterprise Admin Portal";
       position: relative !important;
       box-shadow: none !important;
       transform: none !important;
-      transition: border-color 0.15s ease !important;
+      transition: border-color 0.2s ease, background-color 0.2s ease !important;
     }
     .stat-card:hover,
     .kpi-card:hover {
       box-shadow: none !important;
       transform: none !important;
-      border-color: rgba(255, 255, 255, 0.18) !important;
+      border-color: var(--blue-border) !important;
+      background-color: var(--bg-card-hover) !important;
     }
     .stat-header-row,
     .kpi-card-header {
@@ -591,7 +596,7 @@ $pageTitle = "SmartMove — Enterprise Admin Portal";
     }
     .stat-icon,
     .kpi-icon {
-      color: var(--text-muted);
+      color: var(--blue-light);
       width: 16px;
       height: 16px;
       display: flex;
@@ -629,11 +634,11 @@ $pageTitle = "SmartMove — Enterprise Admin Portal";
     .modal-box {
       background: var(--bg-card);
       border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-lg);
+      border-radius: var(--radius-card);
       width: 90%;
       max-width: 540px;
       padding: 1.75rem;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7);
     }
     .modal-header {
       display: flex;
@@ -668,7 +673,7 @@ $pageTitle = "SmartMove — Enterprise Admin Portal";
     }
     .form-input, .form-select, .form-textarea {
       width: 100%;
-      background: var(--bg-canvas);
+      background: var(--bg-input);
       border: 1px solid var(--border-subtle);
       border-radius: var(--radius-md);
       padding: 0.6rem 0.85rem;
@@ -676,9 +681,11 @@ $pageTitle = "SmartMove — Enterprise Admin Portal";
       font-size: 0.85rem;
       outline: none;
       box-sizing: border-box;
+      transition: border-color 0.15s, box-shadow 0.15s;
     }
     .form-input:focus, .form-select:focus, .form-textarea:focus {
-      border-color: var(--accent-blue);
+      border-color: var(--blue-light);
+      box-shadow: 0 0 0 2px var(--blue-glow);
     }
     .filter-pills-bar {
       display: flex;
@@ -697,9 +704,10 @@ $pageTitle = "SmartMove — Enterprise Admin Portal";
       transition: all 0.15s ease;
     }
     .filter-pill:hover, .filter-pill.active {
-      background: var(--accent-blue);
-      color: #fff;
-      border-color: var(--accent-blue);
+      background: var(--blue-primary);
+      color: #FFFFFF;
+      border-color: var(--blue-primary);
+      box-shadow: 0 2px 8px rgba(37, 99, 235, 0.35);
     }
     .action-btn-sm {
       background: rgba(255, 255, 255, 0.05);
@@ -726,9 +734,7 @@ $pageTitle = "SmartMove — Enterprise Admin Portal";
 
 <div class="app-wrapper">
 
-  <!-- =========================================================================
-       SIDEBAR NAVIGATION
-       ========================================================================= -->
+  <!-- Sidebar Navigation -->
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-header" title="SmartMove Admin Portal">
       <div class="sidebar-brand-wrapper">
@@ -910,9 +916,7 @@ $pageTitle = "SmartMove — Enterprise Admin Portal";
     </div>
   </aside>
 
-  <!-- =========================================================================
-       MAIN CONTENT AREA
-       ========================================================================= -->
+  <!-- Main Content Area -->
   <main class="main-content">
     
     <!-- Topbar Header (Matching dash_screenshot.png) -->
@@ -936,7 +940,7 @@ $pageTitle = "SmartMove — Enterprise Admin Portal";
 
         <!-- User avatar button matching dash_screenshot.png -->
         <button class="topbar-avatar-btn" id="topbarUserBtn" type="button" title="<?php echo $fullName; ?>">
-          <div class="user-avatar" style="border-radius:50%; width:32px; height:32px; background:#1E293B; font-weight:600; font-size:12px;">
+          <div class="user-avatar" style="border-radius:50%; width:32px; height:32px; background:var(--bg-muted); font-weight:600; font-size:12px; border:1px solid var(--border-subtle);">
             <?php 
               $parts = explode(' ', trim($fullName));
               $init = strtoupper(substr($parts[0] ?? 'A', 0, 1) . substr($parts[1] ?? 'D', 0, 1));
@@ -976,9 +980,7 @@ $pageTitle = "SmartMove — Enterprise Admin Portal";
         </div>
       <?php endif; ?>
 
-      <!-- =====================================================================
-           VIEW 1: DASHBOARD OVERVIEW
-           ===================================================================== -->
+      <!-- View 1: Dashboard Overview -->
       <section class="page-view <?php echo $activeView === 'dashboardView' ? 'active-view' : ''; ?>" id="dashboardView">
         <div class="view-header" style="margin-bottom:1.25rem;">
           <div class="view-title-group">
@@ -1073,7 +1075,7 @@ $pageTitle = "SmartMove — Enterprise Admin Portal";
             ?>
               <div class="sale-item" style="display:flex; align-items:center; justify-content:space-between;">
                 <div class="sale-customer" style="display:flex; align-items:center; gap:12px;">
-                  <div class="sale-avatar" style="width:36px; height:36px; border-radius:50%; background:#1E293B; color:var(--text-white); font-size:12px; font-weight:600; display:flex; align-items:center; justify-content:center; border:1px solid var(--border-muted);">
+                  <div class="sale-avatar" style="width:36px; height:36px; border-radius:50%; background:var(--bg-muted); color:var(--text-white); font-size:12px; font-weight:600; display:flex; align-items:center; justify-content:center; border:1px solid var(--border-subtle);">
                     <?php echo htmlspecialchars($s['initials']); ?>
                   </div>
                   <div class="sale-info" style="display:flex; flex-direction:column;">
@@ -1140,9 +1142,7 @@ $pageTitle = "SmartMove — Enterprise Admin Portal";
         </div>
       </section>
 
-      <!-- =====================================================================
-           VIEW 2: OPERATIONAL REPORTS & BUSINESS ANALYTICS
-           ===================================================================== -->
+      <!-- View 2: Operational Reports & Analytics -->
       <section class="page-view <?php echo $activeView === 'reportsView' ? 'active-view' : ''; ?>" id="reportsView">
         <div class="view-header">
           <div class="view-title-group">
@@ -1315,9 +1315,7 @@ $pageTitle = "SmartMove — Enterprise Admin Portal";
         </div>
       </section>
 
-      <!-- =====================================================================
-           VIEW 3: CUSTOMER FEEDBACK & DIGITAL DOCUMENTS
-           ===================================================================== -->
+      <!-- View 3: Customer Feedback & Documents -->
       <section class="page-view <?php echo $activeView === 'mongoView' ? 'active-view' : ''; ?>" id="mongoView">
         <div class="view-header">
           <div class="view-title-group">
@@ -1462,9 +1460,7 @@ $pageTitle = "SmartMove — Enterprise Admin Portal";
         </div>
       </section>
 
-      <!-- =====================================================================
-           VIEW: TRAVEL ANNOUNCEMENTS & ADVISORIES
-           ===================================================================== -->
+      <!-- View 4: Travel Announcements & Alerts -->
       <section class="page-view <?php echo $activeView === 'announcementsView' ? 'active-view' : ''; ?>" id="announcementsView">
         <div class="view-header">
           <div class="view-title-group">
@@ -1603,9 +1599,7 @@ $pageTitle = "SmartMove — Enterprise Admin Portal";
         </div>
       </section>
 
-      <!-- =====================================================================
-           VIEW 4: ROUTES & SCHEDULED TRIPS (FR-08)
-           ===================================================================== -->
+      <!-- View 5: Transit Routes & Schedules -->
       <section class="page-view <?php echo $activeView === 'routesView' ? 'active-view' : ''; ?>" id="routesView">
         <div class="view-header">
           <div class="view-title-group">
@@ -1702,9 +1696,7 @@ $pageTitle = "SmartMove — Enterprise Admin Portal";
         </div>
       </section>
 
-      <!-- =====================================================================
-           VIEW 5: FLEET & VEHICLES MANAGEMENT (FR-03, FR-04)
-           ===================================================================== -->
+      <!-- View 6: Fleet & Vehicles Management -->
       <section class="page-view <?php echo $activeView === 'fleetView' ? 'active-view' : ''; ?>" id="fleetView">
         <div class="view-header">
           <div class="view-title-group">
@@ -1785,9 +1777,7 @@ $pageTitle = "SmartMove — Enterprise Admin Portal";
         </div>
       </section>
 
-      <!-- =====================================================================
-           VIEW 6: USER MANAGEMENT (FR-01, FR-02)
-           ===================================================================== -->
+      <!-- View 7: User Management -->
       <section class="page-view <?php echo $activeView === 'usersView' ? 'active-view' : ''; ?>" id="usersView">
         <div class="view-header">
           <div class="view-title-group">
@@ -1877,9 +1867,7 @@ $pageTitle = "SmartMove — Enterprise Admin Portal";
         </div>
       </section>
 
-      <!-- =====================================================================
-           VIEW 7: FINANCIAL REVENUE LEDGER (FR-09, FR-10)
-           ===================================================================== -->
+      <!-- View 8: Financial Revenue Ledger -->
       <section class="page-view <?php echo $activeView === 'financeView' ? 'active-view' : ''; ?>" id="financeView">
         <div class="view-header">
           <div class="view-title-group">
@@ -1966,9 +1954,7 @@ $pageTitle = "SmartMove — Enterprise Admin Portal";
         </div>
       </section>
 
-      <!-- =====================================================================
-           VIEW 8: DATABASE INFRASTRUCTURE & BACKUP DIAGNOSTICS (FR-18, FR-19)
-           ===================================================================== -->
+      <!-- View 9: Database Infrastructure & Backups -->
       <section class="page-view <?php echo $activeView === 'settingsView' ? 'active-view' : ''; ?>" id="settingsView">
         <div class="view-header">
           <div class="view-title-group">
@@ -2025,9 +2011,7 @@ expdp smartmoveOwner/Owner123@localhost:1521/XEPDB1 DIRECTORY=smartmoveBackupDir
   </main>
 </div>
 
-<!-- =========================================================================
-     MODAL 1: REGISTER NEW VEHICLE (FR-03)
-     ========================================================================= -->
+<!-- Modal: Register New Vehicle -->
 <div class="modal-backdrop" id="modalAddVehicle">
   <div class="modal-box">
     <div class="modal-header">
@@ -2072,9 +2056,7 @@ expdp smartmoveOwner/Owner123@localhost:1521/XEPDB1 DIRECTORY=smartmoveBackupDir
   </div>
 </div>
 
-<!-- =========================================================================
-     MODAL 2: ADD NEW USER (FR-01, FR-02)
-     ========================================================================= -->
+<!-- Modal: Add New User -->
 <div class="modal-backdrop" id="modalAddUser">
   <div class="modal-box">
     <div class="modal-header">
@@ -2130,9 +2112,7 @@ expdp smartmoveOwner/Owner123@localhost:1521/XEPDB1 DIRECTORY=smartmoveBackupDir
   </div>
 </div>
 
-<!-- =========================================================================
-     MODAL 3: ESTABLISH NEW ROUTE (FR-08)
-     ========================================================================= -->
+<!-- Modal: Establish New Route -->
 <div class="modal-backdrop" id="modalAddRoute">
   <div class="modal-box">
     <div class="modal-header">
@@ -2177,9 +2157,7 @@ expdp smartmoveOwner/Owner123@localhost:1521/XEPDB1 DIRECTORY=smartmoveBackupDir
   </div>
 </div>
 
-<!-- =========================================================================
-     MODAL 4: BROADCAST TRAVEL ADVISORY TO MONGODB (FR-17)
-     ========================================================================= -->
+<!-- Modal: Broadcast Travel Advisory -->
 <div class="modal-backdrop" id="modalBroadcastAdvisory">
   <div class="modal-box">
     <div class="modal-header">

@@ -344,12 +344,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // --- Global Keyboard Shortcuts ---
   window.addEventListener('keydown', (e) => {
-    // ⌘K or Ctrl+K focus search
-    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
-      e.preventDefault();
-      const globalSearch = document.getElementById('globalSearchInput');
-      if (globalSearch) globalSearch.focus();
-    }
     // Escape closes popovers
     if (e.key === 'Escape') {
       closeAllPopovers();
