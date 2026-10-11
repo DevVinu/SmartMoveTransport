@@ -9,6 +9,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const pageViews = document.querySelectorAll('.page-view');
 
   function switchView(viewId) {
+    if (!viewId) return;
+
     pageViews.forEach(view => {
       view.classList.toggle('active-view', view.id === viewId);
     });
@@ -17,19 +19,36 @@ document.addEventListener('DOMContentLoaded', () => {
       item.classList.toggle('active', item.dataset.view === viewId);
     });
 
+    // Synchronize URL so page refreshes or actions stay on this view
+    try {
+      const url = new URL(window.location.href);
+      url.searchParams.set('view', viewId);
+      window.history.replaceState(null, '', url.toString());
+    } catch (err) {}
+
     // Close any open popovers on view switch
     closeAllPopovers();
   }
 
-  navItems.forEach(item => {
+  // Intercept all clicks on elements with data-view (nav items, buttons, popover items)
+  document.querySelectorAll('[data-view]').forEach(item => {
     item.addEventListener('click', (e) => {
-      e.preventDefault();
       const targetView = item.dataset.view;
-      if (targetView) {
+      if (targetView && document.getElementById(targetView)) {
+        e.preventDefault();
         switchView(targetView);
       }
     });
   });
+
+  // Check URL on load to restore the correct view
+  try {
+    const urlParams = new URLSearchParams(window.location.search);
+    const initialView = urlParams.get('view') || (urlParams.get('report') ? 'reportsView' : null);
+    if (initialView && document.getElementById(initialView)) {
+      switchView(initialView);
+    }
+  } catch (err) {}
 
   // --- Submenu Accordion (e.g. Secured by Clerk) ---
   const accordionToggles = document.querySelectorAll('.has-submenu');
