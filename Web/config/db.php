@@ -203,12 +203,17 @@ class Database {
             return [];
         }
 
+        $results = [];
+
         // Composer library format
         if (is_object($db) && method_exists($db, 'selectCollection')) {
             try {
                 $col = $db->selectCollection($collection);
                 $cursor = $col->find($filter, $options);
-                return iterator_to_array($cursor);
+                foreach ($cursor as $item) {
+                    $results[] = json_decode(json_encode($item), true);
+                }
+                return $results;
             } catch (\Exception $e) {
                 error_log("[Database] Mongo Query Error: " . $e->getMessage());
                 return [];
@@ -220,7 +225,10 @@ class Database {
             try {
                 $query = new \MongoDB\Driver\Query($filter, $options);
                 $cursor = $db->executeQuery(self::$mongoDb . '.' . $collection, $query);
-                return iterator_to_array($cursor);
+                foreach ($cursor as $item) {
+                    $results[] = json_decode(json_encode($item), true);
+                }
+                return $results;
             } catch (\Exception $e) {
                 error_log("[Database] Native Mongo Query Error: " . $e->getMessage());
                 return [];
@@ -228,6 +236,94 @@ class Database {
         }
 
         return [];
+    }
+
+    /**
+     * Insert one or multiple documents into a MongoDB collection.
+     * @param string $collection Collection name (e.g. 'passenger_reviews')
+     * @param array $documents Associative array or array of arrays
+     * @return bool True on success, false on failure
+     */
+    public static function insertMongo($collection, $documents) {
+        $db = self::getMongo();
+        if (!$db) {
+            return false;
+        }
+
+        if (empty($documents)) {
+            return false;
+        }
+
+        $docsToInsert = isset($documents[0]) && is_array($documents[0]) ? $documents : [$documents];
+
+        // Composer Library
+        if (is_object($db) && method_exists($db, 'selectCollection')) {
+            try {
+                $col = $db->selectCollection($collection);
+                $res = $col->insertMany($docsToInsert);
+                return $res->getInsertedCount() > 0;
+            } catch (\Exception $e) {
+                error_log("[Database] Mongo Insert Error: " . $e->getMessage());
+                return false;
+            }
+        }
+
+        // Native Driver Manager
+        if ($db instanceof \MongoDB\Driver\Manager) {
+            try {
+                $bulk = new \MongoDB\Driver\BulkWrite();
+                foreach ($docsToInsert as $doc) {
+                    $bulk->insert($doc);
+                }
+                $res = $db->executeBulkWrite(self::$mongoDb . '.' . $collection, $bulk);
+                return $res->getInsertedCount() > 0;
+            } catch (\Exception $e) {
+                error_log("[Database] Native Mongo Insert Error: " . $e->getMessage());
+                return false;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Delete documents from MongoDB collection.
+     * @param string $collection Collection name
+     * @param array $filter Filter criteria
+     * @return bool True if at least one document deleted
+     */
+    public static function deleteMongo($collection, $filter = []) {
+        $db = self::getMongo();
+        if (!$db) {
+            return false;
+        }
+
+        // Composer Library
+        if ($db instanceof \MongoDB\Database) {
+            try {
+                $coll = $db->selectCollection($collection);
+                $res = $coll->deleteMany($filter);
+                return $res->getDeletedCount() > 0;
+            } catch (\Exception $e) {
+                error_log("[Database] Mongo Delete Error: " . $e->getMessage());
+                return false;
+            }
+        }
+
+        // Native Driver Manager
+        if ($db instanceof \MongoDB\Driver\Manager) {
+            try {
+                $bulk = new \MongoDB\Driver\BulkWrite();
+                $bulk->delete($filter);
+                $res = $db->executeBulkWrite(self::$mongoDb . '.' . $collection, $bulk);
+                return $res->getDeletedCount() > 0;
+            } catch (\Exception $e) {
+                error_log("[Database] Native Mongo Delete Error: " . $e->getMessage());
+                return false;
+            }
+        }
+
+        return false;
     }
 
     /**

@@ -58,10 +58,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function closeAllPopovers() {
     popovers.forEach(p => p.classList.remove('show'));
+    const sBtn = document.getElementById('sidebarUserBtn');
+    if (sBtn) {
+      sBtn.classList.remove('active');
+      sBtn.setAttribute('aria-expanded', 'false');
+    }
   }
 
   // Topbar user menu toggle
-  const topbarAvatarBtn = document.getElementById('topbarAvatarBtn');
+  const topbarAvatarBtn = document.getElementById('topbarAvatarBtn') || document.getElementById('topbarUserBtn');
   const topbarUserMenu = document.getElementById('topbarUserMenu');
   if (topbarAvatarBtn && topbarUserMenu) {
     topbarAvatarBtn.addEventListener('click', (e) => {
@@ -80,7 +85,22 @@ document.addEventListener('DOMContentLoaded', () => {
       e.stopPropagation();
       const isVisible = sidebarUserMenu.classList.contains('show');
       closeAllPopovers();
-      if (!isVisible) sidebarUserMenu.classList.add('show');
+      if (!isVisible) {
+        sidebarUserMenu.classList.add('show');
+        sidebarUserBtn.classList.add('active');
+        sidebarUserBtn.setAttribute('aria-expanded', 'true');
+      }
+    });
+
+    // Wire up view switching for items inside sidebar user popover
+    sidebarUserMenu.querySelectorAll('.popover-item[data-view]').forEach(item => {
+      item.addEventListener('click', (e) => {
+        e.preventDefault();
+        const targetView = item.dataset.view;
+        if (targetView) {
+          switchView(targetView);
+        }
+      });
     });
   }
 
