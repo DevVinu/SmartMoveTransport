@@ -904,7 +904,7 @@ $pageTitle = "SmartMove — Enterprise Admin Portal";
         <div class="popover-divider"></div>
 
         <!-- Sign out -->
-        <a class="popover-item danger" href="../pages/login.php?logout=true" role="menuitem">
+        <a class="popover-item danger" href="logout.php" role="menuitem">
           <svg class="popover-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
             <polyline points="16 17 21 12 16 7"/>
@@ -958,7 +958,7 @@ $pageTitle = "SmartMove — Enterprise Admin Portal";
           <a class="popover-item" onclick="document.querySelector('.nav-item[data-view=\'usersView\']')?.click();">User Management</a>
           <a class="popover-item" onclick="document.querySelector('.nav-item[data-view=\'settingsView\']')?.click();">System Settings</a>
           <div class="popover-divider"></div>
-          <a href="../pages/login.php?logout=true" class="popover-item danger">Log out</a>
+          <a href="logout.php" class="popover-item danger">Sign out</a>
         </div>
       </div>
     </header>
