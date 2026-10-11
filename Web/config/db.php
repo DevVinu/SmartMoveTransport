@@ -46,13 +46,22 @@ class Database {
             self::$oraService
         );
 
-        // Attempt connection to Oracle XE
+        // Attempt connection to Oracle XE (try smartmoveOwner first, then fallback to smartmove_user)
         self::$oraConn = @oci_connect(
-            self::$oraUser,
-            self::$oraPass,
+            'smartmoveOwner',
+            'Owner123',
             $connectionString,
             self::$oraCharset
         );
+
+        if (!self::$oraConn) {
+            self::$oraConn = @oci_connect(
+                self::$oraUser,
+                self::$oraPass,
+                $connectionString,
+                self::$oraCharset
+            );
+        }
 
         if (!self::$oraConn) {
             $err = oci_error();
