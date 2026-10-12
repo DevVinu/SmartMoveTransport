@@ -137,13 +137,13 @@ $pageTitle = "Sign In | SmartMove Transport";
 
       <?php if (!empty($errorMessage)): ?>
         <div class="alert-box alert-error">
-          ⚠️ <?php echo htmlspecialchars($errorMessage); ?>
+           <?php echo htmlspecialchars($errorMessage); ?>
         </div>
       <?php endif; ?>
 
       <?php if (!empty($successMessage)): ?>
         <div class="alert-box alert-success">
-          ✓ <?php echo htmlspecialchars($successMessage); ?>
+           <?php echo htmlspecialchars($successMessage); ?>
         </div>
       <?php endif; ?>
 

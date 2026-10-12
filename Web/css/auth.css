@@ -115,7 +115,7 @@
   font-size: 0.82rem;
   font-weight: 600;
   padding: 6px 14px;
-  border-radius: var(--radius-pill, 9999px);
+  border-radius: var(--radius-sm, 6px);
   display: flex;
   align-items: center;
   gap: 6px;
@@ -147,7 +147,7 @@
   font-weight: 600;
   color: var(--text-sub, #CBD5E1);
   padding: 0.5rem 1rem;
-  border-radius: var(--radius-pill, 9999px);
+  border-radius: var(--radius-sm, 6px);
   text-decoration: none;
   transition: all 0.15s ease;
 }
@@ -163,7 +163,7 @@
   font-size: 0.92rem;
   font-weight: 700;
   padding: 0.55rem 1.3rem;
-  border-radius: var(--radius-pill, 9999px);
+  border-radius: var(--radius-sm, 6px);
   border: 1px solid #FFFFFF;
   text-decoration: none;
   transition: all 0.15s ease;
@@ -286,7 +286,7 @@
   color: #FFFFFF;
   font-size: 1rem;
   font-weight: 800;
-  border-radius: var(--radius-pill, 9999px);
+  border-radius: var(--radius-input, 8px);
   cursor: pointer;
   border: 1px solid var(--blue-primary, #2563EB);
   margin-top: 0.5rem;
@@ -315,6 +315,18 @@
   font-weight: 600;
 }
 
+/* Dynamic actor signup fields */
+@keyframes fieldPopIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .driver-fields,
 .actor-signup-fields {
   display: none;
@@ -325,6 +337,19 @@
 .driver-fields.show,
 .actor-signup-fields.show {
   display: flex;
+  animation: fieldPopIn 0.25s ease-out forwards;
+}
+
+.category-prompt-box {
+  padding: 0.95rem 1.15rem;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px dashed var(--border-subtle, #2B2F38);
+  border-radius: var(--radius-input, 8px);
+  text-align: center;
+  color: var(--text-muted, #94A3B8);
+  font-size: 0.85rem;
+  line-height: 1.45;
+  transition: all 0.2s ease;
 }
 
 /* Alert Notification Boxes */

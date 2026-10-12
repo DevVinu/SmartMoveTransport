@@ -137,7 +137,7 @@ $myBookings = Database::queryOracle("
            pay.paymentMethod, pay.paymentStatus
     FROM booking b
     JOIN scheduledTrip t ON b.tripId = t.tripId
-    JOIN transitRoute r ON t.routeId = r.routeId
+    JOIN route r ON t.routeId = r.routeId
     JOIN vehicle v ON t.vehicleId = v.vehicleId
     LEFT JOIN payment pay ON b.bookingId = pay.bookingId
     WHERE b.passengerId = :pId
@@ -151,7 +151,7 @@ $availableTrips = Database::queryOracle("
            r.routeName, r.routeType, r.origin, r.destination,
            v.registrationNo, v.vehicleType
     FROM scheduledTrip t
-    JOIN transitRoute r ON t.routeId = r.routeId
+    JOIN route r ON t.routeId = r.routeId
     JOIN vehicle v ON t.vehicleId = v.vehicleId
     WHERE t.tripStatus IN ('SCHEDULED', 'IN_TRANSIT') AND t.availableSeats > 0
     ORDER BY t.tripDate ASC, t.departureTime ASC
@@ -261,13 +261,13 @@ $pageTitle = "SmartMove — Passenger Travel Portal";
       <!-- Flash messages -->
       <?php if (!empty($flashSuccess)): ?>
         <div class="alert-box alert-success" style="margin-bottom:1.5rem; background:rgba(16,185,129,0.15); border:1px solid rgba(16,185,129,0.4); color:#34D399; padding:1rem; border-radius:var(--radius-md);">
-          ✓ <?php echo htmlspecialchars($flashSuccess); ?>
+          <?php echo htmlspecialchars($flashSuccess); ?>
         </div>
       <?php endif; ?>
 
       <?php if (!empty($flashError)): ?>
         <div class="alert-box alert-error" style="margin-bottom:1.5rem; background:rgba(239,68,68,0.15); border:1px solid rgba(239,68,68,0.4); color:#F87171; padding:1rem; border-radius:var(--radius-md);">
-          ⚠️ <?php echo htmlspecialchars($flashError); ?>
+          <?php echo htmlspecialchars($flashError); ?>
         </div>
       <?php endif; ?>
 
@@ -276,7 +276,7 @@ $pageTitle = "SmartMove — Passenger Travel Portal";
         <div class="stat-card">
           <div class="stat-header-row">
             <span class="stat-label">Total Reservations</span>
-            <span class="stat-icon">🎫</span>
+            <span class="stat-icon">TKT</span>
           </div>
           <div class="stat-value"><?php echo $totalBookingsCount; ?></div>
           <div class="stat-subtext">Lifetime trips booked</div>
@@ -285,7 +285,7 @@ $pageTitle = "SmartMove — Passenger Travel Portal";
         <div class="stat-card">
           <div class="stat-header-row">
             <span class="stat-label">Active / Confirmed Trips</span>
-            <span class="stat-icon">🚍</span>
+            <span class="stat-icon">BUS</span>
           </div>
           <div class="stat-value" style="color:#38BDF8;"><?php echo $activeBookingsCount; ?></div>
           <div class="stat-subtext">Upcoming departures</div>
@@ -294,7 +294,7 @@ $pageTitle = "SmartMove — Passenger Travel Portal";
         <div class="stat-card">
           <div class="stat-header-row">
             <span class="stat-label">Preferred Payment</span>
-            <span class="stat-icon">💳</span>
+            <span class="stat-icon">PAY</span>
           </div>
           <div class="stat-value" style="font-size:1.3rem;"><?php echo htmlspecialchars($passengerInfo['preferredPaymentMethod'] ?? 'CARD'); ?></div>
           <div class="stat-subtext"><?php echo htmlspecialchars($passengerInfo['address'] ?? 'Sri Lanka'); ?></div>
@@ -304,13 +304,13 @@ $pageTitle = "SmartMove — Passenger Travel Portal";
       <!-- Navigation tabs -->
       <nav class="passenger-nav-tabs">
         <a href="passenger.php?view=bookingsView" class="passenger-tab-btn <?php echo $activeView === 'bookingsView' ? 'active' : ''; ?>">
-          📋 My Bookings &amp; Tickets
+          My Bookings &amp; Tickets
         </a>
         <a href="passenger.php?view=ridesView" class="passenger-tab-btn <?php echo $activeView === 'ridesView' ? 'active' : ''; ?>">
-          🚍 Book Scheduled Express Rides
+          Book Scheduled Express Rides
         </a>
         <a href="passenger.php?view=profileView" class="passenger-tab-btn <?php echo $activeView === 'profileView' ? 'active' : ''; ?>">
-          👤 Manage Profile &amp; Password
+          Manage Profile &amp; Password
         </a>
       </nav>
 
@@ -331,7 +331,7 @@ $pageTitle = "SmartMove — Passenger Travel Portal";
 
           <?php if (empty($myBookings)): ?>
             <div class="dash-panel" style="text-align:center; padding:3rem 1rem; color:var(--text-secondary);">
-              <div style="font-size:3rem; margin-bottom:1rem;">🚍</div>
+              <div style="font-size:3rem; margin-bottom:1rem;"></div>
               <h3>No Travel Bookings Yet</h3>
               <p style="margin-top:0.5rem; font-size:0.9rem;">You haven't reserved any rides yet. Explore available scheduled departures across Sri Lanka.</p>
               <a href="passenger.php?view=ridesView" class="btn-primary" style="display:inline-block; margin-top:1rem; text-decoration:none;">
@@ -421,7 +421,7 @@ $pageTitle = "SmartMove — Passenger Travel Portal";
                       <?php echo htmlspecialchars($t['routeType']); ?>
                     </span>
                     <span style="font-size:0.8rem; color:#34D399; font-weight:600;">
-                      🟢 <?php echo $t['availableSeats']; ?> seats left
+                      <?php echo $t['availableSeats']; ?> seats left
                     </span>
                   </div>
 
@@ -429,7 +429,7 @@ $pageTitle = "SmartMove — Passenger Travel Portal";
                     <?php echo htmlspecialchars($t['routeName']); ?>
                   </h3>
                   <div style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:1rem;">
-                    📍 <?php echo htmlspecialchars($t['origin']); ?> → <?php echo htmlspecialchars($t['destination']); ?>
+                    <?php echo htmlspecialchars($t['origin']); ?> → <?php echo htmlspecialchars($t['destination']); ?>
                   </div>
 
                   <div style="display:flex; justify-content:space-between; font-size:0.85rem; background:var(--bg-card-inner); padding:0.6rem 0.75rem; border-radius:6px; margin-bottom:1rem;">

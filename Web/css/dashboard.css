@@ -238,7 +238,7 @@ body.dashboard-body {
   min-width: 18px;
   height: 18px;
   padding: 0 4px;
-  border-radius: 9999px;
+  border-radius: 4px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -1447,7 +1447,7 @@ body.dashboard-body {
   font-size: 11px;
   font-weight: 500;
   padding: 2px 7px;
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-sm);
   display: inline-flex;
   align-items: center;
   gap: 4px;
@@ -1575,7 +1575,7 @@ body.dashboard-body {
 .badge-status {
   display: inline-block;
   padding: 0.2rem 0.55rem;
-  border-radius: 9999px;
+  border-radius: 6px;
   font-size: 0.72rem;
   font-weight: 600;
   letter-spacing: 0.3px;
@@ -1592,7 +1592,7 @@ body.dashboard-body {
   gap: 0.5rem;
   font-size: 0.78rem;
   padding: 0.35rem 0.75rem;
-  border-radius: 9999px;
+  border-radius: 6px;
   background: var(--bg-card-inner);
   border: 1px solid var(--border-subtle);
 }
@@ -1811,7 +1811,7 @@ body.dashboard-body {
   color: var(--text-secondary);
   font-size: 0.75rem;
   padding: 0.35rem 0.75rem;
-  border-radius: 9999px;
+  border-radius: 6px;
   cursor: pointer;
   transition: all 0.15s ease;
 }
@@ -1849,7 +1849,7 @@ body.dashboard-body {
   align-items: center;
   background-color: var(--bg-card-inner);
   border: 1px solid var(--border-subtle);
-  border-radius: 9999px;
+  border-radius: 6px;
   padding: 3px;
   gap: 2px;
 }
@@ -1859,7 +1859,7 @@ body.dashboard-body {
   align-items: center;
   gap: 6px;
   padding: 5px 12px;
-  border-radius: 9999px;
+  border-radius: 5px;
   border: none;
   background: transparent;
   color: var(--text-muted);

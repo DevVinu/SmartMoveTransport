@@ -1,12 +1,14 @@
 <?php
 // News model
-class News {
-    public static function getLatest() {
+class News
+{
+    public static function getLatest()
+    {
         return [
             [
                 'title' => 'SmartMove Partners with CAASL & PUCSL to Test eVTOL Flying Taxis & EV Transport in Colombo',
                 'date' => 'August 14, 2026',
-                'image' => '../img/news_ev.jpg',
+                'image' => '..\Web\img\news_community1.jpg',
                 'excerpt' => 'Initiating Sri Lanka\'s first regulatory sandbox pilot for electric Vertical Take-Off & Landing passenger drones and commercial EV fleets.',
                 'link' => '#'
             ],

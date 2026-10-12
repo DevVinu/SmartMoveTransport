@@ -165,7 +165,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
   if ($action === 'toggleVehicleStatus') {
     $vId = (int) ($_POST['vehicleId'] ?? 0);
     $newStatus = trim($_POST['newStatus'] ?? 'AVAILABLE');
-    if ($vId > 0 && in_array($newStatus, ['AVAILABLE', 'MAINTENANCE', 'IN_SERVICE', 'RETIRED'])) {
+    if ($vId > 0 && in_array($newStatus, ['AVAILABLE', 'ON_TRIP', 'MAINTENANCE', 'DECOMMISSIONED'])) {
       $ok = Database::executeOracle("UPDATE vehicle SET status = :st WHERE vehicleId = :id", [
         ':st' => $newStatus,
         ':id' => $vId
@@ -461,8 +461,8 @@ if ($oracleUp) {
                            ELSE 'UPCOMING'
                        END AS urgencyStatus
                 FROM vehicle v
-                JOIN maintenanceSchedule ms ON v.vehicleId = ms.vehicleId
-                WHERE ms.status = 'PENDING'
+                JOIN maintenance ms ON v.vehicleId = ms.vehicleId
+                WHERE ms.maintenanceStatus IN ('SCHEDULED', 'IN_PROGRESS')
                 ORDER BY ms.nextServiceDate ASC
             ");
       break;

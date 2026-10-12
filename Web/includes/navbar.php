@@ -30,7 +30,7 @@ $navFirstName = htmlspecialchars($navUser['firstName'] ?? $navUser['firstname'] 
     <div class="nav-right-group">
       <?php if ($isNavLoggedIn): ?>
         <a href="<?php echo $navPortalLink; ?>" class="nav-link-item" style="color:var(--blue-light);font-weight:600;">
-          👤 <?php echo $navFirstName; ?> (<?php echo $navRole; ?>)
+           <?php echo $navFirstName; ?> (<?php echo $navRole; ?>)
         </a>
         <a href="pages/logout.php" class="btn-signup-pill" style="background:rgba(239,68,68,0.15);color:#F87171;border:1px solid rgba(239,68,68,0.4);">
           Sign out
@@ -39,7 +39,7 @@ $navFirstName = htmlspecialchars($navUser['firstName'] ?? $navUser['firstname'] 
         <a href="pages/signin.php" class="nav-link-item">Sign in</a>
         <a href="pages/signup.php" class="btn-signup-pill">Sign up</a>
       <?php endif; ?>
-      <div class="mobile-toggle" id="mobileNavToggle" aria-label="Toggle mobile menu">☰</div>
+      <div class="mobile-toggle" id="mobileNavToggle" aria-label="Toggle mobile menu"></div>
     </div>
   </div>
 </header>

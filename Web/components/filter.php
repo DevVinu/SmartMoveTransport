@@ -19,7 +19,6 @@
         <div class="filter-field-group">
           <label class="filter-field-label">Quick Search</label>
           <div class="filter-input-wrap">
-            <span class="filter-input-icon">🔍</span>
             <input type="text" id="routeKeywordInput" class="filter-text-input" placeholder="Search city, route, or coach (e.g. Galle, E01)...">
           </div>
         </div>
@@ -27,7 +26,6 @@
         <div class="filter-field-group">
           <label class="filter-field-label">Departure From (Origin)</label>
           <div class="filter-input-wrap">
-            <span class="filter-input-icon">📍</span>
             <select id="originFilterSelect" class="filter-select-input">
               <option value="ALL">All Origins (Any Departure)</option>
               <option value="Colombo">Colombo (Fort / Expressway Hub)</option>
@@ -43,7 +41,6 @@
         <div class="filter-field-group">
           <label class="filter-field-label">Destination To</label>
           <div class="filter-input-wrap">
-            <span class="filter-input-icon">🏁</span>
             <select id="destFilterSelect" class="filter-select-input">
               <option value="ALL">All Destinations (Any Arrival)</option>
               <option value="Galle">Galle (Southern Expressway E01)</option>
@@ -60,7 +57,6 @@
         <div class="filter-field-group">
           <label class="filter-field-label">Departure Window</label>
           <div class="filter-input-wrap">
-            <span class="filter-input-icon">⏰</span>
             <select id="timeFilterSelect" class="filter-select-input">
               <option value="ALL">Any Time</option>
               <option value="MORNING">Morning (06:00 AM – 12:00 PM)</option>
@@ -76,13 +72,13 @@
         <span class="filter-pills-label">Fleet Category:</span>
         <div class="filter-pills-list">
           <button type="button" class="type-pill-btn active" data-type="ALL">All Fleets</button>
-          <button type="button" class="type-pill-btn" data-type="BUS">🚌 Expressway Coach</button>
-          <button type="button" class="type-pill-btn" data-type="VAN">🚐 Executive Van</button>
-          <button type="button" class="type-pill-btn" data-type="LUXURYCAR">🚗 Luxury Sedan</button>
-          <button type="button" class="type-pill-btn" data-type="CITY">🛺 City Express</button>
+          <button type="button" class="type-pill-btn" data-type="BUS">Expressway Coach</button>
+          <button type="button" class="type-pill-btn" data-type="VAN">Executive Van</button>
+          <button type="button" class="type-pill-btn" data-type="LUXURYCAR">Luxury Sedan</button>
+          <button type="button" class="type-pill-btn" data-type="CITY">City Express</button>
         </div>
 
-        <button type="button" class="btn-filter-reset" id="resetFiltersBtn">Reset Filters ↺</button>
+        <button type="button" class="btn-filter-reset" id="resetFiltersBtn">Reset Filters</button>
       </div>
     </div>
 
@@ -103,17 +99,17 @@
           <span class="route-category-tag tag-bus">Expressway Coach</span>
           <span class="route-status-pill status-open">Available</span>
         </div>
-        <h3 class="route-title">Colombo Fort ➔ Galle Interchange (E01)</h3>
+        <h3 class="route-title">Colombo Fort  Galle Interchange (E01)</h3>
         <p class="route-sub">Southern Expressway Non-stop Direct Route</p>
         <div class="route-meta-row">
-          <span class="route-meta-item">🕒 08:30 AM (Morning)</span>
-          <span class="route-meta-item">⏱️ ~1h 15m</span>
-          <span class="route-meta-item">💺 42 Seats Available</span>
+          <span class="route-meta-item"> 08:30 AM (Morning)</span>
+          <span class="route-meta-item">⏱ ~1h 15m</span>
+          <span class="route-meta-item"> 42 Seats Available</span>
         </div>
         <div class="route-amenities">
-          <span class="amenity-tag">❄️ Dual A/C</span>
-          <span class="amenity-tag">🛣️ Toll Included</span>
-          <span class="amenity-tag">📶 Free Wi-Fi</span>
+          <span class="amenity-tag"> Dual A/C</span>
+          <span class="amenity-tag"> Toll Included</span>
+          <span class="amenity-tag"> Free Wi-Fi</span>
         </div>
         <div class="route-card-bottom">
           <div class="route-price-box">
@@ -130,17 +126,17 @@
           <span class="route-category-tag tag-bus">Expressway Coach</span>
           <span class="route-status-pill status-open">Available</span>
         </div>
-        <h3 class="route-title">Colombo Fort ➔ Kandy Central (E04)</h3>
+        <h3 class="route-title">Colombo Fort  Kandy Central (E04)</h3>
         <p class="route-sub">Central Expressway Intercity Air-Conditioned Coach</p>
         <div class="route-meta-row">
-          <span class="route-meta-item">🕒 07:15 AM (Morning)</span>
-          <span class="route-meta-item">⏱️ ~2h 30m</span>
-          <span class="route-meta-item">💺 38 Seats Available</span>
+          <span class="route-meta-item"> 07:15 AM (Morning)</span>
+          <span class="route-meta-item">⏱ ~2h 30m</span>
+          <span class="route-meta-item"> 38 Seats Available</span>
         </div>
         <div class="route-amenities">
-          <span class="amenity-tag">❄️ Climate Control</span>
-          <span class="amenity-tag">🧳 Luggage Bay</span>
-          <span class="amenity-tag">📡 GPS Live</span>
+          <span class="amenity-tag"> Climate Control</span>
+          <span class="amenity-tag"> Luggage Bay</span>
+          <span class="amenity-tag"> GPS Live</span>
         </div>
         <div class="route-card-bottom">
           <div class="route-price-box">
@@ -157,17 +153,17 @@
           <span class="route-category-tag tag-van">Executive Van</span>
           <span class="route-status-pill status-priority">Airport Express</span>
         </div>
-        <h3 class="route-title">Colombo Central ➔ Katunayake Intl Airport (E03)</h3>
+        <h3 class="route-title">Colombo Central  Katunayake Intl Airport (E03)</h3>
         <p class="route-sub">Airport Expressway Executive Commuter Van Transfer</p>
         <div class="route-meta-row">
-          <span class="route-meta-item">🕒 02:00 PM (Afternoon)</span>
-          <span class="route-meta-item">⏱️ ~30 mins</span>
-          <span class="route-meta-item">💺 10 Seats / Luggage</span>
+          <span class="route-meta-item"> 02:00 PM (Afternoon)</span>
+          <span class="route-meta-item">⏱ ~30 mins</span>
+          <span class="route-meta-item"> 10 Seats / Luggage</span>
         </div>
         <div class="route-amenities">
-          <span class="amenity-tag">✈️ Flight Tracking</span>
-          <span class="amenity-tag">🧳 Large Boot Space</span>
-          <span class="amenity-tag">🛣️ E03 Toll Free</span>
+          <span class="amenity-tag"> Flight Tracking</span>
+          <span class="amenity-tag"> Large Boot Space</span>
+          <span class="amenity-tag"> E03 Toll Free</span>
         </div>
         <div class="route-card-bottom">
           <div class="route-price-box">
@@ -184,17 +180,17 @@
           <span class="route-category-tag tag-bus">Expressway Coach</span>
           <span class="route-status-pill status-open">Available</span>
         </div>
-        <h3 class="route-title">Colombo Commercial Hub ➔ Matara Terminal</h3>
+        <h3 class="route-title">Colombo Commercial Hub  Matara Terminal</h3>
         <p class="route-sub">Southern Expressway E01 Full Corridor Service</p>
         <div class="route-meta-row">
-          <span class="route-meta-item">🕒 06:30 PM (Evening)</span>
-          <span class="route-meta-item">⏱️ ~1h 50m</span>
-          <span class="route-meta-item">💺 45 Seats Available</span>
+          <span class="route-meta-item"> 06:30 PM (Evening)</span>
+          <span class="route-meta-item">⏱ ~1h 50m</span>
+          <span class="route-meta-item"> 45 Seats Available</span>
         </div>
         <div class="route-amenities">
-          <span class="amenity-tag">❄️ High Cool A/C</span>
-          <span class="amenity-tag">🔋 USB Charging</span>
-          <span class="amenity-tag">🛣️ Expressway Toll</span>
+          <span class="amenity-tag"> High Cool A/C</span>
+          <span class="amenity-tag"> USB Charging</span>
+          <span class="amenity-tag"> Expressway Toll</span>
         </div>
         <div class="route-card-bottom">
           <div class="route-price-box">
@@ -211,17 +207,17 @@
           <span class="route-category-tag tag-sedan">Luxury Sedan</span>
           <span class="route-status-pill status-priority">Chauffeur</span>
         </div>
-        <h3 class="route-title">Colombo City ➔ Kandy Royal Botanical</h3>
+        <h3 class="route-title">Colombo City  Kandy Royal Botanical</h3>
         <p class="route-sub">Private Executive Chauffeur Direct Door-to-Door</p>
         <div class="route-meta-row">
-          <span class="route-meta-item">🕒 09:00 AM (Morning)</span>
-          <span class="route-meta-item">⏱️ ~2h 45m</span>
-          <span class="route-meta-item">💺 1–4 Executive Seats</span>
+          <span class="route-meta-item"> 09:00 AM (Morning)</span>
+          <span class="route-meta-item">⏱ ~2h 45m</span>
+          <span class="route-meta-item"> 1–4 Executive Seats</span>
         </div>
         <div class="route-amenities">
-          <span class="amenity-tag">👔 Verified Captain</span>
-          <span class="amenity-tag">🛡️ Premium Insurance</span>
-          <span class="amenity-tag">🛋️ Leather Interior</span>
+          <span class="amenity-tag"> Verified Captain</span>
+          <span class="amenity-tag"> Premium Insurance</span>
+          <span class="amenity-tag"> Leather Interior</span>
         </div>
         <div class="route-card-bottom">
           <div class="route-price-box">
@@ -238,17 +234,17 @@
           <span class="route-category-tag tag-bus">Expressway Coach</span>
           <span class="route-status-pill status-open">Available</span>
         </div>
-        <h3 class="route-title">Colombo Fort ➔ Jaffna Express Terminal</h3>
+        <h3 class="route-title">Colombo Fort  Jaffna Express Terminal</h3>
         <p class="route-sub">Northern Corridor Deluxe Air-Conditioned Sleeper</p>
         <div class="route-meta-row">
-          <span class="route-meta-item">🕒 08:00 PM (Evening)</span>
-          <span class="route-meta-item">⏱️ ~7h 30m</span>
-          <span class="route-meta-item">💺 32 Sleeper Seats</span>
+          <span class="route-meta-item"> 08:00 PM (Evening)</span>
+          <span class="route-meta-item">⏱ ~7h 30m</span>
+          <span class="route-meta-item"> 32 Sleeper Seats</span>
         </div>
         <div class="route-amenities">
-          <span class="amenity-tag">🛌 Reclining Sleeper</span>
-          <span class="amenity-tag">❄️ Temperature Control</span>
-          <span class="amenity-tag">☕ Refreshment Stop</span>
+          <span class="amenity-tag"> Reclining Sleeper</span>
+          <span class="amenity-tag"> Temperature Control</span>
+          <span class="amenity-tag"> Refreshment Stop</span>
         </div>
         <div class="route-card-bottom">
           <div class="route-price-box">
@@ -265,17 +261,17 @@
           <span class="route-category-tag tag-van">Executive Van</span>
           <span class="route-status-pill status-open">Available</span>
         </div>
-        <h3 class="route-title">Colombo Fort ➔ Negombo Town &amp; Beach</h3>
+        <h3 class="route-title">Colombo Fort  Negombo Town &amp; Beach</h3>
         <p class="route-sub">Coastal Corridor Frequent Shuttle Van</p>
         <div class="route-meta-row">
-          <span class="route-meta-item">🕒 04:30 PM (Afternoon)</span>
-          <span class="route-meta-item">⏱️ ~45 mins</span>
-          <span class="route-meta-item">💺 12 Seats Available</span>
+          <span class="route-meta-item"> 04:30 PM (Afternoon)</span>
+          <span class="route-meta-item">⏱ ~45 mins</span>
+          <span class="route-meta-item"> 12 Seats Available</span>
         </div>
         <div class="route-amenities">
-          <span class="amenity-tag">❄️ Air Conditioned</span>
-          <span class="amenity-tag">🌊 Coastal Route</span>
-          <span class="amenity-tag">⏱️ High Frequency</span>
+          <span class="amenity-tag"> Air Conditioned</span>
+          <span class="amenity-tag"> Coastal Route</span>
+          <span class="amenity-tag">⏱ High Frequency</span>
         </div>
         <div class="route-card-bottom">
           <div class="route-price-box">
@@ -295,14 +291,14 @@
         <h3 class="route-title">Greater Colombo Metro Express</h3>
         <p class="route-sub">Quick City Transit &amp; Neighbourhood Commutes</p>
         <div class="route-meta-row">
-          <span class="route-meta-item">🕒 On-Demand (24/7)</span>
-          <span class="route-meta-item">⏱️ Instant Arrival</span>
-          <span class="route-meta-item">💺 1–3 Passengers</span>
+          <span class="route-meta-item"> On-Demand (24/7)</span>
+          <span class="route-meta-item">⏱ Instant Arrival</span>
+          <span class="route-meta-item"> 1–3 Passengers</span>
         </div>
         <div class="route-amenities">
-          <span class="amenity-tag">⚡ Fast Dispatch</span>
-          <span class="amenity-tag">🗺️ Metered Tracking</span>
-          <span class="amenity-tag">💳 Cash &amp; Digital Pay</span>
+          <span class="amenity-tag"> Fast Dispatch</span>
+          <span class="amenity-tag"> Metered Tracking</span>
+          <span class="amenity-tag"> Cash &amp; Digital Pay</span>
         </div>
         <div class="route-card-bottom">
           <div class="route-price-box">
@@ -317,7 +313,7 @@
 
     <!-- Empty state -->
     <div class="filter-empty-state" id="filterEmptyState" style="display:none;">
-      <div class="empty-state-icon">🔍</div>
+      <div class="empty-state-icon"></div>
       <h3 class="empty-state-title">No Transit Corridors Found</h3>
       <p class="empty-state-desc">No scheduled routes match your current filter criteria. Try choosing "All Fleets" or resetting the search.</p>
       <button type="button" class="btn-filter-reset" onclick="document.getElementById('resetFiltersBtn').click();">Reset All Filters</button>

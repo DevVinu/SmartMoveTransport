@@ -92,19 +92,19 @@
 
                 $borderCol = 'rgba(59, 130, 246, 0.35)';
                 $badgeBg = 'badge-info';
-                $icon = '📢';
+                $icon = '';
                 if ($prio === 'HIGH' || strpos($cat, 'EXPRESSWAY') !== false) {
                   $borderCol = 'rgba(239, 68, 68, 0.45)';
                   $badgeBg = 'badge-urgent';
-                  $icon = '⚠️';
+                  $icon = '';
                 } elseif (strpos($cat, 'ROADWORK') !== false) {
                   $borderCol = 'rgba(245, 158, 11, 0.45)';
                   $badgeBg = 'badge-warning';
-                  $icon = '🚧';
+                  $icon = '';
                 } elseif (strpos($cat, 'COMMUNITY') !== false) {
                   $borderCol = 'rgba(16, 185, 129, 0.45)';
                   $badgeBg = 'badge-active';
-                  $icon = '🌱';
+                  $icon = '';
                 }
                 ?>
                 <div

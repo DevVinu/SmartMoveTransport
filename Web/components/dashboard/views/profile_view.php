@@ -44,11 +44,11 @@ $uAddress = htmlspecialchars($currentUser['address'] ?? '');
       </div>
 
       <div style="display:flex; align-items:center; gap:0.75rem;">
-        <span class="badge-status badge-active" style="padding:0.35rem 0.85rem; border-radius:var(--radius-pill); font-size:0.75rem; font-weight:700; letter-spacing:0.04em;">
+        <span class="badge-status badge-active" style="padding:0.35rem 0.85rem; border-radius:var(--radius-sm); font-size:0.75rem; font-weight:700; letter-spacing:0.04em;">
           <?php echo $uRole; ?>
         </span>
-        <span style="background:rgba(16, 185, 129, 0.15); color:#34D399; border:1px solid rgba(16, 185, 129, 0.3); padding:0.35rem 0.85rem; border-radius:var(--radius-pill); font-size:0.75rem; font-weight:600;">
-          ✓ <?php echo $uStatus; ?>
+        <span style="background:rgba(16, 185, 129, 0.15); color:#34D399; border:1px solid rgba(16, 185, 129, 0.3); padding:0.35rem 0.85rem; border-radius:var(--radius-sm); font-size:0.75rem; font-weight:600;">
+           <?php echo $uStatus; ?>
         </span>
       </div>
     </div>

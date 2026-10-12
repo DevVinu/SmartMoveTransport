@@ -382,13 +382,13 @@ $pageTitle = "SmartMove — Driver Partner Portal";
           <input type="hidden" name="dutyStatus" id="dutyStatusInput" value="<?php echo $currentDutyStatus; ?>">
           
           <button type="submit" onclick="document.getElementById('dutyStatusInput').value='AVAILABLE'" class="duty-pill-btn <?php echo $currentDutyStatus === 'AVAILABLE' ? 'active-available' : ''; ?>">
-            🟢 Available
+            Available
           </button>
           <button type="submit" onclick="document.getElementById('dutyStatusInput').value='ON_DUTY'" class="duty-pill-btn <?php echo $currentDutyStatus === 'ON_DUTY' ? 'active-onduty' : ''; ?>">
-            🔵 On Duty
+            On Duty
           </button>
           <button type="submit" onclick="document.getElementById('dutyStatusInput').value='OFF_DUTY'" class="duty-pill-btn <?php echo $currentDutyStatus === 'OFF_DUTY' ? 'active-offduty' : ''; ?>">
-            ⚪ Off Duty
+            Off Duty
           </button>
         </form>
       </div>
@@ -396,12 +396,12 @@ $pageTitle = "SmartMove — Driver Partner Portal";
       <div class="topbar-right">
         <!-- License -->
         <div class="type-badge" style="background:var(--bg-card-inner);border:1px solid var(--border-subtle);" title="Driver License">
-          🪪 <?php echo htmlspecialchars($driverInfo['licenseNumber'] ?? 'B-LIC'); ?>
+          Lic: <?php echo htmlspecialchars($driverInfo['licenseNumber'] ?? 'B-LIC'); ?>
         </div>
 
         <!-- Rating -->
         <div class="type-badge" style="background:rgba(245, 158, 11, 0.15);color:#FBBF24;border:1px solid rgba(245, 158, 11, 0.35);">
-          ⭐ <?php echo $avgRating; ?> / 5.0
+          Rating: <?php echo $avgRating; ?> / 5.0
         </div>
 
         <!-- Avatar -->
@@ -448,7 +448,7 @@ $pageTitle = "SmartMove — Driver Partner Portal";
                   <span class="cockpit-station-tag">Origin Station</span>
                   <span class="cockpit-station-name"><?php echo htmlspecialchars($activeTrip['origin']); ?></span>
                 </div>
-                <div class="cockpit-route-arrow">➔</div>
+                <div class="cockpit-route-arrow">--&gt;</div>
                 <div class="cockpit-station">
                   <span class="cockpit-station-tag">Destination Station</span>
                   <span class="cockpit-station-name"><?php echo htmlspecialchars($activeTrip['destination']); ?></span>
@@ -457,7 +457,7 @@ $pageTitle = "SmartMove — Driver Partner Portal";
 
               <div style="display:flex;align-items:center;gap:10px;">
                 <span class="badge-status <?php echo $isLive ? 'badge-info' : 'badge-warning'; ?>" style="font-size:13px;padding:6px 14px;">
-                  <?php echo $isLive ? '⚡ RUN IN TRANSIT' : 'SCHEDULED DEPARTURE'; ?>
+                  <?php echo $isLive ? 'RUN IN TRANSIT' : 'SCHEDULED DEPARTURE'; ?>
                 </span>
 
                 <?php if ($ast === 'SCHEDULED'): ?>
@@ -465,7 +465,7 @@ $pageTitle = "SmartMove — Driver Partner Portal";
                     <input type="hidden" name="action" value="startTrip">
                     <input type="hidden" name="tripId" value="<?php echo $activeTrip['tripId']; ?>">
                     <button type="submit" class="btn-primary" style="background:#10B981;border-color:#10B981;">
-                      🚀 Start Trip Run
+                      Start Trip Run
                     </button>
                   </form>
                 <?php elseif ($ast === 'IN_TRANSIT'): ?>
@@ -473,7 +473,7 @@ $pageTitle = "SmartMove — Driver Partner Portal";
                     <input type="hidden" name="action" value="completeTrip">
                     <input type="hidden" name="tripId" value="<?php echo $activeTrip['tripId']; ?>">
                     <button type="submit" class="btn-primary" style="background:#38BDF8;border-color:#38BDF8;color:#0F172A;">
-                      🏁 Complete Run &amp; Arrive
+                      Complete Run &amp; Arrive
                     </button>
                   </form>
                 <?php endif; ?>
@@ -563,7 +563,7 @@ $pageTitle = "SmartMove — Driver Partner Portal";
 
               <div style="margin-top:20px;padding-top:14px;border-top:1px solid var(--border-subtle);display:flex;gap:10px;">
                 <button type="button" class="btn-outline" style="width:100%;justify-content:center;" onclick="openModal('logFuelModal')">
-                  ⛽ Log Refuel Station
+                   Log Refuel Station
                 </button>
               </div>
             </div>
@@ -620,7 +620,7 @@ $pageTitle = "SmartMove — Driver Partner Portal";
                   <td><strong>#<?php echo $trip['tripId']; ?></strong></td>
                   <td>
                     <div style="font-weight:600;color:var(--text-white);"><?php echo htmlspecialchars($trip['routeName']); ?></div>
-                    <div style="font-size:11px;color:var(--text-muted);"><?php echo htmlspecialchars($trip['origin']); ?> ➔ <?php echo htmlspecialchars($trip['destination']); ?></div>
+                    <div style="font-size:11px;color:var(--text-muted);"><?php echo htmlspecialchars($trip['origin']); ?>  <?php echo htmlspecialchars($trip['destination']); ?></div>
                   </td>
                   <td>
                     <div><?php echo htmlspecialchars($trip['registrationNo']); ?></div>
@@ -778,7 +778,7 @@ $pageTitle = "SmartMove — Driver Partner Portal";
               <?php echo $avgRating; ?>
             </div>
             <div>
-              <div style="color:#F59E0B;font-size:18px;letter-spacing:3px;">★★★★★</div>
+              <div style="color:#F59E0B;font-size:18px;letter-spacing:3px;">* * * * *</div>
               <div style="font-size:13px;color:var(--text-muted);margin-top:4px;">
                 Based on <?php echo count($passengerReviews); ?> verified passenger reviews
               </div>
@@ -795,7 +795,7 @@ $pageTitle = "SmartMove — Driver Partner Portal";
             <div class="review-card">
               <div>
                 <div class="review-stars">
-                  <?php echo str_repeat('★', (int)($rev['rating'] ?? 5)); ?><?php echo str_repeat('☆', 5 - (int)($rev['rating'] ?? 5)); ?>
+                  <?php echo str_repeat('*', (int)($rev['rating'] ?? 5)); ?><?php echo str_repeat('-', 5 - (int)($rev['rating'] ?? 5)); ?>
                 <?php 
                   $rAuthor = is_string($rev['author'] ?? null) ? $rev['author'] : 'Commuter';
                   $rComment = is_string($rev['comment'] ?? null) ? $rev['comment'] : (is_string($rev['comments'] ?? null) ? $rev['comments'] : '');
