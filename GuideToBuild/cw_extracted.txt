@@ -1,0 +1,127 @@
+National Institute of Business Management  
+School of Computing and Engineering
+Course work | Assessment Announcement Sheet 
+Course Name
+HDSE  | HNDIS
+Module Name
+Data Management 2
+Batch
+Learning Outcomes Covered (Mention according to the Module Descriptor)
+Identify the fundamentals of Oracle Database Server / SQL Server
+Explain PL/SQL programming Techniques.
+Apply Oracle for Database administration
+Use Non-Relational Databases
+Assessment | CW No
+1
+Assessment Mode 
+Group
+Group (if it is group mode only)
+Group Size
+Grouping Criteria
+4
+Maximum number of members per group is 4
+Assessment Type
+Software | Presentation | VIVA 
+If other specify
+Hand in Date   | Time
+31.08.2026
+Hand out Date | Time
+28.09.2026
+Submission Details (Format and Location)
+GitHub link of the project 
+Plagiarism Acceptance Level
+AI generated contents will obtain 0 marks.
+Assessment | CW Description
+Note:
+This is a take home assessment
+Description:
+You are a database developer working for a transportation service provider called SmartMove Transport Solutions. The company provides passenger transportation services through buses, vans, and other vehicles for daily commuters, corporate employees, and special travel requirements.
+The system manages vehicle operations, driver assignments, passenger registrations, route planning, trip scheduling, ticket reservations, payment processing, and customer feedback. The platform aims to improve transportation efficiency by providing real-time trip management, digital booking facilities, and centralized transport operations.
+The system offers a wide range of functionalities, including vehicle management, route management, driver management, passenger management, online ticket booking, payment processing, and trip monitoring.
+Design the ER or EER diagram.
+Develop a simple Web or Enterprise Application for the  SmartMove Transport Solutions system using any suitable programming language or framework.
+Design and implement a relational database schema using Oracle Database.
+The database must support core system operations, including:
+Vehicle Management 
+Driver Management 
+Route Management 
+Passenger Management 
+Trip Scheduling Management 
+Ticket Booking Management 
+Payment Processing  
+Maintenance Management 
+Feedback and Review Management 
+Populate the database with sufficient sample data to simulate a realistic application scenario.
+Write and implement PL/SQL programs (procedures, functions, cursors, and/or triggers with exception handling) to perform database operations and business logic.
+Your PL/SQL implementation should include at least five(05) business reports.
+Examples
+Identifying the most frequently used routes based on ticket bookings.
+Calculating total revenue generated from ticket sales within a given period.
+Generating passenger travel history reports.
+Finding vehicles due for maintenance. 
+  MongoDB Integration
+Implement MongoDB as a complementary NoSQL database to manage unstructured and dynamic transportation-related information. 
+MongoDB collections should capture:
+Vehicle images and documents. 
+Passenger reviews and feedback comments.
+Travel announcements and notifications.
+Trip-related multimedia content. 
+Ensure data is stored in a schema-flexible format to support dynamic content and community interactions.
+Demonstrate queries in MongoDB to,
+Retrieve all passenger reviews for a specific route.
+Identify highest-rated vehicles or drivers based on customer feedback.
+Search customer complaints or feedback using specific keywords.
+Retrieve vehicle documents and multimedia information. 
+Integrate MongoDB with the application layer to provide real-time content delivery and interactive forums for students and instructors.
+Deliverables:
+Presentation
+Software Application with Database Implementation
+Marking Rubric
+Criteria
+Weight
+0% – 39%
+40% – 49%
+50% – 59%
+70%+
+Front-end Development + ER Diagram
+20%
+Very poor or missing front-end, ER diagram incomplete or incorrect
+Basic front-end with minimal functionality, ER diagram partially correct
+Functional front-end covering most operations, ER diagram mostly accurate
+Fully functional, user-friendly front-end, ER diagram complete, normalized, and clearly represents all entities
+Database Implementation (Oracle)
+15%
+Incomplete DB implementation, fails to meet requirements, no PL/SQL usage
+Few operations (1–2) implemented with PL/SQL, limited security mechanisms
+Two-thirds of operations implemented, some security mechanisms, acceptable backup plan
+All operations implemented with PL/SQL, correct schema, strong security and backup mechanisms
+MongoDB Incorporation 
+15%
+No MongoDB implementation
+Minimal MongoDB requirements captured, weak queries
+MongoDB implemented with requirements, some queries demonstrated, partial integration
+Correct MongoDB incorporation, requirements fully captured with standard queries
+Reports & Business Logic (PL/SQL)
+15%
+No meaningful reports, poor exception handling
+Few reports generated, limited exception handling
+Reports implemented, acceptable exception handling
+Comprehensive reports, robust PL/SQL logic, advanced exception handling
+Completeness of the Project
+5%
+Incomplete, major components missing
+Less than half completed
+More than half completed but missing some features
+Fully complete, all requirements achieved
+Presentation & Viva
+20%
+Poor understanding; weak communication
+Average understanding; average communication
+Good understanding, clear communication
+Excellent understanding, confident communication, demonstrates deep knowledge
+Integration & Innovation
+10%
+No integration between Oracle and MongoDB
+Minimal integration, weak linkage between systems
+Partial integration, some cross-system use cases
+Strong integration, innovative use of Oracle + MongoDB for hybrid analytics

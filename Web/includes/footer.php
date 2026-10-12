@@ -5,7 +5,7 @@
       <span>© 2026 SmartMove Transport Technologies. All rights reserved.</span>
     </div>
     <div class="footer-links">
-      <a href="pages/login.php">Log in</a>
+      <a href="pages/signin.php">Sign in</a>
       <a href="pages/signup.php" class="signup-link">Sign up</a>
     </div>
   </div>

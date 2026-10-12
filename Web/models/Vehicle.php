@@ -3,9 +3,7 @@ require_once __DIR__ . '/../config/db.php';
 
 // Vehicle categories and rates
 class Vehicle {
-    /**
-     * Get live vehicles from Oracle database, fallback to predefined fleet categories.
-     */
+    // Get all vehicles
     public static function getAllFromDb() {
         $sql = "SELECT vehicleId, registrationNo, vehicleType, model, manufacturer, capacity, status 
                 FROM vehicle 

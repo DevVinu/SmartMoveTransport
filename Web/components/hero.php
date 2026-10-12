@@ -1,40 +1,22 @@
 <section class="uber-hero" id="ride">
-  <div class="hero-container-single">
-    
-    <div class="hero-booking-col">
-      <div class="city-location-tag">
-        📍 Colombo, LK <a href="#" id="changeCityBtn">Change city</a>
-      </div>
+  <div class="hero-container-single"><br><br>
 
-      <h1 class="hero-main-title">Go anywhere <br><span class="blue-text">in comfort.</span></h1>
 
-      <button class="pickup-time-pill" id="timePillBtn">
-        🕒 Pickup now ▾
-      </button>
 
-      <div class="connected-inputs-box">
-        <div class="timeline-indicator">
-          <span class="circle-hollow"></span>
-          <span class="vertical-line-stub"></span>
-          <span class="square-solid"></span>
-        </div>
+    <h1 class="hero-main-title">Go anywhere <br><span class="blue-text">in comfort.</span></h1>
 
-        <div class="inputs-container-stack">
-          <div class="uber-input-wrapper">
-            <input type="text" class="uber-input-field" id="pickupInput" placeholder="Pickup location" value="Pickup location">
-            <span class="input-icon-right">📍</span>
-          </div>
-          <div class="uber-input-wrapper">
-            <input type="text" class="uber-input-field" id="dropoffInput" placeholder="Dropoff location">
-          </div>
-        </div>
-      </div>
+    <p class="hero-description">
+      SmartMove delivers premier employee transportation and scheduled intercity passenger mobility across Sri Lanka.
+      Whether coordinating daily enterprise staff commutes or booking expressway transit between Colombo, Kandy, and
+      Galle, our modern fleet and professional captains guarantee punctual, comfortable, and safe travel every single
+      trip.
+    </p><br><br><br><br>
 
-      <div class="hero-cta-row">
-        <button class="btn-see-prices" id="seePricesBtn">See prices & fleet</button>
-        <a href="pages/dashboard.php" class="activity-link">Check dashboard activity →</a>
-      </div>
+    <div class="hero-cta-row">
+      <a href="#explore" class="btn-see-prices">Explore Fleet &amp; Routes</a>
+      <a href="pages/signin.php" class="activity-link">Check dashboard activity →</a>
     </div>
+  </div>
 
   </div>
 </section>

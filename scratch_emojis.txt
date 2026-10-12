@@ -1,0 +1,109 @@
+Web\components\filter.php:102:<h3 class="route-title">Colombo Fort ➔ Galle Interchange (E01)</h3>
+Web\components\filter.php:105:<span class="route-meta-item">🕒 08:30 AM (Morning)</span>
+Web\components\filter.php:106:<span class="route-meta-item">⏱️ ~1h 15m</span>
+Web\components\filter.php:107:<span class="route-meta-item">💺 42 Seats Available</span>
+Web\components\filter.php:110:<span class="amenity-tag">❄️ Dual A/C</span>
+Web\components\filter.php:111:<span class="amenity-tag">🛣️ Toll Included</span>
+Web\components\filter.php:112:<span class="amenity-tag">📶 Free Wi-Fi</span>
+Web\components\filter.php:129:<h3 class="route-title">Colombo Fort ➔ Kandy Central (E04)</h3>
+Web\components\filter.php:132:<span class="route-meta-item">🕒 07:15 AM (Morning)</span>
+Web\components\filter.php:133:<span class="route-meta-item">⏱️ ~2h 30m</span>
+Web\components\filter.php:134:<span class="route-meta-item">💺 38 Seats Available</span>
+Web\components\filter.php:137:<span class="amenity-tag">❄️ Climate Control</span>
+Web\components\filter.php:138:<span class="amenity-tag">🧳 Luggage Bay</span>
+Web\components\filter.php:139:<span class="amenity-tag">📡 GPS Live</span>
+Web\components\filter.php:156:<h3 class="route-title">Colombo Central ➔ Katunayake Intl Airport (E03)</h3>
+Web\components\filter.php:159:<span class="route-meta-item">🕒 02:00 PM (Afternoon)</span>
+Web\components\filter.php:160:<span class="route-meta-item">⏱️ ~30 mins</span>
+Web\components\filter.php:161:<span class="route-meta-item">💺 10 Seats / Luggage</span>
+Web\components\filter.php:164:<span class="amenity-tag">✈️ Flight Tracking</span>
+Web\components\filter.php:165:<span class="amenity-tag">🧳 Large Boot Space</span>
+Web\components\filter.php:166:<span class="amenity-tag">🛣️ E03 Toll Free</span>
+Web\components\filter.php:183:<h3 class="route-title">Colombo Commercial Hub ➔ Matara Terminal</h3>
+Web\components\filter.php:186:<span class="route-meta-item">🕒 06:30 PM (Evening)</span>
+Web\components\filter.php:187:<span class="route-meta-item">⏱️ ~1h 50m</span>
+Web\components\filter.php:188:<span class="route-meta-item">💺 45 Seats Available</span>
+Web\components\filter.php:191:<span class="amenity-tag">❄️ High Cool A/C</span>
+Web\components\filter.php:192:<span class="amenity-tag">🔋 USB Charging</span>
+Web\components\filter.php:193:<span class="amenity-tag">🛣️ Expressway Toll</span>
+Web\components\filter.php:210:<h3 class="route-title">Colombo City ➔ Kandy Royal Botanical</h3>
+Web\components\filter.php:213:<span class="route-meta-item">🕒 09:00 AM (Morning)</span>
+Web\components\filter.php:214:<span class="route-meta-item">⏱️ ~2h 45m</span>
+Web\components\filter.php:215:<span class="route-meta-item">💺 1–4 Executive Seats</span>
+Web\components\filter.php:218:<span class="amenity-tag">👔 Verified Captain</span>
+Web\components\filter.php:219:<span class="amenity-tag">🛡️ Premium Insurance</span>
+Web\components\filter.php:220:<span class="amenity-tag">🛋️ Leather Interior</span>
+Web\components\filter.php:237:<h3 class="route-title">Colombo Fort ➔ Jaffna Express Terminal</h3>
+Web\components\filter.php:240:<span class="route-meta-item">🕒 08:00 PM (Evening)</span>
+Web\components\filter.php:241:<span class="route-meta-item">⏱️ ~7h 30m</span>
+Web\components\filter.php:242:<span class="route-meta-item">💺 32 Sleeper Seats</span>
+Web\components\filter.php:245:<span class="amenity-tag">🛌 Reclining Sleeper</span>
+Web\components\filter.php:246:<span class="amenity-tag">❄️ Temperature Control</span>
+Web\components\filter.php:247:<span class="amenity-tag">☕ Refreshment Stop</span>
+Web\components\filter.php:264:<h3 class="route-title">Colombo Fort ➔ Negombo Town &amp; Beach</h3>
+Web\components\filter.php:267:<span class="route-meta-item">🕒 04:30 PM (Afternoon)</span>
+Web\components\filter.php:268:<span class="route-meta-item">⏱️ ~45 mins</span>
+Web\components\filter.php:269:<span class="route-meta-item">💺 12 Seats Available</span>
+Web\components\filter.php:272:<span class="amenity-tag">❄️ Air Conditioned</span>
+Web\components\filter.php:273:<span class="amenity-tag">🌊 Coastal Route</span>
+Web\components\filter.php:274:<span class="amenity-tag">⏱️ High Frequency</span>
+Web\components\filter.php:294:<span class="route-meta-item">🕒 On-Demand (24/7)</span>
+Web\components\filter.php:295:<span class="route-meta-item">⏱️ Instant Arrival</span>
+Web\components\filter.php:296:<span class="route-meta-item">💺 1–3 Passengers</span>
+Web\components\filter.php:299:<span class="amenity-tag">⚡ Fast Dispatch</span>
+Web\components\filter.php:300:<span class="amenity-tag">🗺️ Metered Tracking</span>
+Web\components\filter.php:301:<span class="amenity-tag">💳 Cash &amp; Digital Pay</span>
+Web\components\filter.php:316:<div class="empty-state-icon">🔍</div>
+Web\components\dashboard\flash_messages.php:5:<span>✓ <?php echo htmlspecialchars($flashSuccess); ?></span>
+Web\components\dashboard\flash_messages.php:13:<span>⚠ <?php echo htmlspecialchars($flashError); ?></span>
+Web\components\dashboard\sidebar.php:256:<span class="nav-badge" style="background:#F59E0B;"><?php echo $avgRating; ?>★</span>
+Web\components\dashboard\views\announcements_view.php:95:$icon = '📢';
+Web\components\dashboard\views\announcements_view.php:99:$icon = '⚠️';
+Web\components\dashboard\views\announcements_view.php:103:$icon = '🚧';
+Web\components\dashboard\views\announcements_view.php:107:$icon = '🌱';
+Web\components\dashboard\views\announcements_view.php:141:<button type="submit" class="action-btn-sm action-btn-danger" title="Dismiss Advisory">✕
+Web\components\dashboard\views\mongo_view.php:45:<span style="color:#FBBF24; font-weight:700; font-size:0.85rem;">★
+Web\components\dashboard\views\mongo_view.php:90:<span style="color:#FBBF24; font-weight:700; font-size:0.95rem;">★
+Web\components\dashboard\views\mongo_view.php:118:<span style="color:#FBBF24; font-weight:700; font-size:0.95rem;">★
+Web\components\dashboard\views\mongo_view.php:156:<span style="color:#93C5FD;">📄
+Web\components\dashboard\views\profile_view.php:51:✓ <?php echo $uStatus; ?>
+Web\includes\navbar.php:33:👤 <?php echo $navFirstName; ?> (<?php echo $navRole; ?>)
+Web\includes\navbar.php:42:<div class="mobile-toggle" id="mobileNavToggle" aria-label="Toggle mobile menu">☰</div>
+Web\pages\driver.php:385:🟢 Available
+Web\pages\driver.php:388:🔵 On Duty
+Web\pages\driver.php:391:⚪ Off Duty
+Web\pages\driver.php:399:🪪 <?php echo htmlspecialchars($driverInfo['licenseNumber'] ?? 'B-LIC'); ?>
+Web\pages\driver.php:451:<div class="cockpit-route-arrow">➔</div>
+Web\pages\driver.php:460:<?php echo $isLive ? '⚡ RUN IN TRANSIT' : 'SCHEDULED DEPARTURE'; ?>
+Web\pages\driver.php:468:🚀 Start Trip Run
+Web\pages\driver.php:476:🏁 Complete Run &amp; Arrive
+Web\pages\driver.php:566:⛽ Log Refuel Station
+Web\pages\driver.php:623:<div style="font-size:11px;color:var(--text-muted);"><?php echo htmlspecialchars($trip['origin']); ?> ➔ <?php echo htmlspecialchars($trip['destination']); ?></div>
+Web\pages\driver.php:781:<div style="color:#F59E0B;font-size:18px;letter-spacing:3px;">★★★★★</div>
+Web\pages\driver.php:798:<?php echo str_repeat('★', (int)($rev['rating'] ?? 5)); ?><?php echo str_repeat('☆', 5 - (int)($rev['rating'] ?? 5)); ?>
+Web\pages\driver.php:835:<button class="modal-close-btn" type="button" onclick="closeModal('logFuelModal')">✕</button>
+Web\pages\passenger.php:264:✓ <?php echo htmlspecialchars($flashSuccess); ?>
+Web\pages\passenger.php:270:⚠️ <?php echo htmlspecialchars($flashError); ?>
+Web\pages\passenger.php:279:<span class="stat-icon">🎫</span>
+Web\pages\passenger.php:288:<span class="stat-icon">🚍</span>
+Web\pages\passenger.php:297:<span class="stat-icon">💳</span>
+Web\pages\passenger.php:307:📋 My Bookings &amp; Tickets
+Web\pages\passenger.php:310:🚍 Book Scheduled Express Rides
+Web\pages\passenger.php:313:👤 Manage Profile &amp; Password
+Web\pages\passenger.php:334:<div style="font-size:3rem; margin-bottom:1rem;">🚍</div>
+Web\pages\passenger.php:424:🟢 <?php echo $t['availableSeats']; ?> seats left
+Web\pages\passenger.php:432:📍 <?php echo htmlspecialchars($t['origin']); ?> → <?php echo htmlspecialchars($t['destination']); ?>
+Web\pages\signin.php:140:⚠️ <?php echo htmlspecialchars($errorMessage); ?>
+Web\pages\signin.php:146:✓ <?php echo htmlspecialchars($successMessage); ?>
+Web\pages\signup.php:147:⚠️ <?php echo htmlspecialchars($errorMessage); ?>
+Web\pages\staff.php:506:<span class="stat-icon">🚍</span>
+Web\pages\staff.php:514:<span class="stat-icon">⚡</span>
+Web\pages\staff.php:522:<span class="stat-icon">👨‍✈️</span>
+Web\pages\staff.php:530:<span class="stat-icon">🔧</span>
+Web\pages\staff.php:576:<div style="font-size:11px;color:var(--text-muted);"><?php echo htmlspecialchars($trip['origin']); ?> ➔ <?php echo htmlspecialchars($trip['destination']); ?></div>
+Web\pages\staff.php:926:<button class="modal-close-btn" type="button" onclick="closeModal('addTripModal')">✕</button>
+Web\pages\staff.php:991:<button class="modal-close-btn" type="button" onclick="closeModal('assignShiftModal')">✕</button>
+Web\pages\staff.php:1030:<button class="modal-close-btn" type="button" onclick="closeModal('addMaintenanceModal')">✕</button>
+Web\pages\staff.php:1079:<button class="modal-close-btn" type="button" onclick="closeModal('counterBookingModal')">✕</button>
+Web\pages\staff.php:1118:<button class="modal-close-btn" type="button" onclick="closeModal('processRefundModal')">✕</button>
+Web\pages\staff.php:1147:<button class="modal-close-btn" type="button" onclick="closeModal('addAnnouncementModal')">✕</button>

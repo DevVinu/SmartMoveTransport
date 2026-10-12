@@ -154,6 +154,14 @@
   color: var(--blue-light);
 }
 
+.hero-description {
+  font-size: 1.05rem;
+  line-height: 1.65;
+  color: #94A3B8;
+  max-width: 500px;
+  margin: 0.2rem 0;
+}
+
 .hero-cta-row {
   display: flex;
   align-items: center;
@@ -171,6 +179,10 @@
   border: 1px solid var(--color-white);
   cursor: pointer;
   transition: all 0.15s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .btn-see-prices:hover {
