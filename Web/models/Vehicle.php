@@ -1,6 +1,17 @@
 <?php
+require_once __DIR__ . '/../config/db.php';
+
 // Vehicle categories and rates
 class Vehicle {
+    // Get all vehicles
+    public static function getAllFromDb() {
+        $sql = "SELECT vehicleId, registrationNo, vehicleType, model, manufacturer, capacity, status 
+                FROM vehicle 
+                ORDER BY vehicleId ASC";
+        $rows = Database::queryOracle($sql);
+        return !empty($rows) ? $rows : self::getAll();
+    }
+
     public static function getAll() {
         return [
             [

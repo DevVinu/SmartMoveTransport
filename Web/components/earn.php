@@ -2,7 +2,7 @@
   <div class="earn-container">
     
     <div class="panoramic-banner-box">
-      <img src="../img/banner_chauffeur.jpg" alt="Chauffeur passenger experience" class="panoramic-banner-img">
+      <img src="../img/banner_chauffeur2.jpg" alt="Chauffeur passenger experience" class="panoramic-banner-img">
     </div>
 
     <h2 class="earn-headline">Earn with <span class="blue-text">SmartMove</span></h2>
@@ -20,7 +20,7 @@
 
       <div class="earn-card">
         <div class="earn-img-wrap">
-          <img src="../img/delivery_courier.jpg" alt="Deliver when you want" class="earn-img">
+          <img src="../img/delivery_courier2.jpg" alt="Deliver when you want" class="earn-img">
         </div>
         <h3 class="earn-card-title">Deliver when you want</h3>
         <p class="earn-card-desc">Turn your commute into earnings. Just go online, pick up, and drop off.</p>

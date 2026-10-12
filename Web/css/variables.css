@@ -1,38 +1,89 @@
+/* Design system tokens */
+
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
 
 :root {
-  /* Gray shade backgrounds */
-  --bg-gray-main: #181A20;
+  /* Colors */
+  --bg-canvas: #181A20;            /* Charcoal dark main background */
   --bg-deep-charcoal: #181A20;
+  --bg-gray-main: #181A20;
+  --bg-sidebar: #14161C;           /* Deep surface dark */
+  --bg-topbar: rgba(20, 22, 28, 0.94); /* Frosted header background */
   --bg-gray-section: #1E2128;
   --bg-gray-surface: #242832;
   --bg-surface-dark: #14161C;
+  --bg-card: #1E2128;              /* Charcoal section / card surface */
   --bg-card-dark: #0D0F13;
-  --bg-card-hover: #16181F;
+  --bg-card-inner: #14161C;        /* Inset dark card surface */
+  --bg-card-hover: #242832;        /* Elevated card hover */
+  --bg-muted: #242832;             /* Surface elevated gray */
+  --bg-active: #242832;            /* Active row / state gray */
+  --bg-hover: rgba(255, 255, 255, 0.05);
+  --bg-popover: #14161C;           /* Popover menu background */
+  --bg-input: #0A0C0F;             /* Input box background */
   --bg-input-gray: #0A0C0F;
 
-  /* Blue highlights & accents */
+  /* Accents */
   --blue-primary: #2563EB;
   --blue-hover: #1D4ED8;
   --blue-light: #3B82F6;
   --blue-accent: #60A5FA;
   --blue-border: rgba(59, 130, 246, 0.35);
   --blue-border-hover: #3B82F6;
-  --blue-glow: rgba(59, 130, 246, 0.18);
+  --blue-glow: transparent;
 
-  /* Black and White elements */
+  --accent-blue: #2563EB;
+  --accent-blue-hover: #1D4ED8;
+  --accent-blue-light: #3B82F6;
+  --accent-rose: #F43F5E;
+  --accent-amber: #F59E0B;
+  --accent-emerald: #10B981;
+  --green-accent: #10B981;
+  --amber-accent: #F59E0B;
+  --rose-accent: #EF4444;
+
+  /* Typography */
   --color-black: #000000;
   --color-white: #FFFFFF;
+  --text-primary: #FFFFFF;
   --text-white: #FFFFFF;
+  --text-secondary: #CBD5E1;
   --text-sub: #CBD5E1;
   --text-muted: #94A3B8;
+  --text-dim: #64748B;
   --text-dark: #000000;
 
+  /* Borders */
+  --border-subtle: #2B2F38;
+  --border-muted: rgba(255, 255, 255, 0.12);
+  --border-focus: #3B82F6;
+  --border-blue: rgba(59, 130, 246, 0.35);
   --border-light: rgba(255, 255, 255, 0.12);
   --border-gray: #2B2F38;
 
-  --font-main: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  /* Buttons */
+  --btn-white-bg: #2563EB;
+  --btn-white-text: #FFFFFF;
+  --btn-white-hover: #1D4ED8;
+  --btn-white-active: #1E40AF;
+
+  /* Radii */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
   --radius-pill: 9999px;
   --radius-card: 14px;
   --radius-input: 8px;
+
+  /* Layout & Dimensions */
+  --sidebar-width: 250px;
+  --topbar-height: 56px;
+  --btn-pill-bg: #000000;
+  --btn-pill-text: #FFFFFF;
+
+  /* Typography & Shadows */
+  --font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-main: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --shadow-card: 0 16px 36px -8px rgba(0, 0, 0, 0.65), 0 4px 12px rgba(0, 0, 0, 0.45);
+  --shadow-popover: 0 10px 25px -5px rgba(0, 0, 0, 0.8), 0 8px 10px -6px rgba(0, 0, 0, 0.6);
 }

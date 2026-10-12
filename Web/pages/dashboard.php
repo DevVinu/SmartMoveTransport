@@ -1,592 +1,563 @@
 <?php
-$pageTitle = "Operations Dashboard | SmartMove Transport";
+// Admin Dashboard
+
+require_once __DIR__ . '/../config/config.php';
+require_once __DIR__ . '/../config/db.php';
+require_once __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../models/User.php';
+require_once __DIR__ . '/../models/MongoService.php';
+
+// Auth check
+if (!Auth::check()) {
+  header('Location: signin.php');
+  exit;
+}
+
+$activeUserRole = strtoupper(Auth::user()['role'] ?? 'PASSENGER');
+if ($activeUserRole === 'STAFF') {
+  header('Location: staff.php');
+  exit;
+} elseif ($activeUserRole === 'DRIVER') {
+  header('Location: driver.php');
+  exit;
+} elseif ($activeUserRole === 'PASSENGER') {
+  header('Location: passenger.php');
+  exit;
+}
+
+// Require admin
+Auth::requireRole('ADMIN');
+
+$currentUser = Auth::user();
+$firstName = htmlspecialchars($currentUser['firstName'] ?? $currentUser['firstname'] ?? 'Admin');
+$lastName = htmlspecialchars($currentUser['lastName'] ?? $currentUser['lastname'] ?? 'User');
+$fullName = trim($firstName . ' ' . $lastName);
+$email = htmlspecialchars($currentUser['email'] ?? 'admin@smartmove.com');
+$role = strtoupper($currentUser['role'] ?? 'ADMIN');
+$initials = strtoupper(substr($firstName, 0, 1) . substr($lastName, 0, 1));
+
+require_once __DIR__ . '/../components/dashboard/profile_controller.php';
+
+// View routing
+$activeView = $_GET['view'] ?? (isset($_GET['report']) ? 'reportsView' : 'dashboardView');
+$validViews = [
+  'dashboardView',
+  'reportsView',
+  'mongoView',
+  'announcementsView',
+  'routesView',
+  'fleetView',
+  'usersView',
+  'financeView',
+  'settingsView',
+  'profileView'
+];
+if (!in_array($activeView, $validViews)) {
+  $activeView = 'dashboardView';
+}
+
+// Health check
+$dbHealth = Database::checkHealth();
+$oracleUp = $dbHealth['oracle']['connected'] ?? false;
+$mongoUp = $dbHealth['mongodb']['connected'] ?? false;
+
+// Flash messages
+$flashSuccess = $_SESSION['flash_success'] ?? null;
+$flashError = $_SESSION['flash_error'] ?? null;
+unset($_SESSION['flash_success'], $_SESSION['flash_error']);
+
+// Handle post actions
+if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
+  $action = $_POST['action'] ?? '';
+
+  // Toggle user status
+  if ($action === 'toggleUserStatus') {
+    $uId = (int) ($_POST['userId'] ?? 0);
+    $newStatus = trim($_POST['newStatus'] ?? 'ACTIVE');
+    if ($uId > 0 && in_array($newStatus, ['ACTIVE', 'SUSPENDED', 'INACTIVE'])) {
+      $ok = Database::executeOracle("UPDATE users SET accountStatus = :st WHERE userId = :id", [
+        ':st' => $newStatus,
+        ':id' => $uId
+      ]);
+      if ($ok) {
+        $_SESSION['flash_success'] = "User #$uId status updated to $newStatus.";
+      } else {
+        $_SESSION['flash_error'] = "Could not update user status.";
+      }
+    }
+    header("Location: dashboard.php?view=usersView");
+    exit;
+  }
+
+  // Add user
+  if ($action === 'addUser') {
+    $uEmail = trim($_POST['email'] ?? '');
+    $uFirstName = trim($_POST['firstName'] ?? '');
+    $uLastName = trim($_POST['lastName'] ?? '');
+    $uPhone = trim($_POST['phone'] ?? '');
+    $uNic = trim($_POST['nic'] ?? '');
+    $uRole = strtoupper(trim($_POST['role'] ?? 'PASSENGER'));
+    $uPass = trim($_POST['password'] ?? '');
+
+    if ($uEmail && $uFirstName && $uLastName && $uNic && $uPass) {
+      if (User::emailExists($uEmail)) {
+        $_SESSION['flash_error'] = "A user with email '$uEmail' already exists.";
+      } elseif (User::nicExists($uNic)) {
+        $_SESSION['flash_error'] = "A user with NIC '$uNic' already exists.";
+      } else {
+        $createdId = User::createUserWithRole($_POST);
+        if ($createdId) {
+          $_SESSION['flash_success'] = "User account ($uRole) for $uFirstName $uLastName created successfully (ID #$createdId).";
+        } else {
+          $_SESSION['flash_error'] = "Failed to create user. Please verify all fields.";
+        }
+      }
+    } else {
+      $_SESSION['flash_error'] = "Please fill in all required user fields.";
+    }
+    header("Location: dashboard.php?view=usersView");
+    exit;
+  }
+
+  // Edit user
+  if ($action === 'editUser') {
+    $uId = (int) ($_POST['userId'] ?? 0);
+    $uFirstName = trim($_POST['firstName'] ?? '');
+    $uLastName = trim($_POST['lastName'] ?? '');
+    $uEmail = trim($_POST['email'] ?? '');
+
+    if ($uId > 0 && $uFirstName && $uLastName && $uEmail) {
+      $ok = User::updateUserWithRole($uId, $_POST);
+      if ($ok) {
+        $_SESSION['flash_success'] = "User #$uId profile and actor details updated successfully.";
+      } else {
+        $_SESSION['flash_error'] = "Failed to update user details.";
+      }
+    } else {
+      $_SESSION['flash_error'] = "Please provide valid user details for update.";
+    }
+    header("Location: dashboard.php?view=usersView");
+    exit;
+  }
+
+  // Delete user
+  if ($action === 'deleteUser') {
+    $uId = (int) ($_POST['userId'] ?? 0);
+    $myId = (int) ($currentUser['userId'] ?? $currentUser['userid'] ?? 0);
+
+    if ($uId > 0) {
+      if ($uId === $myId) {
+        $_SESSION['flash_error'] = "Action prevented: You cannot delete your own logged-in administrator account.";
+      } else {
+        $ok = User::deleteUser($uId);
+        if ($ok) {
+          $_SESSION['flash_success'] = "User account #$uId and associated records deleted permanently.";
+        } else {
+          $_SESSION['flash_error'] = "Could not delete user #$uId due to active foreign key constraints.";
+        }
+      }
+    }
+    header("Location: dashboard.php?view=usersView");
+    exit;
+  }
+
+  // Toggle vehicle status
+  if ($action === 'toggleVehicleStatus') {
+    $vId = (int) ($_POST['vehicleId'] ?? 0);
+    $newStatus = trim($_POST['newStatus'] ?? 'AVAILABLE');
+    if ($vId > 0 && in_array($newStatus, ['AVAILABLE', 'ON_TRIP', 'MAINTENANCE', 'DECOMMISSIONED'])) {
+      $ok = Database::executeOracle("UPDATE vehicle SET status = :st WHERE vehicleId = :id", [
+        ':st' => $newStatus,
+        ':id' => $vId
+      ]);
+      if ($ok) {
+        $_SESSION['flash_success'] = "Vehicle #$vId status changed to $newStatus.";
+      } else {
+        $_SESSION['flash_error'] = "Could not update vehicle status.";
+      }
+    }
+    header("Location: dashboard.php?view=fleetView");
+    exit;
+  }
+
+  // Register vehicle
+  if ($action === 'addVehicle') {
+    $regNo = strtoupper(trim($_POST['registrationNo'] ?? ''));
+    $vType = strtoupper(trim($_POST['vehicleType'] ?? 'BUS'));
+    $model = trim($_POST['model'] ?? '');
+    $mfg = trim($_POST['manufacturer'] ?? '');
+    $cap = (int) ($_POST['capacity'] ?? 30);
+
+    if ($regNo && $model && $mfg && $cap > 0) {
+      $ok = Database::executeOracle("
+                INSERT INTO vehicle (registrationNo, vehicleType, model, manufacturer, capacity, status)
+                VALUES (:reg, :vt, :md, :mf, :cap, 'AVAILABLE')
+            ", [
+        ':reg' => $regNo,
+        ':vt' => $vType,
+        ':md' => $model,
+        ':mf' => $mfg,
+        ':cap' => $cap
+      ]);
+      if ($ok) {
+        $_SESSION['flash_success'] = "Vehicle $regNo ($model) registered into active fleet.";
+      } else {
+        $_SESSION['flash_error'] = "Failed to register vehicle. Ensure registration number is unique.";
+      }
+    } else {
+      $_SESSION['flash_error'] = "Please provide valid vehicle specifications.";
+    }
+    header("Location: dashboard.php?view=fleetView");
+    exit;
+  }
+
+  // Add route
+  if ($action === 'addRoute') {
+    $rName = trim($_POST['routeName'] ?? '');
+    $orig = trim($_POST['origin'] ?? '');
+    $dest = trim($_POST['destination'] ?? '');
+    $dist = (float) ($_POST['distanceKm'] ?? 50.0);
+    $dur = (int) ($_POST['estimatedDurationMinutes'] ?? 60);
+    $fare = (float) ($_POST['baseFare'] ?? 500.0);
+
+    if ($rName && $orig && $dest && $dist > 0 && $fare > 0) {
+      $ok = Database::executeOracle("
+                INSERT INTO route (routeName, origin, destination, distanceKm, estimatedDurationMinutes, baseFare, routeType)
+                VALUES (:rn, :org, :dst, :dstKm, :dur, :fare, 'EXPRESSWAY')
+            ", [
+        ':rn' => $rName,
+        ':org' => $orig,
+        ':dst' => $dest,
+        ':dstKm' => $dist,
+        ':dur' => $dur,
+        ':fare' => $fare
+      ]);
+      if ($ok) {
+        $_SESSION['flash_success'] = "Transit route '$rName' created successfully.";
+      } else {
+        $_SESSION['flash_error'] = "Failed to create route.";
+      }
+    } else {
+      $_SESSION['flash_error'] = "Please provide valid route parameters.";
+    }
+    header("Location: dashboard.php?view=routesView");
+    exit;
+  }
+
+  // Create announcement
+  if ($action === 'createAnnouncement') {
+    $title = trim($_POST['title'] ?? '');
+    $category = strtoupper(trim($_POST['category'] ?? 'EXPRESSWAY_ALERT'));
+    $priority = strtoupper(trim($_POST['priority'] ?? 'MEDIUM'));
+    $msg = trim($_POST['message'] ?? '');
+    $routesRaw = trim($_POST['affectedRoutes'] ?? '1');
+    $routesArr = array_map('intval', explode(',', $routesRaw));
+
+    if ($title && $msg) {
+      $annId = 'ANN-' . date('Y') . '-' . str_pad(rand(10, 999), 3, '0', STR_PAD_LEFT);
+      $newDoc = [
+        'announcementId' => $annId,
+        'title' => $title,
+        'category' => $category,
+        'priority' => $priority,
+        'message' => $msg,
+        'affectedRoutes' => $routesArr,
+        'active' => true,
+        'publishedAt' => date('Y-m-d H:i:s')
+      ];
+      $ok = Database::insertMongo('travel_announcements', [$newDoc]);
+      if ($ok) {
+        $_SESSION['flash_success'] = "Travel advisory '$title' broadcasted successfully.";
+      } else {
+        $_SESSION['flash_error'] = "Failed to broadcast travel advisory.";
+      }
+    } else {
+      $_SESSION['flash_error'] = "Advisory title and message are required.";
+    }
+    header("Location: dashboard.php?view=announcementsView");
+    exit;
+  }
+
+  // Delete announcement
+  if ($action === 'deleteAnnouncement') {
+    $annId = trim($_POST['announcementId'] ?? '');
+    if ($annId) {
+      $ok = Database::deleteMongo('travel_announcements', ['announcementId' => $annId]);
+      if ($ok) {
+        $_SESSION['flash_success'] = "Advisory $annId dismissed.";
+      } else {
+        $_SESSION['flash_error'] = "Failed to dismiss advisory.";
+      }
+    }
+    header("Location: dashboard.php?view=announcementsView");
+    exit;
+  }
+}
+
+// Oracle metrics
+$totalRevenue = 0.00;
+$totalUsersCount = 0;
+$activeFleetCount = 0;
+$completedTrips = 0;
+$recentBookings = [];
+$fleetList = [];
+$usersList = [];
+$routesList = [];
+$scheduledTripsList = [];
+$paymentsList = [];
+
+if ($oracleUp) {
+  // Revenue
+  $revRows = Database::queryOracle("SELECT NVL(SUM(amountPaid), 0) AS total FROM payment WHERE paymentStatus = 'PAID'");
+  if (!empty($revRows)) {
+    $totalRevenue = (float) ($revRows[0]['total'] ?? 0);
+  }
+
+  // Users count
+  $userCountRows = Database::queryOracle("SELECT COUNT(*) AS total FROM users");
+  if (!empty($userCountRows)) {
+    $totalUsersCount = (int) ($userCountRows[0]['total'] ?? 0);
+  }
+
+  // Active fleet count
+  $fleetCountRows = Database::queryOracle("SELECT COUNT(*) AS total FROM vehicle WHERE status = 'AVAILABLE'");
+  if (!empty($fleetCountRows)) {
+    $activeFleetCount = (int) ($fleetCountRows[0]['total'] ?? 0);
+  }
+
+  // Completed trips
+  $tripCountRows = Database::queryOracle("SELECT COUNT(*) AS total FROM scheduledTrip WHERE tripStatus = 'COMPLETED'");
+  if (!empty($tripCountRows)) {
+    $completedTrips = (int) ($tripCountRows[0]['total'] ?? 0);
+  }
+
+  // Recent bookings
+  $recentBookings = Database::queryOracle("
+        SELECT b.bookingId, u.firstName || ' ' || u.lastName AS passengerName,
+               r.routeName, b.seatNumber, b.ticketPrice, b.bookingStatus, p.paymentMethod
+        FROM booking b
+        JOIN passenger pass ON b.passengerId = pass.passengerId
+        JOIN users u ON pass.passengerId = u.userId
+        JOIN scheduledTrip st ON b.tripId = st.tripId
+        JOIN route r ON st.routeId = r.routeId
+        LEFT JOIN payment p ON b.bookingId = p.bookingId
+        ORDER BY b.bookingId DESC
+    ");
+
+  // Fleet list
+  $fleetList = Database::queryOracle("
+        SELECT vehicleId, registrationNo, vehicleType, model, manufacturer, capacity, status
+        FROM vehicle
+        ORDER BY vehicleId ASC
+    ");
+
+  // Users list
+  // Users list
+  $usersList = User::getAllWithDetails();
+
+  // Routes list
+  $routesList = Database::queryOracle("
+        SELECT routeId, routeName, origin, destination, distanceKm, estimatedDurationMinutes, baseFare, routeType
+        FROM route
+        ORDER BY routeId ASC
+    ");
+
+  // Scheduled trips
+  $scheduledTripsList = Database::queryOracle("
+        SELECT st.tripId, r.routeName, v.registrationNo, v.vehicleType,
+               st.tripDate, st.departureTime, st.arrivalTime, st.availableSeats, st.tripStatus
+        FROM scheduledTrip st
+        JOIN route r ON st.routeId = r.routeId
+        JOIN vehicle v ON st.vehicleId = v.vehicleId
+        ORDER BY st.tripDate DESC, st.departureTime DESC
+    ");
+
+  // Payments list
+  $paymentsList = Database::queryOracle("
+        SELECT p.paymentId, p.bookingId, u.firstName || ' ' || u.lastName AS passengerName,
+               r.routeName, p.amountPaid, p.paymentMethod, p.paymentStatus, p.paymentDate
+        FROM payment p
+        JOIN booking b ON p.bookingId = b.bookingId
+        JOIN scheduledTrip st ON b.tripId = st.tripId
+        JOIN route r ON st.routeId = r.routeId
+        JOIN passenger pass ON b.passengerId = pass.passengerId
+        JOIN users u ON pass.passengerId = u.userId
+        ORDER BY p.paymentId DESC
+    ");
+}
+
+// MongoDB queries
+$mongoAnnouncements = [];
+$mongoReviews = [];
+$mongoTopRated = ['drivers' => [], 'vehicles' => []];
+$mongoVehDocs = [];
+$searchKeyword = trim($_GET['keyword'] ?? '');
+
+if ($mongoUp) {
+  // Announcements
+  $mongoAnnouncements = MongoService::getActiveAnnouncements();
+  // Feedback search
+  $mongoReviews = MongoService::searchFeedbackByKeyword($searchKeyword);
+  // Top rated
+  $mongoTopRated = MongoService::getTopRatedDriversAndVehicles();
+  // Vehicle documents
+  $mongoVehDocs = MongoService::getVehicleDocumentsAndMedia();
+}
+
+// Report queries
+$activeReport = $_GET['report'] ?? 'frequentRoutes';
+$reportData = [];
+
+if ($oracleUp) {
+  switch ($activeReport) {
+    case 'frequentRoutes':
+      $reportData = Database::queryOracle("
+                SELECT r.routeId, r.routeName, r.origin, r.destination,
+                       COUNT(b.bookingId) AS totalBookings,
+                       NVL(SUM(b.ticketPrice), 0) AS totalRevenue
+                FROM route r
+                JOIN scheduledTrip st ON r.routeId = st.routeId
+                JOIN booking b ON st.tripId = b.tripId
+                WHERE b.bookingStatus = 'CONFIRMED'
+                GROUP BY r.routeId, r.routeName, r.origin, r.destination
+                ORDER BY totalBookings DESC
+            ");
+      break;
+
+    case 'periodRevenue':
+      $reportData = Database::queryOracle("
+                SELECT p.paymentMethod,
+                       COUNT(p.paymentId) AS transactionCount,
+                       SUM(p.amountPaid) AS totalCollected
+                FROM payment p
+                WHERE p.paymentStatus = 'PAID'
+                GROUP BY p.paymentMethod
+                ORDER BY totalCollected DESC
+            ");
+      break;
+
+    case 'passengerHistory':
+      $reportData = Database::queryOracle("
+                SELECT b.bookingId, u.firstName || ' ' || u.lastName AS passengerName,
+                       st.tripDate, r.routeName, st.departureTime,
+                       b.seatNumber, b.ticketPrice, b.bookingStatus, p.paymentStatus
+                FROM booking b
+                JOIN passenger pass ON b.passengerId = pass.passengerId
+                JOIN users u ON pass.passengerId = u.userId
+                JOIN scheduledTrip st ON b.tripId = st.tripId
+                JOIN route r ON st.routeId = r.routeId
+                LEFT JOIN payment p ON b.bookingId = p.bookingId
+                ORDER BY st.tripDate DESC
+            ");
+      break;
+
+    case 'maintenanceDue':
+      $reportData = Database::queryOracle("
+                SELECT v.registrationNo, v.vehicleType, v.model,
+                       ms.maintenanceType, ms.nextServiceDate,
+                       CASE 
+                           WHEN ms.nextServiceDate < SYSDATE THEN 'URGENT OVERDUE'
+                           WHEN ms.nextServiceDate <= SYSDATE + 7 THEN 'DUE IN 7 DAYS'
+                           ELSE 'UPCOMING'
+                       END AS urgencyStatus
+                FROM vehicle v
+                JOIN maintenance ms ON v.vehicleId = ms.vehicleId
+                WHERE ms.maintenanceStatus IN ('SCHEDULED', 'IN_PROGRESS')
+                ORDER BY ms.nextServiceDate ASC
+            ");
+      break;
+
+    case 'driverPerformance':
+      $reportData = Database::queryOracle("
+                SELECT u.firstName || ' ' || u.lastName AS driverName,
+                       d.licenseNumber AS licenseNo,
+                       COUNT(DISTINCT st.tripId) AS completedTrips,
+                       COUNT(DISTINCT ds.shiftId) AS totalShifts,
+                       NVL(SUM(fl.litersPumped), 0) AS totalFuelLogged
+                FROM driver d
+                JOIN users u ON d.driverId = u.userId
+                LEFT JOIN scheduledTrip st ON d.driverId = st.driverId AND st.tripStatus = 'COMPLETED'
+                LEFT JOIN driverShift ds ON d.driverId = ds.driverId
+                LEFT JOIN fuelLog fl ON d.driverId = fl.driverId
+                GROUP BY u.firstName, u.lastName, d.licenseNumber
+                ORDER BY completedTrips DESC
+            ");
+      break;
+  }
+}
+
+$pageTitle = "SmartMove — Enterprise Admin Portal";
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><?php echo htmlspecialchars($pageTitle); ?></title>
-  
+
   <link rel="stylesheet" href="../css/variables.css">
-  <link rel="stylesheet" href="../css/base.css">
   <link rel="stylesheet" href="../css/dashboard.css">
 </head>
+
 <body class="dashboard-body">
 
-  <!-- Left Sidebar (NO ICONS inside menu items as requested) -->
-  <aside class="dash-sidebar" id="dashSidebar">
-    
-    <!-- Sidebar Header / Logo -->
-    <div class="sidebar-header">
-      <div class="sidebar-logo-badge">SM</div>
-      <div class="sidebar-brand-text">
-        <span>SmartMove<span class="blue-dot">.</span></span>
-        <span class="sidebar-brand-version">Portal</span>
+  <div class="app-wrapper">
+
+    <!-- Sidebar -->
+    <?php include __DIR__ . '/../components/dashboard/sidebar.php'; ?>
+
+    <!-- Main content -->
+    <main class="main-content">
+
+      <!-- Topbar -->
+      <?php include __DIR__ . '/../components/dashboard/topbar.php'; ?>
+
+      <!-- Content -->
+      <div class="content-container">
+
+        <!-- Flash messages -->
+        <?php include __DIR__ . '/../components/dashboard/flash_messages.php'; ?>
+
+        <!-- Overview -->
+        <?php include __DIR__ . '/../components/dashboard/views/overview_view.php'; ?>
+
+        <!-- Reports -->
+        <?php include __DIR__ . '/../components/dashboard/views/reports_view.php'; ?>
+
+        <!-- Feedback and docs -->
+        <?php include __DIR__ . '/../components/dashboard/views/mongo_view.php'; ?>
+
+        <!-- Announcements -->
+        <?php include __DIR__ . '/../components/dashboard/views/announcements_view.php'; ?>
+
+        <!-- Routes -->
+        <?php include __DIR__ . '/../components/dashboard/views/routes_view.php'; ?>
+
+        <!-- Fleet -->
+        <?php include __DIR__ . '/../components/dashboard/views/fleet_view.php'; ?>
+
+        <!-- Users -->
+        <?php include __DIR__ . '/../components/dashboard/views/users_view.php'; ?>
+
+        <!-- Finance -->
+        <?php include __DIR__ . '/../components/dashboard/views/finance_view.php'; ?>
+
+        <!-- Settings -->
+        <?php include __DIR__ . '/../components/dashboard/views/settings_view.php'; ?>
+
+        <!-- Profile -->
+        <?php include __DIR__ . '/../components/dashboard/views/profile_view.php'; ?>
+
       </div>
-    </div>
-
-    <!-- Scrollable Navigation Groups -->
-    <div class="sidebar-scrollable">
-      
-      <!-- GENERAL Group -->
-      <div>
-        <div class="sidebar-group-title">GENERAL</div>
-        <ul class="sidebar-nav-list">
-          <li class="sidebar-nav-item active">
-            <a href="#">
-              <span class="item-label">Dashboards</span>
-              <span class="sidebar-chevron">›</span>
-            </a>
-          </li>
-          <li class="sidebar-nav-item">
-            <a href="#">
-              <span class="item-label">Forms</span>
-              <span class="sidebar-badge-hot">Hot</span>
-              <span class="sidebar-chevron">›</span>
-            </a>
-          </li>
-          <li class="sidebar-nav-item">
-            <a href="#">
-              <span class="item-label">Tables</span>
-              <span class="sidebar-chevron">›</span>
-            </a>
-          </li>
-          <li class="sidebar-nav-item">
-            <a href="#">
-              <span class="item-label">Charts</span>
-              <span class="sidebar-badge-new">New</span>
-              <span class="sidebar-chevron">›</span>
-            </a>
-          </li>
-          <li class="sidebar-nav-item">
-            <a href="#">
-              <span class="item-label">Calendar</span>
-            </a>
-          </li>
-          <li class="sidebar-nav-item">
-            <a href="#">
-              <span class="item-label">Map</span>
-            </a>
-          </li>
-        </ul>
-      </div>
-
-      <!-- APPS Group -->
-      <div>
-        <div class="sidebar-group-title">APPS</div>
-        <ul class="sidebar-nav-list">
-          <li class="sidebar-nav-item">
-            <a href="#">
-              <span class="item-label">Chat</span>
-              <span class="sidebar-badge-count">3</span>
-            </a>
-          </li>
-          <li class="sidebar-nav-item">
-            <a href="#">
-              <span class="item-label">Inbox</span>
-            </a>
-          </li>
-          <li class="sidebar-nav-item">
-            <a href="#">
-              <span class="item-label">Kanban</span>
-            </a>
-          </li>
-          <li class="sidebar-nav-item">
-            <a href="#">
-              <span class="item-label">Files</span>
-            </a>
-          </li>
-          <li class="sidebar-nav-item">
-            <a href="#">
-              <span class="item-label">Notifications</span>
-            </a>
-          </li>
-        </ul>
-      </div>
-
-      <!-- E-COMMERCE / MOBILITY Group -->
-      <div>
-        <div class="sidebar-group-title">FLEET & E-COMMERCE</div>
-        <ul class="sidebar-nav-list">
-          <li class="sidebar-nav-item">
-            <a href="#">
-              <span class="item-label">Storefront</span>
-            </a>
-          </li>
-          <li class="sidebar-nav-item">
-            <a href="#">
-              <span class="item-label">Product / Fleet</span>
-            </a>
-          </li>
-          <li class="sidebar-nav-item">
-            <a href="#">
-              <span class="item-label">Orders</span>
-              <span class="sidebar-chevron">›</span>
-            </a>
-          </li>
-          <li class="sidebar-nav-item">
-            <a href="#">
-              <span class="item-label">Invoice</span>
-            </a>
-          </li>
-        </ul>
-      </div>
-
-    </div>
-
-    <!-- Sidebar Bottom User Profile -->
-    <div class="sidebar-user-footer">
-      <div class="user-avatar-circle">VD</div>
-      <div class="user-info-text">
-        <div class="user-info-name">Vinu Dissanayake</div>
-        <div class="user-info-role">Fleet Admin</div>
-      </div>
-      <a href="../index.php" title="Back to Home" style="color: var(--dash-text-muted); font-size: 1rem; text-decoration: none;">↗</a>
-    </div>
-
-  </aside>
-
-  <!-- Main Content Area -->
-  <div class="dash-main-area">
-
-    <!-- Top Navigation Bar -->
-    <header class="dash-topbar">
-      
-      <div class="topbar-left">
-        <button class="btn-hamburger" id="hamburgerBtn" title="Toggle Sidebar" aria-label="Toggle navigation">
-          ☰
-        </button>
-        <div class="breadcrumb-path">
-          <a href="../index.php">Home</a>
-          <span>›</span>
-          <span class="current">Dashboard</span>
-        </div>
-      </div>
-
-      <!-- Center Search -->
-      <div class="topbar-search-container">
-        <span class="search-icon-svg">🔍</span>
-        <input type="text" class="topbar-search-input" id="dashSearch" placeholder="Search pages or run a comm...">
-        <span class="kbd-shortcut">⌘K</span>
-      </div>
-
-      <!-- Right Actions & User Avatar -->
-      <div class="topbar-right">
-        <a href="#docs" class="btn-docs-pill">
-          <span>📄</span>
-          <span>Docs</span>
-        </a>
-
-        <button class="btn-topbar-icon" title="Toggle Theme" aria-label="Toggle theme">
-          ☼
-        </button>
-
-        <button class="btn-topbar-icon" title="Notifications" aria-label="Notifications" style="position: relative;">
-          🔔
-          <span style="position: absolute; top: 7px; right: 7px; width: 6px; height: 6px; background-color: var(--dash-blue); border-radius: 50%;"></span>
-        </button>
-
-        <button class="btn-topbar-icon" title="Messages" aria-label="Messages">
-          ✉
-        </button>
-
-        <div class="topbar-user-avatar" title="Vinu Dissanayake (Admin)">
-          VD
-        </div>
-      </div>
-
-    </header>
-
-    <!-- Main Workspace Content -->
-    <main class="dash-content">
-
-      <!-- Header: Overview / Actions -->
-      <div class="dash-overview-row">
-        <div class="overview-title-group">
-          <div class="sub-label">OVERVIEW</div>
-          <h1 class="main-title">Operations <span class="blue-text">Dashboard</span></h1>
-        </div>
-
-        <div class="overview-actions">
-          <button class="btn-new-view">+ New view</button>
-          <button class="btn-create-report">+ Create report</button>
-        </div>
-      </div>
-
-      <!-- Top 6 Metric Cards (2 rows x 3 columns) -->
-      <section class="metrics-grid-2x3">
-        
-        <!-- Card 1: Total Users -->
-        <div class="metric-card-box">
-          <div class="metric-card-content">
-            <div class="metric-icon-square icon-blue-primary-theme">
-              👥
-            </div>
-            <div class="metric-details-stack">
-              <span class="metric-label-top">TOTAL USERS</span>
-              <div class="metric-num-row">
-                <span class="metric-big-value">2,500</span>
-                <span class="metric-growth-pill">+ 12%</span>
-              </div>
-              <span class="metric-sub-note">342 new this week</span>
-            </div>
-          </div>
-          <!-- Mini sparkline bars -->
-          <div class="metric-sparkbars-wrap">
-            <span class="spark-bar spark-blue-primary" style="height: 12px;"></span>
-            <span class="spark-bar spark-blue-primary" style="height: 16px;"></span>
-            <span class="spark-bar spark-blue-primary" style="height: 14px;"></span>
-            <span class="spark-bar spark-blue-primary" style="height: 22px;"></span>
-            <span class="spark-bar spark-blue-primary" style="height: 30px;"></span>
-            <span class="spark-bar spark-blue-primary" style="height: 26px;"></span>
-          </div>
-        </div>
-
-        <!-- Card 2: Avg Session -->
-        <div class="metric-card-box">
-          <div class="metric-card-content">
-            <div class="metric-icon-square icon-blue-light-theme">
-              ⏱
-            </div>
-            <div class="metric-details-stack">
-              <span class="metric-label-top">AVG SESSION</span>
-              <div class="metric-num-row">
-                <span class="metric-big-value">123.5<span style="font-size: 0.9rem; font-weight: 500;">min</span></span>
-                <span class="metric-growth-pill">+ 8%</span>
-              </div>
-              <span class="metric-sub-note">+14min from last week</span>
-            </div>
-          </div>
-          <div class="metric-sparkbars-wrap">
-            <span class="spark-bar spark-blue-light" style="height: 14px;"></span>
-            <span class="spark-bar spark-blue-light" style="height: 18px;"></span>
-            <span class="spark-bar spark-blue-light" style="height: 24px;"></span>
-            <span class="spark-bar spark-blue-light" style="height: 28px;"></span>
-            <span class="spark-bar spark-blue-light" style="height: 22px;"></span>
-          </div>
-        </div>
-
-        <!-- Card 3: Orders -->
-        <div class="metric-card-box">
-          <div class="metric-card-content">
-            <div class="metric-icon-square icon-white-accent-theme">
-              💼
-            </div>
-            <div class="metric-details-stack">
-              <span class="metric-label-top">ORDERS</span>
-              <div class="metric-num-row">
-                <span class="metric-big-value">1,240</span>
-                <span class="metric-growth-pill">+ 3%</span>
-              </div>
-              <span class="metric-sub-note">78 shipped today</span>
-            </div>
-          </div>
-          <div class="metric-sparkbars-wrap">
-            <span class="spark-bar spark-white" style="height: 18px;"></span>
-            <span class="spark-bar spark-white" style="height: 22px;"></span>
-            <span class="spark-bar spark-white" style="height: 15px;"></span>
-            <span class="spark-bar spark-white" style="height: 26px;"></span>
-            <span class="spark-bar spark-white" style="height: 28px;"></span>
-          </div>
-        </div>
-
-        <!-- Card 4: Revenue (with Blue Primary bottom bar) -->
-        <div class="metric-card-box">
-          <div class="metric-card-content">
-            <div class="metric-icon-square icon-blue-primary-theme">
-              $
-            </div>
-            <div class="metric-details-stack">
-              <span class="metric-label-top">REVENUE</span>
-              <div class="metric-num-row">
-                <span class="metric-big-value">$24,567</span>
-                <span class="metric-growth-pill">+ 18%</span>
-              </div>
-              <span class="metric-sub-note">$3,218 today</span>
-            </div>
-          </div>
-          <div class="metric-progress-line line-blue-primary"></div>
-        </div>
-
-        <!-- Card 5: Conversions (with Blue Light bottom bar) -->
-        <div class="metric-card-box">
-          <div class="metric-card-content">
-            <div class="metric-icon-square icon-blue-light-theme">
-              📉
-            </div>
-            <div class="metric-details-stack">
-              <span class="metric-label-top">CONVERSIONS</span>
-              <div class="metric-num-row">
-                <span class="metric-big-value">2,315</span>
-                <span class="metric-growth-pill">+ 5%</span>
-              </div>
-              <span class="metric-sub-note">Rate: 4.2%</span>
-            </div>
-          </div>
-          <div class="metric-progress-line line-blue-light"></div>
-        </div>
-
-        <!-- Card 6: Page Views (with White Accent bottom bar) -->
-        <div class="metric-card-box">
-          <div class="metric-card-content">
-            <div class="metric-icon-square icon-white-accent-theme">
-              👁
-            </div>
-            <div class="metric-details-stack">
-              <span class="metric-label-top">PAGE VIEWS</span>
-              <div class="metric-num-row">
-                <span class="metric-big-value">47,325</span>
-                <span class="metric-growth-pill">+ 22%</span>
-              </div>
-              <span class="metric-sub-note">6,854 unique visitors</span>
-            </div>
-          </div>
-          <div class="metric-progress-line line-white-accent"></div>
-        </div>
-
-      </section>
-
-      <!-- Middle Two-Column Grid: Network Activities Chart & Recent Activity List -->
-      <section class="dash-middle-two-col">
-
-        <!-- Left: Network Activities Chart Card -->
-        <div class="chart-card-box">
-          
-          <div class="chart-card-header">
-            <div class="chart-title-area">
-              <h2 class="chart-title">Network Activities</h2>
-              <div class="chart-num-row">
-                <span class="chart-big-num" id="networkMetricNum">6,782</span>
-                <span class="chart-badge">+ 7%</span>
-              </div>
-              <div class="chart-sub-label">Total fleet telemetry sessions this week</div>
-            </div>
-
-            <!-- Time segment switcher -->
-            <div class="chart-segmented-control" id="timeRangeControl">
-              <button class="segment-btn active" data-days="7">7 days</button>
-              <button class="segment-btn" data-days="30">30 days</button>
-              <button class="segment-btn" data-days="90">90 days</button>
-            </div>
-          </div>
-
-          <!-- Scalable Vector Line Chart in Blue & White Theme -->
-          <div class="chart-viewport-wrap">
-            <svg class="svg-chart-container" viewBox="0 0 650 220" preserveAspectRatio="none">
-              <defs>
-                <!-- Blue area gradient glow matching website theme -->
-                <linearGradient id="blueGlowGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stop-color="#3B82F6" stop-opacity="0.28"/>
-                  <stop offset="100%" stop-color="#3B82F6" stop-opacity="0.0"/>
-                </linearGradient>
-              </defs>
-
-              <!-- Y-Axis Grid Lines & Labels -->
-              <!-- 800 -->
-              <text x="32" y="20" fill="#94A3B8" font-size="10" text-anchor="end">800</text>
-              <line x1="45" y1="16" x2="640" y2="16" stroke="rgba(255, 255, 255, 0.05)" stroke-dasharray="3,3" stroke-width="1"/>
-
-              <!-- 600 -->
-              <text x="32" y="65" fill="#94A3B8" font-size="10" text-anchor="end">600</text>
-              <line x1="45" y1="61" x2="640" y2="61" stroke="rgba(255, 255, 255, 0.05)" stroke-dasharray="3,3" stroke-width="1"/>
-
-              <!-- 400 -->
-              <text x="32" y="110" fill="#94A3B8" font-size="10" text-anchor="end">400</text>
-              <line x1="45" y1="106" x2="640" y2="106" stroke="rgba(255, 255, 255, 0.05)" stroke-dasharray="3,3" stroke-width="1"/>
-
-              <!-- 200 -->
-              <text x="32" y="155" fill="#94A3B8" font-size="10" text-anchor="end">200</text>
-              <line x1="45" y1="151" x2="640" y2="151" stroke="rgba(255, 255, 255, 0.05)" stroke-dasharray="3,3" stroke-width="1"/>
-
-              <!-- 0 -->
-              <text x="32" y="195" fill="#94A3B8" font-size="10" text-anchor="end">0</text>
-              <line x1="45" y1="191" x2="640" y2="191" stroke="rgba(255, 255, 255, 0.05)" stroke-width="1"/>
-
-              <!-- X-Axis Labels -->
-              <text x="50" y="212" fill="#CBD5E1" font-size="10">Mon</text>
-              <text x="145" y="212" fill="#CBD5E1" font-size="10">Tue</text>
-              <text x="240" y="212" fill="#CBD5E1" font-size="10">Wed</text>
-              <text x="335" y="212" fill="#CBD5E1" font-size="10">Thu</text>
-              <text x="430" y="212" fill="#CBD5E1" font-size="10">Fri</text>
-              <text x="525" y="212" fill="#CBD5E1" font-size="10">Sat</text>
-              <text x="615" y="212" fill="#CBD5E1" font-size="10">Sun</text>
-
-              <!-- Blue Filled Gradient Area -->
-              <path id="blueAreaPath" d="M 50 148 C 110 135, 170 120, 240 122 C 300 125, 335 70, 420 50 C 490 35, 545 65, 630 68 L 630 191 L 50 191 Z" fill="url(#blueGlowGradient)" />
-
-              <!-- Blue Solid Curve: Sessions -->
-              <path id="blueLinePath" d="M 50 148 C 110 135, 170 120, 240 122 C 300 125, 335 70, 420 50 C 490 35, 545 65, 630 68" fill="none" stroke="#3B82F6" stroke-width="2.6" stroke-linecap="round" />
-
-              <!-- White Dashed Curve: Page Views -->
-              <path id="whiteLinePath" d="M 50 162 C 110 152, 170 138, 240 140 C 300 142, 335 95, 420 85 C 490 75, 545 92, 630 96" fill="none" stroke="#FFFFFF" stroke-width="1.8" stroke-dasharray="5,5" stroke-linecap="round" opacity="0.85" />
-            </svg>
-          </div>
-
-          <!-- Chart Legend -->
-          <div class="chart-legend-row">
-            <div class="legend-item">
-              <span class="legend-indicator-line line-solid-blue"></span>
-              <span>Sessions</span>
-            </div>
-            <div class="legend-item">
-              <span class="legend-indicator-line line-dashed-white"></span>
-              <span>Page views</span>
-            </div>
-          </div>
-
-        </div>
-
-        <!-- Right: Recent Activity Card -->
-        <div class="activity-card-box">
-          
-          <div class="activity-header">
-            <h2 class="activity-title">Recent Activity</h2>
-            <button class="activity-minimize-btn" title="Collapse" aria-label="Minimize">―</button>
-          </div>
-
-          <div class="activity-list">
-            
-            <!-- Item 1: Sarah K. (Royal Blue) -->
-            <div class="activity-item">
-              <div class="activity-avatar avatar-blue-pri">SK</div>
-              <div class="activity-content">
-                <div class="activity-text">
-                  <strong>Sarah K.</strong> placed a new booking for $245.00
-                </div>
-                <div class="activity-timestamp">2 min ago</div>
-              </div>
-            </div>
-
-            <!-- Item 2: Michael R. (Luminous Blue) -->
-            <div class="activity-item">
-              <div class="activity-avatar avatar-blue-light">MR</div>
-              <div class="activity-content">
-                <div class="activity-text">
-                  <strong>Michael R.</strong> registered a passenger account
-                </div>
-                <div class="activity-timestamp">18 min ago</div>
-              </div>
-            </div>
-
-            <!-- Item 3: Payment (Black & Blue outline) -->
-            <div class="activity-item">
-              <div class="activity-avatar avatar-black-solid">SY</div>
-              <div class="activity-content">
-                <div class="activity-text">
-                  <strong>Payment</strong> processed — Invoice #4521
-                </div>
-                <div class="activity-timestamp">45 min ago</div>
-              </div>
-            </div>
-
-            <!-- Item 4: Jeffie L. (Dark Gray) -->
-            <div class="activity-item">
-              <div class="activity-avatar avatar-gray-dark">JL</div>
-              <div class="activity-content">
-                <div class="activity-text">
-                  <strong>Jeffie L.</strong> reviewed <strong>SmartMove Fleet</strong>
-                </div>
-                <div class="activity-timestamp">1 hour ago</div>
-              </div>
-            </div>
-
-            <!-- Item 5: Emmy L. (Deep Blue) -->
-            <div class="activity-item">
-              <div class="activity-avatar avatar-blue-hover">EL</div>
-              <div class="activity-content">
-                <div class="activity-text">
-                  <strong>Emmy L.</strong> scheduled dispatch <strong>Airport CMB</strong>
-                </div>
-                <div class="activity-timestamp">4 hours ago</div>
-              </div>
-            </div>
-
-            <!-- Item 6: Shipment (Crisp White) -->
-            <div class="activity-item">
-              <div class="activity-avatar avatar-white-solid">DS</div>
-              <div class="activity-content">
-                <div class="activity-text">
-                  <strong>Chauffeur</strong> dispatched — Trip #3847
-                </div>
-                <div class="activity-timestamp">6 hours ago</div>
-              </div>
-            </div>
-
-          </div>
-
-        </div>
-
-      </section>
-
     </main>
-
   </div>
 
-  <!-- Interactive JavaScript logic -->
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      // Sidebar Mobile Toggle
-      const hamburger = document.getElementById('hamburgerBtn');
-      const sidebar = document.getElementById('dashSidebar');
-      if (hamburger && sidebar) {
-        hamburger.addEventListener('click', () => {
-          sidebar.classList.toggle('open');
-        });
-      }
+  <!-- Modals -->
+  <?php include __DIR__ . '/../components/dashboard/modals.php'; ?>
 
-      // Time Range Segment Switcher & Chart Morph Simulation
-      const segmentBtns = document.querySelectorAll('.segment-btn');
-      const metricNum = document.getElementById('networkMetricNum');
-      const blueLine = document.getElementById('blueLinePath');
-      const blueArea = document.getElementById('blueAreaPath');
-      const whiteLine = document.getElementById('whiteLinePath');
-
-      const chartData = {
-        '7': {
-          num: '6,782',
-          blue: 'M 50 148 C 110 135, 170 120, 240 122 C 300 125, 335 70, 420 50 C 490 35, 545 65, 630 68',
-          area: 'M 50 148 C 110 135, 170 120, 240 122 C 300 125, 335 70, 420 50 C 490 35, 545 65, 630 68 L 630 191 L 50 191 Z',
-          white: 'M 50 162 C 110 152, 170 138, 240 140 C 300 142, 335 95, 420 85 C 490 75, 545 92, 630 96'
-        },
-        '30': {
-          num: '28,490',
-          blue: 'M 50 120 C 120 90, 190 140, 260 80 C 330 60, 400 95, 480 40 C 530 30, 580 50, 630 45',
-          area: 'M 50 120 C 120 90, 190 140, 260 80 C 330 60, 400 95, 480 40 C 530 30, 580 50, 630 45 L 630 191 L 50 191 Z',
-          white: 'M 50 140 C 120 115, 190 160, 260 105 C 330 85, 400 115, 480 65 C 530 55, 580 75, 630 70'
-        },
-        '90': {
-          num: '84,120',
-          blue: 'M 50 160 C 130 110, 200 70, 290 85 C 370 100, 450 50, 520 30 C 560 25, 600 40, 630 35',
-          area: 'M 50 160 C 130 110, 200 70, 290 85 C 370 100, 450 50, 520 30 C 560 25, 600 40, 630 35 L 630 191 L 50 191 Z',
-          white: 'M 50 180 C 130 135, 200 95, 290 110 C 370 125, 450 75, 520 55 C 560 50, 600 65, 630 60'
-        }
-      };
-
-      segmentBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-          segmentBtns.forEach(b => b.classList.remove('active'));
-          btn.classList.add('active');
-          const days = btn.getAttribute('data-days');
-          if (chartData[days]) {
-            if (metricNum) metricNum.textContent = chartData[days].num;
-            if (blueLine) blueLine.setAttribute('d', chartData[days].blue);
-            if (blueArea) blueArea.setAttribute('d', chartData[days].area);
-            if (whiteLine) whiteLine.setAttribute('d', chartData[days].white);
-          }
-        });
-      });
-
-      // Search bar shortcut keybind (⌘K or Ctrl+K)
-      const searchInput = document.getElementById('dashSearch');
-      document.addEventListener('keydown', (e) => {
-        if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-          e.preventDefault();
-          if (searchInput) searchInput.focus();
-        }
-      });
-    });
-  </script>
-
+  <!-- Script -->
+  <script src="../js/dashboard.js"></script>
 </body>
+
 </html>
