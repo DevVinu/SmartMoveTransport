@@ -1,30 +1,17 @@
 <?php
 require_once __DIR__ . '/../config/db.php';
 
-/**
- * SmartMove Transport Solutions — MongoDB Service Model
- * Implements the 4 mandatory NoSQL analytical queries required by the DM2 Coursework rubric.
- */
+// MongoDB analytical queries service
 class MongoService {
 
-    /**
-     * QUERY 1 (Coursework Rubric):
-     * Retrieve all passenger reviews for a specific route.
-     * @param int $routeId
-     * @return array
-     */
+    // Retrieve passenger reviews by route
     public static function getReviewsByRoute($routeId) {
         $filter = ['routeId' => (int)$routeId];
         $options = ['sort' => ['createdAt' => -1]];
         return Database::queryMongo('passenger_reviews', $filter, $options);
     }
 
-    /**
-     * QUERY 2 (Coursework Rubric):
-     * Identify highest-rated vehicles or drivers based on customer feedback.
-     * Groups reviews by driver/vehicle and computes average rating.
-     * @return array
-     */
+    // Top-rated drivers and vehicles by feedback
     public static function getTopRatedDriversAndVehicles() {
         $allReviews = Database::queryMongo('passenger_reviews');
         if (empty($allReviews)) {
@@ -38,7 +25,6 @@ class MongoService {
             $r = is_array($rev) ? $rev : (array)$rev;
             $rating = (float)($r['rating'] ?? 5);
 
-            // Driver Aggregation
             $dId = $r['driverId'] ?? null;
             $dName = $r['driverName'] ?? 'Driver ' . $dId;
             if ($dId) {
@@ -49,7 +35,6 @@ class MongoService {
                 $driverScores[$dId]['count']++;
             }
 
-            // Vehicle Aggregation
             $vId = $r['vehicleId'] ?? null;
             $vReg = $r['vehicleRegNo'] ?? 'Vehicle ' . $vId;
             $vType = $r['vehicleType'] ?? 'CAR';
@@ -62,7 +47,6 @@ class MongoService {
             }
         }
 
-        // Calculate averages
         $topDrivers = [];
         foreach ($driverScores as $id => $d) {
             $topDrivers[] = [
@@ -92,20 +76,13 @@ class MongoService {
         ];
     }
 
-    /**
-     * QUERY 3 (Coursework Rubric):
-     * Search customer complaints or feedback using specific keywords.
-     * Uses regex / text matching across comments, tags, and sentiments.
-     * @param string $keyword (e.g. 'AC', 'delay', 'luggage', 'clean')
-     * @return array
-     */
+    // Keyword search across complaints and feedback
     public static function searchFeedbackByKeyword($keyword) {
         $keyword = trim($keyword);
         if (empty($keyword)) {
             return Database::queryMongo('passenger_reviews', [], ['sort' => ['createdAt' => -1], 'limit' => 10]);
         }
 
-        // Regex search across comment or tags
         $filter = [
             '$or' => [
                 ['comment' => ['$regex' => $keyword, '$options' => 'i']],
@@ -117,12 +94,7 @@ class MongoService {
         return Database::queryMongo('passenger_reviews', $filter);
     }
 
-    /**
-     * QUERY 4 (Coursework Rubric):
-     * Retrieve vehicle documents and multimedia information.
-     * @param int|null $vehicleId Optional vehicle filter
-     * @return array
-     */
+    // Vehicle documents and media attachments
     public static function getVehicleDocumentsAndMedia($vehicleId = null) {
         $filter = [];
         if ($vehicleId !== null) {
@@ -131,10 +103,7 @@ class MongoService {
         return Database::queryMongo('vehicle_documents', $filter);
     }
 
-    /**
-     * Helper: Retrieve active travel announcements
-     * @return array
-     */
+    // Active travel announcements
     public static function getActiveAnnouncements() {
         return Database::queryMongo('travel_announcements', ['active' => true]);
     }

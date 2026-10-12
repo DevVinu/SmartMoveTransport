@@ -6,31 +6,23 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 class Auth {
-    /**
-     * Set user session upon successful database authentication
-     */
+    // Set user session upon successful database authentication
     public static function login($user) {
         unset($user['password']); // Never store password in session
         $_SESSION['user'] = $user;
     }
 
-    /**
-     * Get active logged-in user or null
-     */
+    // Get active logged-in user or null
     public static function user() {
         return $_SESSION['user'] ?? null;
     }
 
-    /**
-     * Check if user is logged in
-     */
+    // Check if user is logged in
     public static function check() {
         return isset($_SESSION['user']) && !empty($_SESSION['user']['email']);
     }
 
-    /**
-     * Require specific role(s) to access page
-     */
+    // Require specific role(s) to access page
     public static function requireRole($roles) {
         if (!is_array($roles)) {
             $roles = [$roles];
@@ -50,9 +42,7 @@ class Auth {
         }
     }
 
-    /**
-     * Logout and destroy session
-     */
+    // Logout and destroy session
     public static function logout() {
         $_SESSION = [];
         if (ini_get("session.use_cookies")) {

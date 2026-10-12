@@ -111,7 +111,7 @@ body.dashboard-body {
   font-weight: 800;
   font-size: 15px;
   flex-shrink: 0;
-  box-shadow: 0 0 12px var(--blue-glow);
+  box-shadow: none;
 }
 
 .sidebar-header-text {
@@ -196,7 +196,7 @@ body.dashboard-body {
   background: rgba(37, 99, 235, 0.14);
   color: #FFFFFF;
   font-weight: 600;
-  border-left: 3px solid var(--blue-light);
+  border-left: none;
 }
 
 .nav-item-icon {
@@ -221,14 +221,15 @@ body.dashboard-body {
   fill: none;
 }
 
-.nav-item span {
+.nav-item > span:not(.nav-badge) {
   flex: 1;
+  min-width: 0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-/* Chat Badge */
+/* Nav Count / Status Badge */
 .nav-badge {
   background-color: var(--blue-primary);
   color: #FFFFFF;
@@ -236,12 +237,17 @@ body.dashboard-body {
   font-weight: 700;
   min-width: 18px;
   height: 18px;
-  padding: 0 5px;
-  border-radius: 9px;
+  padding: 0 4px;
+  border-radius: 9999px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   margin-left: auto;
+  flex: 0 0 auto;
+  flex-shrink: 0;
+  line-height: 1;
+  box-sizing: border-box;
+  text-align: center;
 }
 
 .nav-chevron {
@@ -402,7 +408,7 @@ body.dashboard-body {
   color: var(--text-muted);
 }
 
-/* Popover User Header Card matching Shadcn UI */
+/* Popover header */
 .popover-user-header {
   display: flex;
   align-items: center;
@@ -742,13 +748,13 @@ body.dashboard-body {
   cursor: pointer;
   transition: all 0.15s ease;
   text-decoration: none;
-  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+  box-shadow: none;
 }
 
 .btn-primary:hover {
   background-color: var(--blue-hover);
   border-color: var(--blue-hover);
-  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.45);
+  box-shadow: none;
 }
 
 .btn-outline {
@@ -808,7 +814,7 @@ body.dashboard-body {
 .subtab-item.active {
   background-color: var(--blue-primary);
   color: var(--text-white);
-  box-shadow: 0 1px 4px rgba(37, 99, 235, 0.4);
+  box-shadow: none;
 }
 
 /* Dashboard Stats & Charts */
@@ -853,8 +859,8 @@ body.dashboard-body {
 .kpi-card:hover {
   transform: none !important;
   box-shadow: none !important;
-  border-color: var(--blue-border);
-  background-color: var(--bg-card-hover);
+  border-color: var(--border-subtle) !important;
+  background-color: var(--bg-card) !important;
 }
 
 .stat-header-row,
@@ -1366,8 +1372,8 @@ body.dashboard-body {
 }
 
 .app-card:hover {
-  border-color: var(--blue-border);
-  background-color: var(--bg-card-hover);
+  border-color: var(--border-subtle);
+  background-color: var(--bg-card);
 }
 
 .app-card-top {
@@ -1626,7 +1632,7 @@ body.dashboard-body {
   background: var(--blue-primary);
   color: #FFFFFF;
   border-color: var(--blue-primary);
-  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.35);
+  box-shadow: none;
 }
 .search-input-box {
   background: var(--bg-input);
@@ -1683,8 +1689,8 @@ body.dashboard-body {
 .kpi-card:hover {
   box-shadow: none !important;
   transform: none !important;
-  border-color: var(--blue-border) !important;
-  background-color: var(--bg-card-hover) !important;
+  border-color: var(--border-subtle) !important;
+  background-color: var(--bg-card) !important;
 }
 .stat-header-row,
 .kpi-card-header {
@@ -1813,7 +1819,7 @@ body.dashboard-body {
   background: var(--blue-primary);
   color: #FFFFFF;
   border-color: var(--blue-primary);
-  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.35);
+  box-shadow: none;
 }
 .action-btn-sm {
   background: rgba(255, 255, 255, 0.05);
@@ -1835,9 +1841,7 @@ body.dashboard-body {
   border-color: rgba(239, 68, 68, 0.4);
 }
 
-/* ==========================================================================
-   STAFF & DRIVER PORTAL EXTENSIONS
-   ========================================================================== */
+
 
 /* Duty Status Switcher Bar */
 .duty-status-bar {
@@ -1875,14 +1879,14 @@ body.dashboard-body {
   background: rgba(16, 185, 129, 0.2);
   color: #34D399;
   border: 1px solid rgba(16, 185, 129, 0.4);
-  box-shadow: 0 0 10px rgba(16, 185, 129, 0.25);
+  box-shadow: none;
 }
 
 .duty-pill-btn.active-onduty {
   background: rgba(59, 130, 246, 0.2);
   color: #60A5FA;
   border: 1px solid rgba(59, 130, 246, 0.4);
-  box-shadow: 0 0 10px rgba(59, 130, 246, 0.25);
+  box-shadow: none;
 }
 
 .duty-pill-btn.active-offduty {
@@ -2039,7 +2043,7 @@ body.dashboard-body {
 }
 
 .review-card:hover {
-  border-color: var(--border-focus);
+  border-color: var(--border-subtle);
 }
 
 .review-stars {

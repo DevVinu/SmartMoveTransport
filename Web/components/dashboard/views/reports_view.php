@@ -1,0 +1,238 @@
+        <!-- Reports view -->
+        <section class="page-view <?php echo $activeView === 'reportsView' ? 'active-view' : ''; ?>" id="reportsView">
+          <div class="view-header">
+            <div class="view-title-group">
+              <h1>Operational Reports & Business Analytics</h1>
+              <p style="color:var(--text-secondary); font-size:0.85rem; margin-top:0.25rem;">Enterprise performance
+                intelligence and operational analytics across passenger routes and fleet</p>
+            </div>
+          </div>
+
+          <!-- Report tabs -->
+          <div class="reports-nav-bar">
+            <a href="dashboard.php?view=reportsView&report=frequentRoutes"
+              class="report-tab-btn <?php echo $activeReport === 'frequentRoutes' ? 'active' : ''; ?>">
+              Report 1: Frequent Routes
+            </a>
+            <a href="dashboard.php?view=reportsView&report=periodRevenue"
+              class="report-tab-btn <?php echo $activeReport === 'periodRevenue' ? 'active' : ''; ?>">
+              Report 2: Period Revenue
+            </a>
+            <a href="dashboard.php?view=reportsView&report=passengerHistory"
+              class="report-tab-btn <?php echo $activeReport === 'passengerHistory' ? 'active' : ''; ?>">
+              Report 3: Passenger Travel History
+            </a>
+            <a href="dashboard.php?view=reportsView&report=maintenanceDue"
+              class="report-tab-btn <?php echo $activeReport === 'maintenanceDue' ? 'active' : ''; ?>">
+              Report 4: Maintenance Overdue
+            </a>
+            <a href="dashboard.php?view=reportsView&report=driverPerformance"
+              class="report-tab-btn <?php echo $activeReport === 'driverPerformance' ? 'active' : ''; ?>">
+              Report 5: Driver Performance
+            </a>
+          </div>
+
+          <div
+            style="background:var(--bg-card); border:1px solid var(--border-subtle); border-radius:var(--radius-lg); padding:1.5rem;">
+
+            <?php if ($activeReport === 'frequentRoutes'): ?>
+              <h2 style="font-size:1.1rem; font-weight:600; color:var(--text-white); margin-bottom:1rem;">Report 1: Top
+                Frequently Used Routes (By Booking Volume)</h2>
+              <div style="overflow-x:auto;">
+                <table class="tasks-table" style="width:100%; border-collapse:collapse;">
+                  <thead>
+                    <tr>
+                      <th style="padding:0.75rem 1rem; text-align:left; color:var(--text-muted); font-size:0.75rem;">ROUTE
+                        ID</th>
+                      <th style="padding:0.75rem 1rem; text-align:left; color:var(--text-muted); font-size:0.75rem;">ROUTE
+                        NAME</th>
+                      <th style="padding:0.75rem 1rem; text-align:left; color:var(--text-muted); font-size:0.75rem;">
+                        ORIGIN & DESTINATION</th>
+                      <th style="padding:0.75rem 1rem; text-align:left; color:var(--text-muted); font-size:0.75rem;">TOTAL
+                        BOOKINGS</th>
+                      <th style="padding:0.75rem 1rem; text-align:left; color:var(--text-muted); font-size:0.75rem;">TOTAL
+                        REVENUE</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <?php foreach ($reportData as $row): ?>
+                      <tr style="border-bottom:1px solid var(--border-muted);">
+                        <td style="padding:0.85rem 1rem; font-family:monospace; color:var(--accent-blue);">
+                          #RT-<?php echo htmlspecialchars($row['routeid'] ?? $row['ROUTEID']); ?></td>
+                        <td style="padding:0.85rem 1rem; font-weight:600; color:var(--text-white);">
+                          <?php echo htmlspecialchars($row['routename'] ?? $row['ROUTENAME']); ?></td>
+                        <td style="padding:0.85rem 1rem; color:var(--text-secondary);">
+                          <?php echo htmlspecialchars($row['origin'] ?? $row['ORIGIN']); ?> →
+                          <?php echo htmlspecialchars($row['destination'] ?? $row['DESTINATION']); ?></td>
+                        <td style="padding:0.85rem 1rem; font-weight:700; color:var(--text-white);">
+                          <?php echo htmlspecialchars($row['totalbookings'] ?? $row['TOTALBOOKINGS']); ?> Rides</td>
+                        <td style="padding:0.85rem 1rem; font-weight:600; color:#34D399;">LKR
+                          <?php echo number_format((float) ($row['totalrevenue'] ?? $row['TOTALREVENUE']), 2); ?></td>
+                      </tr>
+                    <?php endforeach; ?>
+                  </tbody>
+                </table>
+              </div>
+
+            <?php elseif ($activeReport === 'periodRevenue'): ?>
+              <h2 style="font-size:1.1rem; font-weight:600; color:var(--text-white); margin-bottom:1rem;">Report 2: Total
+                Revenue Generated By Payment Channel</h2>
+              <div style="overflow-x:auto;">
+                <table class="tasks-table" style="width:100%; border-collapse:collapse;">
+                  <thead>
+                    <tr>
+                      <th style="padding:0.75rem 1rem; text-align:left; color:var(--text-muted); font-size:0.75rem;">
+                        PAYMENT METHOD</th>
+                      <th style="padding:0.75rem 1rem; text-align:left; color:var(--text-muted); font-size:0.75rem;">
+                        SUCCESSFUL TRANSACTIONS</th>
+                      <th style="padding:0.75rem 1rem; text-align:left; color:var(--text-muted); font-size:0.75rem;">TOTAL
+                        AMOUNT COLLECTED</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <?php foreach ($reportData as $row): ?>
+                      <tr style="border-bottom:1px solid var(--border-muted);">
+                        <td style="padding:0.85rem 1rem; font-weight:600; color:var(--text-white);">
+                          <?php echo htmlspecialchars($row['paymentmethod'] ?? $row['PAYMENTMETHOD']); ?></td>
+                        <td style="padding:0.85rem 1rem; color:var(--text-secondary);">
+                          <?php echo htmlspecialchars($row['transactioncount'] ?? $row['TRANSACTIONCOUNT']); ?> payments
+                        </td>
+                        <td style="padding:0.85rem 1rem; font-weight:700; color:#34D399;">LKR
+                          <?php echo number_format((float) ($row['totalcollected'] ?? $row['TOTALCOLLECTED']), 2); ?></td>
+                      </tr>
+                    <?php endforeach; ?>
+                  </tbody>
+                </table>
+              </div>
+
+            <?php elseif ($activeReport === 'maintenanceDue'): ?>
+              <h2 style="font-size:1.1rem; font-weight:600; color:var(--text-white); margin-bottom:1rem;">Report 4: Fleet
+                Preventive Maintenance Alerts & Scheduling</h2>
+              <div style="overflow-x:auto;">
+                <table class="tasks-table" style="width:100%; border-collapse:collapse;">
+                  <thead>
+                    <tr>
+                      <th style="padding:0.75rem 1rem; text-align:left; color:var(--text-muted); font-size:0.75rem;">
+                        VEHICLE REG NO</th>
+                      <th style="padding:0.75rem 1rem; text-align:left; color:var(--text-muted); font-size:0.75rem;">
+                        CATEGORY & MODEL</th>
+                      <th style="padding:0.75rem 1rem; text-align:left; color:var(--text-muted); font-size:0.75rem;">
+                        SERVICE ACTION</th>
+                      <th style="padding:0.75rem 1rem; text-align:left; color:var(--text-muted); font-size:0.75rem;">NEXT
+                        SERVICE DATE</th>
+                      <th style="padding:0.75rem 1rem; text-align:left; color:var(--text-muted); font-size:0.75rem;">
+                        URGENCY STATUS</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <?php foreach ($reportData as $row): ?>
+                      <?php
+                      $urg = strtoupper($row['urgencystatus'] ?? $row['URGENCYSTATUS'] ?? '');
+                      $bClass = ($urg === 'URGENT OVERDUE') ? 'badge-urgent' : (($urg === 'DUE IN 7 DAYS') ? 'badge-warning' : 'badge-active');
+                      ?>
+                      <tr style="border-bottom:1px solid var(--border-muted);">
+                        <td style="padding:0.85rem 1rem; font-family:monospace; font-weight:700; color:var(--accent-blue);">
+                          <?php echo htmlspecialchars($row['registrationno'] ?? $row['REGISTRATIONNO']); ?></td>
+                        <td style="padding:0.85rem 1rem; color:var(--text-white);">
+                          <?php echo htmlspecialchars($row['vehicletype'] ?? $row['VEHICLETYPE']); ?> -
+                          <?php echo htmlspecialchars($row['model'] ?? $row['MODEL']); ?></td>
+                        <td style="padding:0.85rem 1rem; color:var(--text-secondary);">
+                          <?php echo htmlspecialchars($row['maintenancetype'] ?? $row['MAINTENANCETYPE']); ?></td>
+                        <td style="padding:0.85rem 1rem; color:var(--text-white);">
+                          <?php echo htmlspecialchars($row['nextservicedate'] ?? $row['NEXTSERVICEDATE']); ?></td>
+                        <td style="padding:0.85rem 1rem;">
+                          <span class="badge-status <?php echo $bClass; ?>"><?php echo htmlspecialchars($urg); ?></span>
+                        </td>
+                      </tr>
+                    <?php endforeach; ?>
+                  </tbody>
+                </table>
+              </div>
+
+            <?php elseif ($activeReport === 'driverPerformance'): ?>
+              <h2 style="font-size:1.1rem; font-weight:600; color:var(--text-white); margin-bottom:1rem;">Report 5: Driver
+                Duty, Completed Trips & Fuel Logs</h2>
+              <div style="overflow-x:auto;">
+                <table class="tasks-table" style="width:100%; border-collapse:collapse;">
+                  <thead>
+                    <tr>
+                      <th style="padding:0.75rem 1rem; text-align:left; color:var(--text-muted); font-size:0.75rem;">
+                        DRIVER NAME</th>
+                      <th style="padding:0.75rem 1rem; text-align:left; color:var(--text-muted); font-size:0.75rem;">
+                        LICENSE NO</th>
+                      <th style="padding:0.75rem 1rem; text-align:left; color:var(--text-muted); font-size:0.75rem;">
+                        COMPLETED TRIPS</th>
+                      <th style="padding:0.75rem 1rem; text-align:left; color:var(--text-muted); font-size:0.75rem;">TOTAL
+                        SHIFTS</th>
+                      <th style="padding:0.75rem 1rem; text-align:left; color:var(--text-muted); font-size:0.75rem;">TOTAL
+                        FUEL CONSUMED</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <?php foreach ($reportData as $row): ?>
+                      <tr style="border-bottom:1px solid var(--border-muted);">
+                        <td style="padding:0.85rem 1rem; font-weight:600; color:var(--text-white);">
+                          <?php echo htmlspecialchars($row['drivername'] ?? $row['DRIVERNAME']); ?></td>
+                        <td style="padding:0.85rem 1rem; font-family:monospace; color:var(--text-secondary);">
+                          <?php echo htmlspecialchars($row['licenseno'] ?? $row['LICENSENO']); ?></td>
+                        <td style="padding:0.85rem 1rem;"><span
+                            class="badge-status badge-info"><?php echo htmlspecialchars($row['completedtrips'] ?? $row['COMPLETEDTRIPS']); ?>
+                            Trips</span></td>
+                        <td style="padding:0.85rem 1rem;"><span
+                            class="badge-status badge-active"><?php echo htmlspecialchars($row['totalshifts'] ?? $row['TOTALSHIFTS']); ?>
+                            Shifts</span></td>
+                        <td style="padding:0.85rem 1rem; font-weight:600; color:#FBBF24;">
+                          <?php echo number_format((float) ($row['totalfuellogged'] ?? $row['TOTALFUELLOGGED']), 1); ?>
+                          Liters</td>
+                      </tr>
+                    <?php endforeach; ?>
+                  </tbody>
+                </table>
+              </div>
+
+            <?php else: ?>
+              <h2 style="font-size:1.1rem; font-weight:600; color:var(--text-white); margin-bottom:1rem;">Report 3:
+                Passenger Travel History Statement</h2>
+              <div style="overflow-x:auto;">
+                <table class="tasks-table" style="width:100%; border-collapse:collapse;">
+                  <thead>
+                    <tr>
+                      <th style="padding:0.75rem 1rem; text-align:left; color:var(--text-muted); font-size:0.75rem;">
+                        BOOKING ID</th>
+                      <th style="padding:0.75rem 1rem; text-align:left; color:var(--text-muted); font-size:0.75rem;">
+                        PASSENGER</th>
+                      <th style="padding:0.75rem 1rem; text-align:left; color:var(--text-muted); font-size:0.75rem;">DATE
+                        & TIME</th>
+                      <th style="padding:0.75rem 1rem; text-align:left; color:var(--text-muted); font-size:0.75rem;">ROUTE
+                      </th>
+                      <th style="padding:0.75rem 1rem; text-align:left; color:var(--text-muted); font-size:0.75rem;">SEAT
+                        NO</th>
+                      <th style="padding:0.75rem 1rem; text-align:left; color:var(--text-muted); font-size:0.75rem;">FARE
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <?php foreach ($reportData as $row): ?>
+                      <tr style="border-bottom:1px solid var(--border-muted);">
+                        <td style="padding:0.85rem 1rem; font-family:monospace; color:var(--accent-blue);">
+                          #BK-<?php echo htmlspecialchars($row['bookingid'] ?? $row['BOOKINGID']); ?></td>
+                        <td style="padding:0.85rem 1rem; font-weight:600; color:var(--text-white);">
+                          <?php echo htmlspecialchars($row['passengername'] ?? $row['PASSENGERNAME']); ?></td>
+                        <td style="padding:0.85rem 1rem; color:var(--text-secondary);">
+                          <?php echo htmlspecialchars($row['tripdate'] ?? $row['TRIPDATE']); ?>
+                          (<?php echo htmlspecialchars($row['departuretime'] ?? $row['DEPARTURETIME']); ?>)</td>
+                        <td style="padding:0.85rem 1rem; color:var(--text-white);">
+                          <?php echo htmlspecialchars($row['routename'] ?? $row['ROUTENAME']); ?></td>
+                        <td style="padding:0.85rem 1rem; color:var(--text-white);">Seat
+                          <?php echo htmlspecialchars($row['seatnumber'] ?? $row['SEATNUMBER']); ?></td>
+                        <td style="padding:0.85rem 1rem; font-weight:600; color:#34D399;">LKR
+                          <?php echo number_format((float) ($row['ticketprice'] ?? $row['TICKETPRICE']), 2); ?></td>
+                      </tr>
+                    <?php endforeach; ?>
+                  </tbody>
+                </table>
+              </div>
+            <?php endif; ?>
+
+          </div>
+        </section>

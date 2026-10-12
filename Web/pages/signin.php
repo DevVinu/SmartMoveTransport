@@ -4,16 +4,26 @@ require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../models/User.php';
 
-// Handle explicit logout request
+// Logout
 if (isset($_GET['logout'])) {
   Auth::logout();
-  header('Location: ../index.php');
+  header('Location: signin.php?logged_out=1');
   exit;
 }
 
-// If already logged in, redirect straight to dashboard
+// Redirect logged-in users
 if (Auth::check()) {
-  header('Location: dashboard.php');
+  $currentUser = Auth::user();
+  $role = strtoupper($currentUser['role'] ?? 'PASSENGER');
+  if ($role === 'ADMIN') {
+    header('Location: dashboard.php');
+  } elseif ($role === 'STAFF') {
+    header('Location: staff.php');
+  } elseif ($role === 'DRIVER') {
+    header('Location: driver.php');
+  } else {
+    header('Location: passenger.php');
+  }
   exit;
 }
 
@@ -32,7 +42,7 @@ if (isset($_GET['registered'])) {
   }
 }
 
-// Handle Form POST
+// Handle login
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $email = trim($_POST['email'] ?? '');
   $password = trim($_POST['password'] ?? '');
@@ -43,30 +53,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $user = User::authenticate($email, $password);
 
     if ($user) {
-      // Check account status
       $status = strtoupper($user['accountstatus'] ?? $user['accountStatus'] ?? 'ACTIVE');
       if ($status === 'SUSPENDED') {
         $errorMessage = 'This account has been suspended. Please contact fleet administration.';
       } elseif ($status === 'INACTIVE') {
         $errorMessage = 'This account is inactive. Please verify your email or contact support.';
       } else {
-        // Successful Login
         Auth::login($user);
 
-        // Redirect to proper portal based on role
-        $userRole = strtolower($user['role'] ?? 'passenger');
-        if ($userRole === 'admin') {
+        $userRole = strtoupper($user['role'] ?? 'PASSENGER');
+        if ($userRole === 'ADMIN') {
           header('Location: dashboard.php');
-        } elseif ($userRole === 'staff') {
+        } elseif ($userRole === 'STAFF') {
           header('Location: staff.php');
-        } elseif ($userRole === 'driver') {
+        } elseif ($userRole === 'DRIVER') {
           header('Location: driver.php');
         } else {
-          if (file_exists(__DIR__ . '/passenger.php')) {
-            header('Location: passenger.php');
-          } else {
-            header('Location: ../index.php');
-          }
+          header('Location: passenger.php');
         }
         exit;
       }
@@ -93,14 +96,12 @@ $pageTitle = "Sign In | SmartMove Transport";
 
 <body class="auth-split-page">
 
-  <!-- ========================================================================
-       LEFT COLUMN: IMAGE SHOWCASE BANNER & BRAND OVERLAY
-       ======================================================================== -->
+  <!-- Left banner -->
   <aside class="auth-image-col signin-bg">
     <div class="auth-image-overlay"></div>
 
     <div class="auth-image-content">
-      <!-- Top Brand Logo -->
+      <!-- Brand logo -->
       <div>
         <a href="../index.php" class="auth-brand-badge-link" title="SmartMove Home">
           <span class="auth-brand-sq-box">S</span>
@@ -108,7 +109,7 @@ $pageTitle = "Sign In | SmartMove Transport";
         </a>
       </div>
 
-      <!-- Bottom Caption & Features -->
+      <!-- Caption -->
       <div class="auth-image-caption-area">
         <h2 class="auth-image-headline">Move with comfort, speed &amp; precision.</h2>
         <p class="auth-image-subtext">
@@ -121,17 +122,15 @@ $pageTitle = "Sign In | SmartMove Transport";
     </div>
   </aside>
 
-  <!-- ========================================================================
-       RIGHT COLUMN: INTERACTIVE SIGN IN FORM
-       ======================================================================== -->
+  <!-- Sign in form -->
   <main class="auth-form-col">
-    <!-- Top Bar Navigation -->
+    <!-- Top nav -->
     <header class="auth-top-nav-bar">
       <a href="../index.php" class="btn-ghost-light">← Back to Home</a>
       <a href="signup.php" class="btn-pill-primary">Sign Up</a>
     </header>
 
-    <!-- Centered Form Container -->
+    <!-- Form container -->
     <div class="auth-form-box">
       <h1 class="auth-title">Welcome back</h1>
       <p class="auth-subtitle">Sign in to access your SmartMove portal.</p>
@@ -180,13 +179,13 @@ $pageTitle = "Sign In | SmartMove Transport";
       </div>
     </div>
 
-    <!-- Column Footer -->
+    <!-- Footer -->
     <footer class="auth-col-footer">
       © 2026 SmartMove Transport Technologies. All rights reserved.
     </footer>
   </main>
 
-  <!-- External Clean Script -->
+  <!-- Script -->
   <script src="../js/auth.js"></script>
 </body>
 
