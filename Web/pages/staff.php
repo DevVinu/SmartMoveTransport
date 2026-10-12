@@ -238,7 +238,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
         if ($bookingId && $amount > 0) {
             $ok = Database::executeOracle("
                 INSERT INTO refund (bookingId, paymentId, processedByStaffId, refundAmount, refundReason, refundDate, refundStatus)
-                VALUES (:bId, :pId, :sId, :amt, :rsn, SYSDATE, 'APPROVED')
+                VALUES (:bId, :pId, :sId, :amt, :rsn, SYSDATE, 'PENDING')
             ", [
                 ':bId' => $bookingId,
                 ':pId' => $paymentId ?: 1,
@@ -429,7 +429,7 @@ if (empty($bookingsList)) {
 
 if (empty($refundsList)) {
     $refundsList = [
-        ['refundId' => 1, 'bookingId' => 498, 'refundAmount' => 1250.00, 'refundReason' => 'Travel plan postponed by commuter', 'refundDate' => date('Y-m-d'), 'refundStatus' => 'APPROVED', 'staffName' => 'Nimal Disanayake']
+        ['refundId' => 1, 'bookingId' => 498, 'refundAmount' => 1250.00, 'refundReason' => 'Travel plan postponed by commuter', 'refundDate' => date('Y-m-d'), 'refundStatus' => 'PENDING', 'staffName' => 'Nimal Disanayake']
     ];
 }
 
@@ -503,7 +503,7 @@ $pageTitle = "SmartMove — Staff Operations Portal";
           <div class="stat-card">
             <div class="stat-header-row">
               <span class="stat-label">Active / Scheduled Trips</span>
-              <span class="stat-icon">🚍</span>
+              <span class="stat-icon">BUS</span>
             </div>
             <div class="stat-value"><?php echo count($scheduledTrips); ?></div>
             <div class="stat-subtext">Across expressway &amp; intercity routes</div>
@@ -511,7 +511,7 @@ $pageTitle = "SmartMove — Staff Operations Portal";
           <div class="stat-card">
             <div class="stat-header-row">
               <span class="stat-label">In-Transit Fleet</span>
-              <span class="stat-icon">⚡</span>
+              <span class="stat-icon">TRP</span>
             </div>
             <div class="stat-value" style="color:#38BDF8;"><?php echo $inTransitCount; ?></div>
             <div class="stat-subtext">Currently on the road</div>
@@ -519,7 +519,7 @@ $pageTitle = "SmartMove — Staff Operations Portal";
           <div class="stat-card">
             <div class="stat-header-row">
               <span class="stat-label">Drivers On Duty</span>
-              <span class="stat-icon">👨‍✈️</span>
+              <span class="stat-icon">DRV</span>
             </div>
             <div class="stat-value" style="color:#34D399;"><?php echo $onDutyDrivers; ?></div>
             <div class="stat-subtext">Clocked into active shifts</div>
@@ -527,7 +527,7 @@ $pageTitle = "SmartMove — Staff Operations Portal";
           <div class="stat-card">
             <div class="stat-header-row">
               <span class="stat-label">Fleet Maintenance</span>
-              <span class="stat-icon">🔧</span>
+              <span class="stat-icon">MNT</span>
             </div>
             <div class="stat-value" style="color:#FBBF24;"><?php echo $maintVehCount; ?></div>
             <div class="stat-subtext">Vehicles undergoing servicing</div>
@@ -573,7 +573,7 @@ $pageTitle = "SmartMove — Staff Operations Portal";
                   <td><strong>#<?php echo $trip['tripId']; ?></strong></td>
                   <td>
                     <div style="font-weight:600;color:var(--text-white);"><?php echo htmlspecialchars($trip['routeName']); ?></div>
-                    <div style="font-size:11px;color:var(--text-muted);"><?php echo htmlspecialchars($trip['origin']); ?> ➔ <?php echo htmlspecialchars($trip['destination']); ?></div>
+                    <div style="font-size:11px;color:var(--text-muted);"><?php echo htmlspecialchars($trip['origin']); ?> to <?php echo htmlspecialchars($trip['destination']); ?></div>
                   </td>
                   <td>
                     <div><?php echo htmlspecialchars($trip['registrationNo']); ?></div>

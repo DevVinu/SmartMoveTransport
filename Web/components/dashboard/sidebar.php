@@ -253,7 +253,7 @@ $currentRole = strtoupper($role ?? 'ADMIN');
           </div>
           <span>Reviews &amp; Ratings</span>
           <?php if (!empty($avgRating)): ?>
-            <span class="nav-badge" style="background:#F59E0B;"><?php echo $avgRating; ?>★</span>
+            <span class="nav-badge" style="background:#F59E0B;"><?php echo $avgRating; ?></span>
           <?php endif; ?>
         </a>
 

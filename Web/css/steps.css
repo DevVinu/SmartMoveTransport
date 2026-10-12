@@ -96,7 +96,7 @@
   color: var(--color-white);
   border: 1px solid var(--border-light);
   border-radius: var(--radius-input);
-  padding: 0.75rem 0.9rem 0.75rem 2.4rem;
+  padding: 0.75rem 0.95rem;
   font-size: 0.88rem;
   outline: none;
   transition: border-color 0.15s ease;
@@ -140,7 +140,7 @@
   background-color: #0E121B;
   color: var(--text-sub);
   border: 1px solid var(--border-light);
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-sm);
   padding: 0.45rem 1rem;
   font-size: 0.82rem;
   font-weight: 600;
@@ -167,7 +167,7 @@
   background: transparent;
   color: var(--text-muted);
   border: 1px solid var(--border-light);
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-sm);
   padding: 0.45rem 0.9rem;
   font-size: 0.8rem;
   font-weight: 600;
@@ -241,7 +241,7 @@
   letter-spacing: 0.05em;
   text-transform: uppercase;
   padding: 0.25rem 0.65rem;
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-sm);
 }
 
 .tag-bus {
@@ -272,7 +272,7 @@
   font-size: 0.72rem;
   font-weight: 600;
   padding: 0.2rem 0.6rem;
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-sm);
 }
 
 .status-open {

@@ -25,7 +25,7 @@ $successMessage = '';
 
 // Handle registration
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-  $role = strtoupper(trim($_POST['role'] ?? 'PASSENGER'));
+  $role = strtoupper(trim($_POST['role'] ?? ''));
   $firstName = trim($_POST['firstName'] ?? '');
   $lastName = trim($_POST['lastName'] ?? '');
   $email = trim($_POST['email'] ?? '');
@@ -36,6 +36,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
   if (empty($firstName) || empty($lastName) || empty($email) || empty($phone) || empty($password)) {
     $errorMessage = 'Please fill in all required fields.';
+  } elseif (empty($role) || !in_array($role, ['PASSENGER', 'DRIVER'])) {
+    $errorMessage = 'Please select whether you want to join as a Passenger or Driver.';
   } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
     $errorMessage = 'Please enter a valid email address.';
   } elseif ($password !== $confirmPassword) {
@@ -65,16 +67,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $userData['licenseType'] = trim($_POST['licenseType'] ?? 'HEAVY_COACH');
         $userData['licenseExpiryDate'] = trim($_POST['licenseExpiryDate'] ?? date('Y-m-d', strtotime('+3 years')));
         $userData['driverStatus'] = 'AVAILABLE';
-      } elseif ($role === 'STAFF') {
-        $userData['position'] = trim($_POST['position'] ?? 'Operations Officer');
-        $userData['staffStatus'] = 'ACTIVE';
-      } elseif ($role === 'ADMIN') {
-        $userData['adminCode'] = trim($_POST['adminCode'] ?? ('ADM-' . rand(100, 999)));
-        $userData['privilegeLevel'] = trim($_POST['privilegeLevel'] ?? 'OPS_ADMIN');
-        $userData['department'] = trim($_POST['department'] ?? 'Operations HQ');
       } else {
         $userData['address'] = trim($_POST['address'] ?? 'Colombo, Sri Lanka');
-        $userData['preferredPaymentMethod'] = trim($_POST['preferredPaymentMethod'] ?? 'CARD');
+        $userData['preferredPaymentMethod'] = 'CARD';
       }
 
       $createdId = User::createUserWithRole($userData);
@@ -92,6 +87,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   }
 }
 
+$selectedRole = strtoupper(trim($_POST['role'] ?? ''));
 $pageTitle = "Sign Up | SmartMove Transport";
 ?>
 <!DOCTYPE html>
@@ -104,7 +100,7 @@ $pageTitle = "Sign Up | SmartMove Transport";
 
   <link rel="stylesheet" href="../css/variables.css">
   <link rel="stylesheet" href="../css/base.css">
-  <link rel="stylesheet" href="../css/auth.css">
+  <link rel="stylesheet" href="../css/auth.css?v=<?php echo filemtime(__DIR__ . '/../css/auth.css'); ?>">
 </head>
 
 <body class="auth-split-page">
@@ -129,8 +125,6 @@ $pageTitle = "Sign Up | SmartMove Transport";
           Whether you want to ride in premium comfort or partner with us to earn on your own flexible schedule,
           SmartMove provides the ultimate transport network.
         </p>
-
-
       </div>
     </div>
   </aside>
@@ -146,33 +140,18 @@ $pageTitle = "Sign Up | SmartMove Transport";
     <!-- Form container -->
     <div class="auth-form-box wide">
       <h1 class="auth-title">Create your account</h1>
-      <p class="auth-subtitle">Join SmartMove to book instant rides or start earning as a driver partner.</p>
+      <p class="auth-subtitle">Join SmartMove to book instant rides, partner as a driver, or manage transit.</p>
 
       <?php if (!empty($errorMessage)): ?>
         <div class="alert-box alert-error">
-          ⚠️ <?php echo htmlspecialchars($errorMessage); ?>
+           <?php echo htmlspecialchars($errorMessage); ?>
         </div>
       <?php endif; ?>
 
-      <div class="role-tabs">
-        <button type="button"
-          class="role-btn <?php echo (!isset($_POST['role']) || $_POST['role'] === 'PASSENGER') ? 'active' : ''; ?>"
-          data-role="PASSENGER">Passenger</button>
-        <button type="button"
-          class="role-btn <?php echo (isset($_POST['role']) && $_POST['role'] === 'DRIVER') ? 'active' : ''; ?>"
-          data-role="DRIVER">Driver</button>
-        <button type="button"
-          class="role-btn <?php echo (isset($_POST['role']) && $_POST['role'] === 'STAFF') ? 'active' : ''; ?>"
-          data-role="STAFF">Staff</button>
-        <button type="button"
-          class="role-btn <?php echo (isset($_POST['role']) && $_POST['role'] === 'ADMIN') ? 'active' : ''; ?>"
-          data-role="ADMIN">Admin</button>
-      </div>
-
       <form class="auth-form" action="signup.php" method="POST">
-        <input type="hidden" name="role" id="userRoleInput"
-          value="<?php echo htmlspecialchars($_POST['role'] ?? 'PASSENGER'); ?>">
+        <input type="hidden" name="role" id="userRoleInput" value="<?php echo htmlspecialchars($selectedRole); ?>">
 
+        <!-- Basic user details (first) -->
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
           <div class="form-group">
             <label for="firstName" class="form-label">First Name</label>
@@ -205,96 +184,6 @@ $pageTitle = "Sign Up | SmartMove Transport";
           </div>
         </div>
 
-        <!-- Passenger fields -->
-        <div class="actor-signup-fields <?php echo (!isset($_POST['role']) || $_POST['role'] === 'PASSENGER') ? 'show' : ''; ?>"
-          id="passengerFields">
-          <div class="form-group">
-            <label for="address" class="form-label">Residential Address</label>
-            <input type="text" name="address" id="address" class="form-control" placeholder="No. 45, Galle Road, Colombo 03"
-              value="<?php echo htmlspecialchars($_POST['address'] ?? ''); ?>">
-          </div>
-          <div class="form-group">
-            <label for="preferredPaymentMethod" class="form-label">Preferred Payment Method</label>
-            <select name="preferredPaymentMethod" id="preferredPaymentMethod" class="form-control"
-              style="background-color: var(--bg-card-inner); color: #fff;">
-              <option value="CARD" <?php echo (($_POST['preferredPaymentMethod'] ?? '') === 'CARD') ? 'selected' : ''; ?>>Credit / Debit Card</option>
-              <option value="CASH" <?php echo (($_POST['preferredPaymentMethod'] ?? '') === 'CASH') ? 'selected' : ''; ?>>Cash at Boarding</option>
-              <option value="WALLET" <?php echo (($_POST['preferredPaymentMethod'] ?? '') === 'WALLET') ? 'selected' : ''; ?>>Digital Wallet</option>
-              <option value="ONLINE" <?php echo (($_POST['preferredPaymentMethod'] ?? '') === 'ONLINE') ? 'selected' : ''; ?>>Online Net Banking</option>
-            </select>
-          </div>
-        </div>
-
-        <!-- Driver fields -->
-        <div class="actor-signup-fields <?php echo (isset($_POST['role']) && $_POST['role'] === 'DRIVER') ? 'show' : ''; ?>"
-          id="driverFields">
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-            <div class="form-group">
-              <label for="licenseNo" class="form-label">Driving License No.</label>
-              <input type="text" name="licenseNo" id="licenseNo" class="form-control" placeholder="B1234567"
-                value="<?php echo htmlspecialchars($_POST['licenseNo'] ?? ''); ?>">
-            </div>
-            <div class="form-group">
-              <label for="licenseType" class="form-label">License Class</label>
-              <select name="licenseType" id="licenseType" class="form-control"
-                style="background-color: var(--bg-card-inner); color: #fff;">
-                <option value="HEAVY_COACH">Heavy Coach (Buses)</option>
-                <option value="COMMERCIAL_VAN">Commercial Van</option>
-                <option value="EXECUTIVE_SEDAN">Executive Sedan</option>
-                <option value="THREE_WHEELER">Three-Wheel Tuk-Tuk</option>
-                <option value="MOTORBIKE">Express Courier Bike</option>
-              </select>
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="licenseExpiryDate" class="form-label">License Expiry Date</label>
-            <input type="date" name="licenseExpiryDate" id="licenseExpiryDate" class="form-control"
-              value="<?php echo htmlspecialchars($_POST['licenseExpiryDate'] ?? date('Y-m-d', strtotime('+3 years'))); ?>">
-          </div>
-        </div>
-
-        <!-- Staff fields -->
-        <div class="actor-signup-fields <?php echo (isset($_POST['role']) && $_POST['role'] === 'STAFF') ? 'show' : ''; ?>"
-          id="staffFields">
-          <div class="form-group">
-            <label for="position" class="form-label">Staff Position</label>
-            <select name="position" id="position" class="form-control"
-              style="background-color: var(--bg-card-inner); color: #fff;">
-              <option value="Dispatch Controller">Dispatch Controller</option>
-              <option value="Fleet Maintenance Supervisor">Fleet Maintenance Supervisor</option>
-              <option value="Ticketing Officer">Ticketing Officer</option>
-              <option value="Customer Support Officer">Customer Support Officer</option>
-              <option value="Operations Executive">Operations Executive</option>
-            </select>
-          </div>
-        </div>
-
-        <!-- Admin fields -->
-        <div class="actor-signup-fields <?php echo (isset($_POST['role']) && $_POST['role'] === 'ADMIN') ? 'show' : ''; ?>"
-          id="adminFields">
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-            <div class="form-group">
-              <label for="adminCode" class="form-label">Admin Security Code</label>
-              <input type="text" name="adminCode" id="adminCode" class="form-control" placeholder="ADM-101"
-                value="<?php echo htmlspecialchars($_POST['adminCode'] ?? ''); ?>">
-            </div>
-            <div class="form-group">
-              <label for="privilegeLevel" class="form-label">Privilege Level</label>
-              <select name="privilegeLevel" id="privilegeLevel" class="form-control"
-                style="background-color: var(--bg-card-inner); color: #fff;">
-                <option value="OPS_ADMIN">Operations Admin</option>
-                <option value="SUPER_ADMIN">Super Administrator</option>
-                <option value="AUDITOR">Compliance Auditor</option>
-              </select>
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="department" class="form-label">Department</label>
-            <input type="text" name="department" id="department" class="form-control" placeholder="Central Operations Command"
-              value="<?php echo htmlspecialchars($_POST['department'] ?? 'Operations HQ'); ?>">
-          </div>
-        </div>
-
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
           <div class="form-group">
             <label for="password" class="form-label">Password</label>
@@ -307,7 +196,80 @@ $pageTitle = "Sign Up | SmartMove Transport";
           </div>
         </div>
 
-        <button type="submit" class="btn-auth-submit">Create SmartMove Account</button>
+        <!-- Account category selection -->
+        <div class="form-group" style="margin-top: 0.25rem;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 0.35rem;">
+            <label class="form-label" style="font-weight: 700; color: var(--text-white, #FFFFFF); margin: 0;">
+              Choose Account Category
+            </label>
+            <span style="font-size: 0.75rem; color: var(--text-muted, #94A3B8);">Select your role to view options</span>
+          </div>
+
+          <div class="role-tabs" style="margin-bottom: 0.5rem;">
+            <button type="button"
+              class="role-btn <?php echo ($selectedRole === 'PASSENGER') ? 'active' : ''; ?>"
+              data-role="PASSENGER">Passenger</button>
+            <button type="button"
+              class="role-btn <?php echo ($selectedRole === 'DRIVER') ? 'active' : ''; ?>"
+              data-role="DRIVER">Driver</button>
+          </div>
+        </div>
+
+        <!-- Helper prompt when no category is selected -->
+        <div id="noRoleSelectedHint" class="category-prompt-box"
+          style="<?php echo empty($selectedRole) ? 'display:block;' : 'display:none;'; ?>">
+          Select whether you want to join as a <strong>Passenger</strong> or <strong>Driver</strong> to configure your specific details.
+        </div>
+
+        <!-- Passenger fields -->
+        <div class="actor-signup-fields <?php echo ($selectedRole === 'PASSENGER') ? 'show' : ''; ?>"
+          id="passengerFields"
+          style="<?php echo ($selectedRole === 'PASSENGER') ? 'display:flex;' : 'display:none;'; ?>">
+          <div style="background: rgba(37, 99, 235, 0.08); border: 1px solid rgba(37, 99, 235, 0.2); border-radius: var(--radius-sm, 6px); padding: 0.65rem 0.85rem; font-size: 0.8rem; color: #93C5FD;">
+            Passenger Account: Configure your residential address.
+          </div>
+          <div class="form-group">
+            <label for="address" class="form-label">Residential Address</label>
+            <input type="text" name="address" id="address" class="form-control" placeholder="No. 45, Galle Road, Colombo 03"
+              value="<?php echo htmlspecialchars($_POST['address'] ?? ''); ?>">
+          </div>
+        </div>
+
+        <!-- Driver fields -->
+        <div class="actor-signup-fields <?php echo ($selectedRole === 'DRIVER') ? 'show' : ''; ?>"
+          id="driverFields"
+          style="<?php echo ($selectedRole === 'DRIVER') ? 'display:flex;' : 'display:none;'; ?>">
+          <div style="background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.25); border-radius: var(--radius-sm, 6px); padding: 0.65rem 0.85rem; font-size: 0.8rem; color: #FCD34D;">
+            Driver Partner: Enter your driving license credentials for verification.
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-group">
+              <label for="licenseNo" class="form-label">Driving License No.</label>
+              <input type="text" name="licenseNo" id="licenseNo" class="form-control" placeholder="B1234567"
+                value="<?php echo htmlspecialchars($_POST['licenseNo'] ?? ''); ?>">
+            </div>
+            <div class="form-group">
+              <label for="licenseType" class="form-label">License Class</label>
+              <select name="licenseType" id="licenseType" class="form-control"
+                style="background-color: var(--bg-card-inner); color: #fff;">
+                <option value="HEAVY_COACH" <?php echo (($_POST['licenseType'] ?? '') === 'HEAVY_COACH') ? 'selected' : ''; ?>>Heavy Coach (Buses)</option>
+                <option value="COMMERCIAL_VAN" <?php echo (($_POST['licenseType'] ?? '') === 'COMMERCIAL_VAN') ? 'selected' : ''; ?>>Commercial Van</option>
+                <option value="EXECUTIVE_SEDAN" <?php echo (($_POST['licenseType'] ?? '') === 'EXECUTIVE_SEDAN') ? 'selected' : ''; ?>>Executive Sedan</option>
+                <option value="THREE_WHEELER" <?php echo (($_POST['licenseType'] ?? '') === 'THREE_WHEELER') ? 'selected' : ''; ?>>Three-Wheel Tuk-Tuk</option>
+                <option value="MOTORBIKE" <?php echo (($_POST['licenseType'] ?? '') === 'MOTORBIKE') ? 'selected' : ''; ?>>Express Courier Bike</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="licenseExpiryDate" class="form-label">License Expiry Date</label>
+            <input type="date" name="licenseExpiryDate" id="licenseExpiryDate" class="form-control"
+              value="<?php echo htmlspecialchars($_POST['licenseExpiryDate'] ?? date('Y-m-d', strtotime('+3 years'))); ?>">
+          </div>
+        </div>
+
+
+
+        <button type="submit" class="btn-auth-submit" id="submitBtn">Create SmartMove Account</button>
       </form>
 
       <div class="auth-footer-text">
@@ -322,7 +284,7 @@ $pageTitle = "Sign Up | SmartMove Transport";
   </main>
 
   <!-- Script -->
-  <script src="../js/auth.js"></script>
+  <script src="../js/auth.js?v=<?php echo filemtime(__DIR__ . '/../js/auth.js'); ?>"></script>
 </body>
 
 </html>

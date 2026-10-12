@@ -42,7 +42,7 @@
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
                       <strong
                         style="color:var(--text-white); font-size:0.85rem;"><?php echo htmlspecialchars($rev['passengerName'] ?? 'Passenger'); ?></strong>
-                      <span style="color:#FBBF24; font-weight:700; font-size:0.85rem;">★
+                      <span style="color:#FBBF24; font-weight:700; font-size:0.85rem;">
                         <?php echo htmlspecialchars($rev['rating'] ?? 5); ?>/5</span>
                     </div>
                     <div style="font-size:0.75rem; color:var(--accent-blue); margin-bottom:0.5rem;">
@@ -87,7 +87,7 @@
                         <div style="color:var(--text-muted); font-size:0.75rem;">
                           <?php echo htmlspecialchars($d['reviews']); ?> verified passenger reviews</div>
                       </div>
-                      <span style="color:#FBBF24; font-weight:700; font-size:0.95rem;">★
+                      <span style="color:#FBBF24; font-weight:700; font-size:0.95rem;">
                         <?php echo htmlspecialchars($d['avgRating']); ?></span>
                     </div>
                   <?php endforeach; ?>
@@ -115,7 +115,7 @@
                         <div style="color:var(--text-muted); font-size:0.75rem;">
                           <?php echo htmlspecialchars($v['reviews']); ?> passenger ratings</div>
                       </div>
-                      <span style="color:#FBBF24; font-weight:700; font-size:0.95rem;">★
+                      <span style="color:#FBBF24; font-weight:700; font-size:0.95rem;">
                         <?php echo htmlspecialchars($v['avgRating']); ?></span>
                     </div>
                   <?php endforeach; ?>
@@ -153,7 +153,7 @@
                         <?php $docItem = (array) $d; ?>
                         <div
                           style="background:rgba(255,255,255,0.03); padding:0.4rem 0.6rem; border-radius:4px; font-size:0.78rem; display:flex; justify-content:space-between; align-items:center;">
-                          <span style="color:#93C5FD;">📄
+                          <span style="color:#93C5FD;">
                             <?php echo htmlspecialchars($docItem['title'] ?? 'Document'); ?></span>
                           <span
                             style="color:var(--text-muted); font-size:0.72rem;"><?php echo htmlspecialchars($docItem['fileSize'] ?? ''); ?></span>
