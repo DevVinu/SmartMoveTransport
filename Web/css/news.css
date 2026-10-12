@@ -45,7 +45,7 @@
 }
 
 .news-card:hover {
-  background-color: var(--bg-card-hover);
+  background-color: var(--bg-card-dark);
   transform: none;
 }
 

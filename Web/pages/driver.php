@@ -1,24 +1,13 @@
 <?php
-/**
- * SmartMove Transport Solutions — Driver Partner Portal
- * Enterprise Dark Slate Theme (ShadcnUI Aesthetic)
- * 
- * Functional Features for Road Captains / Fleet Drivers:
- * - Real-Time Duty Status Toggling (AVAILABLE / ON_DUTY / OFF_DUTY)
- * - FR-08: Active Assigned Trip Cockpit & Passenger Manifest
- * - Trip Execution Lifecycle (Start Run -> In Transit -> Completed)
- * - FR-04: Duty Shift Rostering & Shift Clock-In/Clock-Out
- * - Fuel & Mileage Refuel Logging (fuelLog)
- * - FR-07: Passenger Ratings & Feedback Auditing (MongoDB + Oracle)
- */
-
+// Driver portal
 require_once __DIR__ . '/../config/config.php';
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../models/User.php';
 require_once __DIR__ . '/../models/MongoService.php';
+require_once __DIR__ . '/../components/dashboard/profile_controller.php';
 
-// Session Security: Require DRIVER or ADMIN role
+// Auth check
 Auth::requireRole(['DRIVER', 'ADMIN']);
 
 $currentUser = Auth::user();
@@ -30,30 +19,28 @@ $email       = htmlspecialchars($currentUser['email'] ?? 'driver@smartmove.com')
 $role        = strtoupper($currentUser['role'] ?? 'DRIVER');
 $initials    = strtoupper(substr($firstName, 0, 1) . substr($lastName, 0, 1));
 
-// Database Health Check
+// Health check
 $dbHealth = Database::checkHealth();
 $oracleUp = $dbHealth['oracle']['connected'] ?? false;
 $mongoUp  = $dbHealth['mongodb']['connected'] ?? false;
 
-// Active View Routing
+// View routing
 $activeView = $_GET['view'] ?? 'cockpitView';
-$validViews = ['cockpitView', 'tripsView', 'shiftsView', 'fuelView', 'feedbackView'];
+$validViews = ['cockpitView', 'tripsView', 'shiftsView', 'fuelView', 'feedbackView', 'profileView'];
 if (!in_array($activeView, $validViews)) {
     $activeView = 'cockpitView';
 }
 
-// Flash Notifications
+// Flash messages
 $flashSuccess = $_SESSION['flash_success'] ?? null;
 $flashError   = $_SESSION['flash_error'] ?? null;
 unset($_SESSION['flash_success'], $_SESSION['flash_error']);
 
-// -----------------------------------------------------------------------------
-// POST CONTROLLER: DRIVER ACTIONS
-// -----------------------------------------------------------------------------
+// Post actions
 if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
     $action = $_POST['action'] ?? '';
 
-    // Action 1: Toggle Duty Status
+    // Set duty status
     if ($action === 'setDutyStatus') {
         $newDuty = strtoupper(trim($_POST['dutyStatus'] ?? 'AVAILABLE'));
         if (in_array($newDuty, ['AVAILABLE', 'ON_DUTY', 'OFF_DUTY'])) {
@@ -67,7 +54,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
         exit;
     }
 
-    // Action 2: Start Assigned Trip (Set to IN_TRANSIT)
+    // Start trip
     if ($action === 'startTrip') {
         $tripId = (int)($_POST['tripId'] ?? 0);
         if ($tripId) {
@@ -82,7 +69,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
         exit;
     }
 
-    // Action 3: Complete Trip (Set to COMPLETED)
+    // Complete trip
     if ($action === 'completeTrip') {
         $tripId = (int)($_POST['tripId'] ?? 0);
         if ($tripId) {
@@ -97,7 +84,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
         exit;
     }
 
-    // Action 4: Shift Clock-In / Clock-Out
+    // Clock shift
     if ($action === 'clockShift') {
         $shiftId   = (int)($_POST['shiftId'] ?? 0);
         $newStatus = strtoupper(trim($_POST['status'] ?? 'ON_DUTY'));
@@ -115,7 +102,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
         exit;
     }
 
-    // Action 5: Log Fuel Refill
+    // Log fuel
     if ($action === 'logFuel') {
         $vehicleId       = (int)($_POST['vehicleId'] ?? 1);
         $stationName     = trim($_POST['stationName'] ?? 'Ceypetco Highway Station');
@@ -147,9 +134,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
     }
 }
 
-// -----------------------------------------------------------------------------
-// DATA QUERIES (With Realistic Fallbacks)
-// -----------------------------------------------------------------------------
+// Queries
 $driverInfo       = null;
 $assignedTrips    = [];
 $activeTrip       = null;
@@ -159,7 +144,7 @@ $fuelLogs         = [];
 $passengerReviews = [];
 
 if ($oracleUp) {
-    // 1. Driver Profile & License
+    // Driver profile
     $dRows = Database::queryOracle("
         SELECT d.driverId, d.licenseNo, d.licenseNumber, d.licenseType, d.licenseExpiryDate, d.driverStatus
         FROM driver d
@@ -169,7 +154,7 @@ if ($oracleUp) {
         $driverInfo = $dRows[0];
     }
 
-    // 2. Assigned Trips
+    // Assigned trips
     $assignedTrips = Database::queryOracle("
         SELECT st.tripId, r.routeName, r.origin, r.destination, r.distanceKm,
                v.vehicleId, v.registrationNo, v.model, v.vehicleType, v.capacity,
@@ -181,7 +166,7 @@ if ($oracleUp) {
         ORDER BY st.tripId DESC
     ", [':dId' => $userId]);
 
-    // 3. Driver Shifts
+    // Shifts
     $myShifts = Database::queryOracle("
         SELECT shiftId, shiftDate, startTime, endTime, shiftStatus
         FROM driverShift
@@ -189,7 +174,7 @@ if ($oracleUp) {
         ORDER BY shiftId DESC
     ", [':dId' => $userId]);
 
-    // 4. Fuel Logs
+    // Fuel logs
     $fuelLogs = Database::queryOracle("
         SELECT fl.fuelLogId, v.registrationNo, fl.refuelDate, fl.stationName,
                fl.litersPumped, fl.totalCost, fl.odometerReading
@@ -200,7 +185,7 @@ if ($oracleUp) {
     ", [':dId' => $userId]);
 }
 
-// Fallbacks for Driver Info
+// Fallback driver info
 if (!$driverInfo) {
     $driverInfo = [
         'driverId'          => $userId,
@@ -213,7 +198,7 @@ if (!$driverInfo) {
 }
 $currentDutyStatus = strtoupper($_SESSION['driver_duty_status'] ?? $driverInfo['driverStatus'] ?? 'AVAILABLE');
 
-// Fallback Assigned Trips
+// Fallback trips
 if (empty($assignedTrips)) {
     $assignedTrips = [
         [
@@ -273,7 +258,7 @@ if (empty($assignedTrips)) {
     ];
 }
 
-// Locate Active or Next Scheduled Trip
+// Active trip
 foreach ($assignedTrips as $t) {
     if (in_array($t['tripStatus'], ['IN_TRANSIT', 'SCHEDULED'])) {
         $activeTrip = $t;
@@ -284,7 +269,7 @@ if (!$activeTrip && !empty($assignedTrips)) {
     $activeTrip = $assignedTrips[0];
 }
 
-// Fallback Manifest for Active Trip
+// Fallback manifest
 if ($activeTrip) {
     if ($oracleUp) {
         $tripManifest = Database::queryOracle("
@@ -308,7 +293,7 @@ if ($activeTrip) {
     }
 }
 
-// Fallback Shifts
+// Fallback shifts
 if (empty($myShifts)) {
     $myShifts = [
         ['shiftId' => 201, 'shiftDate' => date('Y-m-d'), 'startTime' => '06:00 AM', 'endTime' => '02:00 PM', 'shiftStatus' => 'ON_DUTY'],
@@ -317,7 +302,7 @@ if (empty($myShifts)) {
     ];
 }
 
-// Fallback Fuel Logs
+// Fallback fuel logs
 if (empty($fuelLogs)) {
     $fuelLogs = [
         ['fuelLogId' => 11, 'registrationNo' => 'WP-ND-4521', 'refuelDate' => date('Y-m-d', strtotime('-1 day')), 'stationName' => 'Ceypetco Highway Interchange Kottawa', 'litersPumped' => 65.0, 'totalCost' => 24375.00, 'odometerReading' => 142850],
@@ -325,7 +310,7 @@ if (empty($fuelLogs)) {
     ];
 }
 
-// MongoDB Passenger Reviews & Ratings (FR-07)
+// Passenger reviews
 if ($mongoUp) {
     $mongoRes = Database::queryMongo('passenger_reviews', ['driverId' => $userId]);
     if (!empty($mongoRes)) {
@@ -358,7 +343,7 @@ if (empty($passengerReviews)) {
     ];
 }
 
-// Compute Driver Score
+// Driver rating
 $totalScore = array_sum(array_column($passengerReviews, 'rating'));
 $avgRating  = count($passengerReviews) > 0 ? round($totalScore / count($passengerReviews), 1) : 4.9;
 
@@ -378,106 +363,20 @@ $pageTitle = "SmartMove — Driver Partner Portal";
 
 <div class="app-wrapper">
 
-  <!-- Sidebar Navigation -->
-  <aside class="sidebar" id="sidebar">
-    <div class="sidebar-header" title="SmartMove Driver Portal">
-      <div class="sidebar-brand-wrapper">
-        <div class="brand-icon-box" style="background:#0284C7;">DR</div>
-        <div class="sidebar-header-text">
-          <span class="brand-name">SmartMove</span>
-          <span class="brand-subtext">DRIVER PORTAL</span>
-        </div>
-      </div>
-      <div class="brand-arrows">⌘</div>
-    </div>
+  <!-- Sidebar -->
+  <?php include __DIR__ . '/../components/dashboard/sidebar.php'; ?>
 
-    <!-- Nav List -->
-    <nav class="sidebar-nav">
-      <div class="sidebar-group">
-        <div class="sidebar-group-title">CAPTAIN DASHBOARD</div>
-
-        <a class="nav-item <?php echo $activeView === 'cockpitView' ? 'active' : ''; ?>" data-view="cockpitView" title="Driver Cockpit & Run Manifest">
-          <div class="nav-item-icon">
-            <svg viewBox="0 0 24 24"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
-          </div>
-          <span>Active Cockpit</span>
-          <?php if ($activeTrip && $activeTrip['tripStatus'] === 'IN_TRANSIT'): ?>
-            <span class="nav-badge" style="background:#38BDF8;">LIVE</span>
-          <?php endif; ?>
-        </a>
-
-        <a class="nav-item <?php echo $activeView === 'tripsView' ? 'active' : ''; ?>" data-view="tripsView" title="My Assigned Runs">
-          <div class="nav-item-icon">
-            <svg viewBox="0 0 24 24"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1 .4-1 1v7c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/></svg>
-          </div>
-          <span>My Assigned Trips</span>
-          <span class="nav-badge" style="background:var(--blue-primary);"><?php echo count($assignedTrips); ?></span>
-        </a>
-
-        <a class="nav-item <?php echo $activeView === 'shiftsView' ? 'active' : ''; ?>" data-view="shiftsView" title="Duty Shifts & Roster">
-          <div class="nav-item-icon">
-            <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-          </div>
-          <span>My Shifts</span>
-        </a>
-
-        <a class="nav-item <?php echo $activeView === 'fuelView' ? 'active' : ''; ?>" data-view="fuelView" title="Vehicle Health & Refueling">
-          <div class="nav-item-icon">
-            <svg viewBox="0 0 24 24"><path d="M3 22v-8a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v8"/><path d="M15 10a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v12"/><path d="M7 12V2"/><path d="M19 8V2"/></svg>
-          </div>
-          <span>Fuel &amp; Vehicle Logs</span>
-        </a>
-
-        <a class="nav-item <?php echo $activeView === 'feedbackView' ? 'active' : ''; ?>" data-view="feedbackView" title="Ratings & Passenger Feedback">
-          <div class="nav-item-icon">
-            <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-          </div>
-          <span>Reviews &amp; Ratings</span>
-          <span class="nav-badge" style="background:#F59E0B;"><?php echo $avgRating; ?>★</span>
-        </a>
-      </div>
-    </nav>
-
-    <!-- Sidebar Footer -->
-    <div class="sidebar-footer">
-      <button class="user-profile-btn" id="sidebarUserBtn" type="button">
-        <div class="user-avatar" style="background:#0284C7;"><?php echo $initials; ?></div>
-        <div class="user-details">
-          <span class="user-name"><?php echo $fullName; ?></span>
-          <span class="user-email">CAPTAIN #<?php echo $userId; ?></span>
-        </div>
-        <div class="user-arrows">⇅</div>
-      </button>
-
-      <!-- Sidebar User Menu Popover -->
-      <div class="popover-menu" id="sidebarUserMenu">
-        <div class="popover-item">
-          <strong><?php echo $fullName; ?></strong><br>
-          <span style="font-size:11px;color:var(--text-muted);"><?php echo $email; ?></span>
-        </div>
-        <div class="popover-divider"></div>
-        <a href="../index.php" class="popover-item">← Main Website</a>
-        <?php if ($role === 'ADMIN'): ?>
-          <a href="dashboard.php" class="popover-item">🛡️ Admin Portal</a>
-          <a href="staff.php" class="popover-item">📋 Staff Portal</a>
-        <?php endif; ?>
-        <div class="popover-divider"></div>
-        <a href="logout.php" class="popover-item" style="color:#F87171;">Sign Out</a>
-      </div>
-    </div>
-  </aside>
-
-  <!-- Main Viewport -->
+  <!-- Main viewport -->
   <div class="main-viewport">
     
-    <!-- Topbar Header -->
+    <!-- Topbar -->
     <header class="topbar">
       <div class="topbar-left">
         <button class="sidebar-toggle-btn" id="toggleSidebarBtn" type="button" title="Toggle Sidebar">
           <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" fill="none"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
         </button>
         
-        <!-- Live Duty Status Toggle Pill Bar -->
+        <!-- Duty status -->
         <form method="POST" class="duty-status-bar" id="dutyStatusForm">
           <input type="hidden" name="action" value="setDutyStatus">
           <input type="hidden" name="dutyStatus" id="dutyStatusInput" value="<?php echo $currentDutyStatus; ?>">
@@ -495,17 +394,17 @@ $pageTitle = "SmartMove — Driver Partner Portal";
       </div>
 
       <div class="topbar-right">
-        <!-- License Pill -->
+        <!-- License -->
         <div class="type-badge" style="background:var(--bg-card-inner);border:1px solid var(--border-subtle);" title="Driver License">
           🪪 <?php echo htmlspecialchars($driverInfo['licenseNumber'] ?? 'B-LIC'); ?>
         </div>
 
-        <!-- Rating Pill -->
+        <!-- Rating -->
         <div class="type-badge" style="background:rgba(245, 158, 11, 0.15);color:#FBBF24;border:1px solid rgba(245, 158, 11, 0.35);">
           ⭐ <?php echo $avgRating; ?> / 5.0
         </div>
 
-        <!-- Topbar Avatar -->
+        <!-- Avatar -->
         <button class="topbar-avatar-btn" id="topbarAvatarBtn" type="button">
           <div class="user-avatar" style="background:#0284C7;"><?php echo $initials; ?></div>
         </button>
@@ -522,24 +421,13 @@ $pageTitle = "SmartMove — Driver Partner Portal";
       </div>
     </header>
 
-    <!-- Main Content Container -->
+    <!-- Content -->
     <main class="content-container">
 
-      <!-- Flash Notification Alerts -->
-      <?php if ($flashSuccess): ?>
-        <div class="alert-banner alert-banner-success">
-          <span>✓</span> <?php echo htmlspecialchars($flashSuccess); ?>
-        </div>
-      <?php endif; ?>
-      <?php if ($flashError): ?>
-        <div class="alert-banner alert-banner-error">
-          <span>⚠️</span> <?php echo htmlspecialchars($flashError); ?>
-        </div>
-      <?php endif; ?>
+      <!-- Flash messages -->
+      <?php include __DIR__ . '/../components/dashboard/flash_messages.php'; ?>
 
-      <!-- ====================================================================
-           VIEW 1: DRIVER COCKPIT & ACTIVE TRIP
-           ==================================================================== -->
+      <!-- Cockpit view -->
       <section class="page-view <?php echo $activeView === 'cockpitView' ? 'active-view' : ''; ?>" id="cockpitView">
         <div class="view-header">
           <div class="view-title-group">
@@ -552,7 +440,7 @@ $pageTitle = "SmartMove — Driver Partner Portal";
           $ast = strtoupper($activeTrip['tripStatus']);
           $isLive = ($ast === 'IN_TRANSIT');
         ?>
-          <!-- Prominent Active Trip Banner -->
+          <!-- Active trip banner -->
           <div class="cockpit-banner">
             <div class="cockpit-header">
               <div class="cockpit-route-display">
@@ -592,7 +480,7 @@ $pageTitle = "SmartMove — Driver Partner Portal";
               </div>
             </div>
 
-            <!-- Route Meta Grid -->
+            <!-- Route meta -->
             <div class="cockpit-meta-grid">
               <div class="cockpit-meta-item">
                 <span class="cockpit-meta-label">Route Name</span>
@@ -617,7 +505,7 @@ $pageTitle = "SmartMove — Driver Partner Portal";
             </div>
           </div>
 
-          <!-- Passenger Manifest Section -->
+          <!-- Manifest -->
           <div class="dash-overview-grid" style="margin-top:12px;">
             <div class="dash-panel">
               <div class="panel-header">
@@ -647,7 +535,7 @@ $pageTitle = "SmartMove — Driver Partner Portal";
               </div>
             </div>
 
-            <!-- Quick Road Action & Safety Checklist -->
+            <!-- Safety checklist -->
             <div class="dash-panel">
               <div class="panel-header">
                 <h3 class="panel-title">Pre-Departure Safety Checklist</h3>
@@ -688,9 +576,7 @@ $pageTitle = "SmartMove — Driver Partner Portal";
         <?php endif; ?>
       </section>
 
-      <!-- ====================================================================
-           VIEW 2: ASSIGNED TRIPS
-           ==================================================================== -->
+      <!-- Trips view -->
       <section class="page-view <?php echo $activeView === 'tripsView' ? 'active-view' : ''; ?>" id="tripsView">
         <div class="view-header">
           <div class="view-title-group">
@@ -769,9 +655,7 @@ $pageTitle = "SmartMove — Driver Partner Portal";
         </div>
       </section>
 
-      <!-- ====================================================================
-           VIEW 3: MY SHIFTS
-           ==================================================================== -->
+      <!-- Shifts view -->
       <section class="page-view <?php echo $activeView === 'shiftsView' ? 'active-view' : ''; ?>" id="shiftsView">
         <div class="view-header">
           <div class="view-title-group">
@@ -833,9 +717,7 @@ $pageTitle = "SmartMove — Driver Partner Portal";
         </div>
       </section>
 
-      <!-- ====================================================================
-           VIEW 4: FUEL & VEHICLE LOGS
-           ==================================================================== -->
+      <!-- Fuel view -->
       <section class="page-view <?php echo $activeView === 'fuelView' ? 'active-view' : ''; ?>" id="fuelView">
         <div class="view-header">
           <div class="view-title-group">
@@ -880,9 +762,7 @@ $pageTitle = "SmartMove — Driver Partner Portal";
         </div>
       </section>
 
-      <!-- ====================================================================
-           VIEW 5: RATINGS & PASSENGER REVIEWS
-           ==================================================================== -->
+      <!-- Reviews view -->
       <section class="page-view <?php echo $activeView === 'feedbackView' ? 'active-view' : ''; ?>" id="feedbackView">
         <div class="view-header">
           <div class="view-title-group">
@@ -891,7 +771,7 @@ $pageTitle = "SmartMove — Driver Partner Portal";
           </div>
         </div>
 
-        <!-- Rating Summary Box -->
+        <!-- Rating summary -->
         <div class="stat-card" style="margin-bottom:20px;padding:24px;">
           <div style="display:flex;align-items:center;gap:24px;flex-wrap:wrap;">
             <div style="font-size:48px;font-weight:800;color:#FBBF24;line-height:1;">
@@ -909,35 +789,45 @@ $pageTitle = "SmartMove — Driver Partner Portal";
           </div>
         </div>
 
-        <!-- Reviews Grid -->
+        <!-- Reviews grid -->
         <div class="reviews-grid">
           <?php foreach ($passengerReviews as $rev): ?>
             <div class="review-card">
               <div>
                 <div class="review-stars">
                   <?php echo str_repeat('★', (int)($rev['rating'] ?? 5)); ?><?php echo str_repeat('☆', 5 - (int)($rev['rating'] ?? 5)); ?>
-                </div>
+                <?php 
+                  $rAuthor = is_string($rev['author'] ?? null) ? $rev['author'] : 'Commuter';
+                  $rComment = is_string($rev['comment'] ?? null) ? $rev['comment'] : (is_string($rev['comments'] ?? null) ? $rev['comments'] : '');
+                  $rCreated = $rev['createdAt'] ?? date('Y-m-d');
+                  if (is_array($rCreated)) {
+                    $rCreated = $rCreated['$date'] ?? date('Y-m-d');
+                  }
+                  if (!is_string($rCreated)) {
+                    $rCreated = date('Y-m-d');
+                  }
+                ?>
                 <p class="review-text" style="margin-top:10px;">
-                  "<?php echo htmlspecialchars($rev['comment'] ?? $rev['comments'] ?? ''); ?>"
+                  "<?php echo htmlspecialchars($rComment); ?>"
                 </p>
               </div>
 
               <div class="review-author-row">
-                <span style="font-weight:600;color:var(--text-white);"><?php echo htmlspecialchars($rev['author'] ?? 'Commuter'); ?></span>
-                <span><?php echo htmlspecialchars($rev['createdAt'] ?? date('Y-m-d')); ?></span>
+                <span style="font-weight:600;color:var(--text-white);"><?php echo htmlspecialchars($rAuthor); ?></span>
+                <span><?php echo htmlspecialchars($rCreated); ?></span>
               </div>
             </div>
           <?php endforeach; ?>
         </div>
       </section>
 
+      <?php include __DIR__ . '/../components/dashboard/views/profile_view.php'; ?>
+
     </main>
   </div>
 </div>
 
-<!-- ========================================================================
-     MODAL: LOG FUEL STATION RECEIPT
-     ======================================================================== -->
+<!-- Fuel modal -->
 <div class="modal-backdrop" id="logFuelModal">
   <div class="modal-box">
     <div class="modal-header">
@@ -972,7 +862,7 @@ $pageTitle = "SmartMove — Driver Partner Portal";
   </div>
 </div>
 
-<!-- Core Dashboard Engine (Zero Inline Scripts) -->
+<!-- Script -->
 <script src="../js/dashboard.js"></script>
 </body>
 </html>

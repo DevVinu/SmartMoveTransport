@@ -1,379 +1,217 @@
 <?php
-/**
- * SmartMove Transport Solutions — Dual Database Manager
- * Handles hybrid connectivity:
- *   1. Oracle Database 19c/21c XE (Relational / ACID transactions)
- *   2. MongoDB Community Server 7.0+ (NoSQL / Unstructured Documents & Telemetry)
- */
-
-class Database {
-    // ------------------------------------------------------------------------
-    // ORACLE CONFIGURATION
-    // ------------------------------------------------------------------------
-    private static $oraUser    = 'smartmove_user';
-    private static $oraPass    = 'password123';
+// Database manager
+class Database
+{
+    // Oracle XE Configuration
+    private static $oraUser    = 'system';
+    private static $oraPass    = 'darkking10';
     private static $oraHost    = 'localhost';
     private static $oraPort    = '1521';
     private static $oraService = 'XEPDB1';
     private static $oraCharset = 'AL32UTF8';
     private static $oraConn    = null;
 
-    // ------------------------------------------------------------------------
-    // MONGODB CONFIGURATION
-    // ------------------------------------------------------------------------
+    // MongoDB Configuration
     private static $mongoUri   = 'mongodb://localhost:27017';
     private static $mongoDb    = 'smartmove_db';
     private static $mongoConn  = null;
 
-    /**
-     * Get or establish an active Oracle OCI8 connection.
-     * @return resource|null OCI8 connection resource or null on failure
-     */
-    public static function getOracle() {
+    // Column aliases for clean PHP access
+    private static $aliases = [
+        'tripid' => 'tripId', 'routeid' => 'routeId', 'routename' => 'routeName', 'routetype' => 'routeType',
+        'vehicleid' => 'vehicleId', 'vehicletype' => 'vehicleType', 'registrationno' => 'registrationNo',
+        'driverid' => 'driverId', 'drivername' => 'driverName', 'driverstatus' => 'driverStatus',
+        'licensenumber' => 'licenseNumber', 'licenseno' => 'licenseNo', 'tripdate' => 'tripDate',
+        'departuretime' => 'departureTime', 'arrivaltime' => 'arrivalTime', 'availableseats' => 'availableSeats',
+        'fareamount' => 'fareAmount', 'tripstatus' => 'tripStatus', 'shiftid' => 'shiftId', 'shiftstatus' => 'shiftStatus',
+        'maintenanceid' => 'maintenanceId', 'maintenancestatus' => 'maintenanceStatus', 'nextservicedate' => 'nextServiceDate',
+        'staffid' => 'staffId', 'staffname' => 'staffName', 'bookingid' => 'bookingId', 'bookingstatus' => 'bookingStatus',
+        'passengerid' => 'passengerId', 'passengername' => 'passengerName', 'seatnumber' => 'seatNumber',
+        'ticketprice' => 'ticketPrice', 'paymentmethod' => 'paymentMethod', 'paymentstatus' => 'paymentStatus',
+        'accountstatus' => 'accountStatus', 'userid' => 'userId', 'firstname' => 'firstName', 'lastname' => 'lastName',
+        'distancekm' => 'distanceKm', 'estimateddurationminutes' => 'estimatedDurationMinutes', 'basefare' => 'baseFare'
+    ];
+
+    // Establish Oracle Connection
+    public static function getOracle()
+    {
         if (self::$oraConn !== null) {
             return self::$oraConn;
         }
-
         if (!function_exists('oci_connect')) {
-            error_log("[Database] Oracle OCI8 extension is not enabled in php.ini");
             return null;
         }
 
-        $connectionString = sprintf(
-            '%s:%s/%s',
-            self::$oraHost,
-            self::$oraPort,
-            self::$oraService
-        );
-
-        // Attempt connection to Oracle XE (try smartmoveOwner first, then fallback to smartmove_user)
-        self::$oraConn = @oci_connect(
-            'smartmoveOwner',
-            'Owner123',
-            $connectionString,
-            self::$oraCharset
-        );
-
-        if (!self::$oraConn) {
-            self::$oraConn = @oci_connect(
-                self::$oraUser,
-                self::$oraPass,
-                $connectionString,
-                self::$oraCharset
-            );
-        }
-
-        if (!self::$oraConn) {
-            $err = oci_error();
-            error_log("[Database] Oracle Connection Error: " . ($err['message'] ?? 'Unknown error'));
-            self::$oraConn = null;
-        }
-
-        return self::$oraConn;
+        $dsn = sprintf('%s:%s/%s', self::$oraHost, self::$oraPort, self::$oraService);
+        self::$oraConn = @oci_connect(self::$oraUser, self::$oraPass, $dsn, self::$oraCharset);
+        return self::$oraConn ?: null;
     }
 
-    /**
-     * Execute an Oracle SELECT query and return rows as an associative array.
-     * @param string $sql SQL query with optional :bind variables
-     * @param array $params Associative array of bind parameters e.g. [':id' => 1]
-     * @return array Array of associative rows
-     */
-    public static function queryOracle($sql, $params = []) {
+    // Execute Oracle SELECT query
+    public static function queryOracle($sql, $params = [])
+    {
         $conn = self::getOracle();
-        if (!$conn) {
-            return [];
-        }
+        if (!$conn) return [];
 
         $stmt = oci_parse($conn, $sql);
-        if (!$stmt) {
-            $err = oci_error($conn);
-            error_log("[Database] Oracle Parse Error: " . ($err['message'] ?? ''));
-            return [];
+        if (!$stmt) return [];
+
+        foreach ($params as $k => $v) {
+            $bind = strpos($k, ':') === 0 ? $k : ':' . $k;
+            oci_bind_by_name($stmt, $bind, $params[$k]);
         }
 
-        // Bind parameters
-        foreach ($params as $key => $val) {
-            $bindKey = strpos($key, ':') === 0 ? $key : ':' . $key;
-            oci_bind_by_name($stmt, $bindKey, $params[$key]);
-        }
-
-        $exec = @oci_execute($stmt);
-        if (!$exec) {
-            $err = oci_error($stmt);
-            error_log("[Database] Oracle Execute Error: " . ($err['message'] ?? ''));
+        if (!@oci_execute($stmt)) {
             oci_free_statement($stmt);
             return [];
         }
 
         $rows = [];
         while ($row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
-            // Normalize column keys to lowercase for cleaner access in PHP
-            $normalized = [];
+            $item = [];
             foreach ($row as $k => $v) {
-                $normalized[strtolower($k)] = $v;
+                $low = strtolower($k);
+                $item[$k] = $v;
+                $item[$low] = $v;
+                if (isset(self::$aliases[$low])) {
+                    $item[self::$aliases[$low]] = $v;
+                }
             }
-            $rows[] = $normalized;
+            $rows[] = $item;
         }
 
         oci_free_statement($stmt);
         return $rows;
     }
 
-    /**
-     * Execute an INSERT, UPDATE, DELETE or DDL statement in Oracle with auto-commit.
-     * @param string $sql SQL statement
-     * @param array $params Bind parameters
-     * @return bool True on success, false on error
-     */
-    public static function executeOracle($sql, $params = []) {
+    // Execute Oracle INSERT, UPDATE, DELETE (Auto-commit)
+    public static function executeOracle($sql, $params = [])
+    {
         $conn = self::getOracle();
-        if (!$conn) {
-            return false;
-        }
+        if (!$conn) return false;
 
         $stmt = oci_parse($conn, $sql);
-        if (!$stmt) {
-            return false;
+        if (!$stmt) return false;
+
+        foreach ($params as $k => $v) {
+            $bind = strpos($k, ':') === 0 ? $k : ':' . $k;
+            oci_bind_by_name($stmt, $bind, $params[$k]);
         }
 
-        foreach ($params as $key => $val) {
-            $bindKey = strpos($key, ':') === 0 ? $key : ':' . $key;
-            oci_bind_by_name($stmt, $bindKey, $params[$key]);
-        }
-
-        $success = @oci_execute($stmt, OCI_COMMIT_ON_SUCCESS);
-        if (!$success) {
-            $err = oci_error($stmt);
-            error_log("[Database] Oracle Execution Failure: " . ($err['message'] ?? ''));
-        }
-
+        $ok = @oci_execute($stmt, OCI_COMMIT_ON_SUCCESS);
         oci_free_statement($stmt);
-        return $success;
+        return $ok;
     }
 
-    /**
-     * Get or establish an active MongoDB Connection.
-     * Supports both MongoDB\Client (Composer library) and native MongoDB\Driver\Manager.
-     * @return mixed MongoDB client or manager instance
-     */
-    public static function getMongo() {
+    // Establish MongoDB Connection
+    public static function getMongo()
+    {
         if (self::$mongoConn !== null) {
             return self::$mongoConn;
         }
-
-        // Check if MongoDB extension is loaded
         if (!extension_loaded('mongodb')) {
-            error_log("[Database] MongoDB extension (php_mongodb.dll) is not loaded in php.ini");
             return null;
         }
 
-        // If composer MongoDB\Client is available
-        if (class_exists('MongoDB\\Client')) {
-            try {
+        try {
+            if (class_exists('MongoDB\\Client')) {
                 $client = new \MongoDB\Client(self::$mongoUri);
                 self::$mongoConn = $client->selectDatabase(self::$mongoDb);
-                return self::$mongoConn;
-            } catch (\Exception $e) {
-                error_log("[Database] MongoDB Library Error: " . $e->getMessage());
-                return null;
+            } else {
+                self::$mongoConn = new \MongoDB\Driver\Manager(self::$mongoUri);
             }
-        }
-
-        // Native driver fallback using Manager
-        try {
-            $manager = new \MongoDB\Driver\Manager(self::$mongoUri);
-            self::$mongoConn = $manager;
             return self::$mongoConn;
         } catch (\Exception $e) {
-            error_log("[Database] MongoDB Manager Error: " . $e->getMessage());
             return null;
         }
     }
 
-    /**
-     * Query a MongoDB collection and return an array of documents.
-     * @param string $collection Collection name (e.g., 'passenger_reviews')
-     * @param array $filter MongoDB filter array e.g. ['rating' => 5]
-     * @param array $options Query options e.g. ['sort' => ['createdAt' => -1], 'limit' => 10]
-     * @return array Array of documents
-     */
-    public static function queryMongo($collection, $filter = [], $options = []) {
+    // Query MongoDB Collection
+    public static function queryMongo($collection, $filter = [], $options = [])
+    {
         $db = self::getMongo();
-        if (!$db) {
-            return [];
-        }
+        if (!$db) return [];
 
-        $results = [];
-
-        // Composer library format
-        if (is_object($db) && method_exists($db, 'selectCollection')) {
-            try {
-                $col = $db->selectCollection($collection);
-                $cursor = $col->find($filter, $options);
-                foreach ($cursor as $item) {
-                    $results[] = json_decode(json_encode($item), true);
+        try {
+            $results = [];
+            if (is_object($db) && method_exists($db, 'selectCollection')) {
+                $cursor = $db->selectCollection($collection)->find($filter, $options);
+                foreach ($cursor as $doc) {
+                    $results[] = json_decode(json_encode($doc), true);
                 }
-                return $results;
-            } catch (\Exception $e) {
-                error_log("[Database] Mongo Query Error: " . $e->getMessage());
-                return [];
-            }
-        }
-
-        // Native Driver Manager format
-        if ($db instanceof \MongoDB\Driver\Manager) {
-            try {
+            } elseif ($db instanceof \MongoDB\Driver\Manager) {
                 $query = new \MongoDB\Driver\Query($filter, $options);
                 $cursor = $db->executeQuery(self::$mongoDb . '.' . $collection, $query);
-                foreach ($cursor as $item) {
-                    $results[] = json_decode(json_encode($item), true);
+                foreach ($cursor as $doc) {
+                    $results[] = json_decode(json_encode($doc), true);
                 }
-                return $results;
-            } catch (\Exception $e) {
-                error_log("[Database] Native Mongo Query Error: " . $e->getMessage());
-                return [];
             }
+            return $results;
+        } catch (\Exception $e) {
+            return [];
         }
-
-        return [];
     }
 
-    /**
-     * Insert one or multiple documents into a MongoDB collection.
-     * @param string $collection Collection name (e.g. 'passenger_reviews')
-     * @param array $documents Associative array or array of arrays
-     * @return bool True on success, false on failure
-     */
-    public static function insertMongo($collection, $documents) {
+    // Insert into MongoDB
+    public static function insertMongo($collection, $documents)
+    {
         $db = self::getMongo();
-        if (!$db) {
-            return false;
-        }
+        if (!$db || empty($documents)) return false;
 
-        if (empty($documents)) {
-            return false;
-        }
-
-        $docsToInsert = isset($documents[0]) && is_array($documents[0]) ? $documents : [$documents];
-
-        // Composer Library
-        if (is_object($db) && method_exists($db, 'selectCollection')) {
-            try {
-                $col = $db->selectCollection($collection);
-                $res = $col->insertMany($docsToInsert);
-                return $res->getInsertedCount() > 0;
-            } catch (\Exception $e) {
-                error_log("[Database] Mongo Insert Error: " . $e->getMessage());
-                return false;
-            }
-        }
-
-        // Native Driver Manager
-        if ($db instanceof \MongoDB\Driver\Manager) {
-            try {
+        $docs = isset($documents[0]) && is_array($documents[0]) ? $documents : [$documents];
+        try {
+            if (is_object($db) && method_exists($db, 'selectCollection')) {
+                return $db->selectCollection($collection)->insertMany($docs)->getInsertedCount() > 0;
+            } elseif ($db instanceof \MongoDB\Driver\Manager) {
                 $bulk = new \MongoDB\Driver\BulkWrite();
-                foreach ($docsToInsert as $doc) {
-                    $bulk->insert($doc);
-                }
-                $res = $db->executeBulkWrite(self::$mongoDb . '.' . $collection, $bulk);
-                return $res->getInsertedCount() > 0;
-            } catch (\Exception $e) {
-                error_log("[Database] Native Mongo Insert Error: " . $e->getMessage());
-                return false;
+                foreach ($docs as $d) $bulk->insert($d);
+                return $db->executeBulkWrite(self::$mongoDb . '.' . $collection, $bulk)->getInsertedCount() > 0;
             }
+        } catch (\Exception $e) {
+            return false;
         }
-
         return false;
     }
 
-    /**
-     * Delete documents from MongoDB collection.
-     * @param string $collection Collection name
-     * @param array $filter Filter criteria
-     * @return bool True if at least one document deleted
-     */
-    public static function deleteMongo($collection, $filter = []) {
+    // Delete from MongoDB
+    public static function deleteMongo($collection, $filter = [])
+    {
         $db = self::getMongo();
-        if (!$db) {
-            return false;
-        }
+        if (!$db) return false;
 
-        // Composer Library
-        if ($db instanceof \MongoDB\Database) {
-            try {
-                $coll = $db->selectCollection($collection);
-                $res = $coll->deleteMany($filter);
-                return $res->getDeletedCount() > 0;
-            } catch (\Exception $e) {
-                error_log("[Database] Mongo Delete Error: " . $e->getMessage());
-                return false;
-            }
-        }
-
-        // Native Driver Manager
-        if ($db instanceof \MongoDB\Driver\Manager) {
-            try {
+        try {
+            if (is_object($db) && method_exists($db, 'selectCollection')) {
+                return $db->selectCollection($collection)->deleteMany($filter)->getDeletedCount() > 0;
+            } elseif ($db instanceof \MongoDB\Driver\Manager) {
                 $bulk = new \MongoDB\Driver\BulkWrite();
                 $bulk->delete($filter);
-                $res = $db->executeBulkWrite(self::$mongoDb . '.' . $collection, $bulk);
-                return $res->getDeletedCount() > 0;
-            } catch (\Exception $e) {
-                error_log("[Database] Native Mongo Delete Error: " . $e->getMessage());
-                return false;
+                return $db->executeBulkWrite(self::$mongoDb . '.' . $collection, $bulk)->getDeletedCount() > 0;
             }
+        } catch (\Exception $e) {
+            return false;
         }
-
         return false;
     }
 
-    /**
-     * Check health status of both database servers for dashboards & system diagnostics.
-     * @return array Status array for Oracle and MongoDB
-     */
-    public static function checkHealth() {
-        $status = [
+    // Dual Database Health Check
+    public static function checkHealth()
+    {
+        $ora = self::getOracle();
+        $mng = self::getMongo();
+
+        return [
             'oracle' => [
                 'enabled'   => function_exists('oci_connect'),
-                'connected' => false,
-                'version'   => null,
-                'message'   => 'Not tested'
+                'connected' => $ora !== null,
+                'version'   => $ora ? oci_server_version($ora) : null,
+                'message'   => $ora ? 'Connected to ' . self::$oraService : 'Connection failed'
             ],
             'mongodb' => [
                 'enabled'   => extension_loaded('mongodb'),
-                'connected' => false,
+                'connected' => $mng !== null,
                 'version'   => null,
-                'message'   => 'Not tested'
+                'message'   => $mng ? 'Connected to ' . self::$mongoDb : 'Connection failed'
             ]
         ];
-
-        // Oracle Health Check
-        if ($status['oracle']['enabled']) {
-            $conn = self::getOracle();
-            if ($conn) {
-                $status['oracle']['connected'] = true;
-                $status['oracle']['version']   = oci_server_version($conn);
-                $status['oracle']['message']   = 'Connected successfully to ' . self::$oraService;
-            } else {
-                $status['oracle']['message']   = 'Could not connect to Oracle XE (Check port 1521 or credentials)';
-            }
-        } else {
-            $status['oracle']['message'] = 'PHP oci8 extension is disabled in php.ini';
-        }
-
-        // MongoDB Health Check
-        if ($status['mongodb']['enabled']) {
-            $mongo = self::getMongo();
-            if ($mongo) {
-                $status['mongodb']['connected'] = true;
-                $status['mongodb']['message']   = 'Connected successfully to ' . self::$mongoDb;
-            } else {
-                $status['mongodb']['message']   = 'Could not connect to MongoDB service on port 27017';
-            }
-        } else {
-            $status['mongodb']['message'] = 'PHP mongodb extension is disabled in php.ini';
-        }
-
-        return $status;
     }
 }
-

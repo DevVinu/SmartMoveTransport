@@ -1,24 +1,13 @@
 <?php
-/**
- * SmartMove Transport Solutions — Staff Operations Portal
- * Enterprise Dark Slate Theme (ShadcnUI Aesthetic)
- * 
- * Functional Operations for Operations Staff & Dispatch Supervisors:
- * - FR-06 & FR-08: Scheduled Trip Dispatching & Real-Time Monitoring
- * - FR-04: Driver Duty Shift Rostering & Attendance Tracking
- * - FR-03 & FR-04: Fleet Maintenance Logging & Preventive Servicing
- * - FR-09: Counter Ticket Booking & Commuter Reservations
- * - FR-10: Cancellation & Refund Processing
- * - FR-17: MongoDB Travel Advisories & Expressway Alerts
- */
-
+// Staff portal
 require_once __DIR__ . '/../config/config.php';
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../models/User.php';
 require_once __DIR__ . '/../models/MongoService.php';
+require_once __DIR__ . '/../components/dashboard/profile_controller.php';
 
-// Session Security: Require STAFF or ADMIN role
+// Auth check
 Auth::requireRole(['STAFF', 'ADMIN']);
 
 $currentUser = Auth::user();
@@ -30,30 +19,28 @@ $email       = htmlspecialchars($currentUser['email'] ?? 'staff@smartmove.com');
 $role        = strtoupper($currentUser['role'] ?? 'STAFF');
 $initials    = strtoupper(substr($firstName, 0, 1) . substr($lastName, 0, 1));
 
-// Database Health Check
+// Health check
 $dbHealth = Database::checkHealth();
 $oracleUp = $dbHealth['oracle']['connected'] ?? false;
 $mongoUp  = $dbHealth['mongodb']['connected'] ?? false;
 
-// Active View Routing
+// View routing
 $activeView = $_GET['view'] ?? 'dispatchView';
-$validViews = ['dispatchView', 'shiftsView', 'maintenanceView', 'ticketingView', 'refundsView', 'announcementsView'];
+$validViews = ['dispatchView', 'shiftsView', 'maintenanceView', 'ticketingView', 'refundsView', 'announcementsView', 'profileView'];
 if (!in_array($activeView, $validViews)) {
     $activeView = 'dispatchView';
 }
 
-// Flash Notifications
+// Flash messages
 $flashSuccess = $_SESSION['flash_success'] ?? null;
 $flashError   = $_SESSION['flash_error'] ?? null;
 unset($_SESSION['flash_success'], $_SESSION['flash_error']);
 
-// -----------------------------------------------------------------------------
-// POST CONTROLLER: STAFF ACTIONS
-// -----------------------------------------------------------------------------
+// Post actions
 if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
     $action = $_POST['action'] ?? '';
 
-    // Action 1: Dispatch / Schedule New Trip
+    // Schedule trip
     if ($action === 'addTrip') {
         $routeId        = (int)($_POST['routeId'] ?? 0);
         $vehicleId      = (int)($_POST['vehicleId'] ?? 0);
@@ -90,7 +77,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
         exit;
     }
 
-    // Action 2: Update Trip Status (e.g. IN_TRANSIT, COMPLETED, CANCELLED)
+    // Update trip status
     if ($action === 'updateTripStatus') {
         $tripId    = (int)($_POST['tripId'] ?? 0);
         $newStatus = strtoupper(trim($_POST['status'] ?? 'SCHEDULED'));
@@ -108,7 +95,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
         exit;
     }
 
-    // Action 3: Assign Driver Shift
+    // Assign shift
     if ($action === 'assignShift') {
         $driverId  = (int)($_POST['driverId'] ?? 0);
         $shiftDate = trim($_POST['shiftDate'] ?? date('Y-m-d'));
@@ -135,7 +122,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
         exit;
     }
 
-    // Action 4: Update Shift Status
+    // Update shift status
     if ($action === 'updateShiftStatus') {
         $shiftId   = (int)($_POST['shiftId'] ?? 0);
         $newStatus = strtoupper(trim($_POST['status'] ?? 'SCHEDULED'));
@@ -149,7 +136,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
         exit;
     }
 
-    // Action 5: Log Vehicle Maintenance
+    // Log maintenance
     if ($action === 'logMaintenance') {
         $vehicleId       = (int)($_POST['vehicleId'] ?? 0);
         $maintenanceType = trim($_POST['maintenanceType'] ?? 'Routine Inspection');
@@ -180,7 +167,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
         exit;
     }
 
-    // Action 6: Complete Maintenance
+    // Complete maintenance
     if ($action === 'completeMaintenance') {
         $maintId   = (int)($_POST['maintenanceId'] ?? 0);
         $vehicleId = (int)($_POST['vehicleId'] ?? 0);
@@ -195,7 +182,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
         exit;
     }
 
-    // Action 7: Quick Counter Ticket Booking (Calling PL/SQL procedure processSeatBooking)
+    // Counter booking
     if ($action === 'counterBooking') {
         $tripId      = (int)($_POST['tripId'] ?? 0);
         $passengerId = (int)($_POST['passengerId'] ?? 10);
@@ -204,7 +191,6 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
         $promoParam  = empty($promoCode) ? null : $promoCode;
 
         if ($tripId && $seatNumber > 0) {
-            // Attempt executing procedure processSeatBooking
             $conn = Database::getOracle();
             $bookingCreated = false;
             if ($conn) {
@@ -226,7 +212,6 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
             }
 
             if (!$bookingCreated) {
-                // Fallback direct insert if procedure error
                 $ok = Database::executeOracle("
                     INSERT INTO booking (passengerId, tripId, seatNumber, ticketPrice, bookingStatus)
                     VALUES (:pId, :tId, :sNum, 1250.00, 'CONFIRMED')
@@ -243,7 +228,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
         exit;
     }
 
-    // Action 8: Process Refund Request
+    // Process refund
     if ($action === 'processRefund') {
         $bookingId = (int)($_POST['bookingId'] ?? 0);
         $paymentId = (int)($_POST['paymentId'] ?? 0);
@@ -272,7 +257,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
         exit;
     }
 
-    // Action 9: Broadcast Travel Advisory to MongoDB
+    // Create announcement
     if ($action === 'createAnnouncement') {
         $title    = trim($_POST['title'] ?? '');
         $category = strtoupper(trim($_POST['category'] ?? 'EXPRESSWAY_ALERT'));
@@ -301,9 +286,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
     }
 }
 
-// -----------------------------------------------------------------------------
-// DATA QUERIES (With Realistic Fallbacks)
-// -----------------------------------------------------------------------------
+// Data queries
 $scheduledTrips = [];
 $routesList     = [];
 $vehiclesList   = [];
@@ -315,7 +298,7 @@ $refundsList    = [];
 $announcements  = [];
 
 if ($oracleUp) {
-    // 1. Scheduled Trips
+    // Scheduled trips
     $scheduledTrips = Database::queryOracle("
         SELECT st.tripId, r.routeName, r.origin, r.destination, v.registrationNo, v.model,
                u.firstName || ' ' || u.lastName AS driverName,
@@ -328,7 +311,7 @@ if ($oracleUp) {
         ORDER BY st.tripId DESC
     ");
 
-    // 2. Routes & Vehicles & Drivers for select dropdowns
+    // Routes, vehicles, drivers
     $routesList = Database::queryOracle("SELECT routeId, routeName, baseFare FROM route WHERE status = 'ACTIVE' ORDER BY routeId");
     $vehiclesList = Database::queryOracle("SELECT vehicleId, registrationNo, vehicleType, model, capacity FROM vehicle WHERE status = 'AVAILABLE' ORDER BY vehicleId");
     $driversList = Database::queryOracle("
@@ -338,7 +321,7 @@ if ($oracleUp) {
         ORDER BY d.driverId
     ");
 
-    // 3. Driver Shifts
+    // Driver shifts
     $shiftsList = Database::queryOracle("
         SELECT ds.shiftId, u.firstName || ' ' || u.lastName AS driverName, d.licenseNumber,
                ds.shiftDate, ds.startTime, ds.endTime, ds.shiftStatus
@@ -348,7 +331,7 @@ if ($oracleUp) {
         ORDER BY ds.shiftId DESC
     ");
 
-    // 4. Maintenance Logs
+    // Maintenance logs
     $maintenanceList = Database::queryOracle("
         SELECT m.maintenanceId, v.registrationNo, v.model, m.maintenanceType, m.description,
                m.cost, m.maintenanceStatus, m.nextServiceDate,
@@ -360,7 +343,7 @@ if ($oracleUp) {
         ORDER BY m.maintenanceId DESC
     ");
 
-    // 5. Bookings
+    // Bookings
     $bookingsList = Database::queryOracle("
         SELECT b.bookingId, u.firstName || ' ' || u.lastName AS passengerName, u.phone,
                r.routeName, st.tripDate, st.departureTime, b.seatNumber, b.ticketPrice, b.bookingStatus, p.paymentMethod
@@ -373,7 +356,7 @@ if ($oracleUp) {
         ORDER BY b.bookingId DESC
     ");
 
-    // 6. Refunds
+    // Refunds
     $refundsList = Database::queryOracle("
         SELECT r.refundId, r.bookingId, r.refundAmount, r.refundReason, r.refundDate, r.refundStatus,
                u.firstName || ' ' || u.lastName AS staffName
@@ -384,7 +367,7 @@ if ($oracleUp) {
     ");
 }
 
-// Fallback Mock Data if Oracle is Offline or Fresh Seed
+// Fallback data
 if (empty($scheduledTrips)) {
     $scheduledTrips = [
         ['tripId' => 1, 'routeName' => 'Colombo - Kandy Express (E04)', 'origin' => 'Colombo', 'destination' => 'Kandy', 'registrationNo' => 'WP-ND-4521', 'model' => 'Coaster Deluxe', 'driverName' => 'Kamal Perera', 'tripDate' => date('Y-m-d'), 'departureTime' => '07:00 AM', 'arrivalTime' => '09:30 AM', 'availableSeats' => 28, 'fareAmount' => 1250.00, 'tripStatus' => 'SCHEDULED'],
@@ -450,7 +433,7 @@ if (empty($refundsList)) {
     ];
 }
 
-// Announcements from MongoDB
+// Announcements
 if ($mongoUp) {
     $announcements = MongoService::getActiveAnnouncements();
 }
@@ -460,7 +443,7 @@ if (empty($announcements)) {
     ];
 }
 
-// Operational KPIs
+// KPIs
 $activeTripsCount = count(array_filter($scheduledTrips, fn($t) => in_array($t['tripStatus'], ['SCHEDULED', 'IN_TRANSIT'])));
 $inTransitCount   = count(array_filter($scheduledTrips, fn($t) => $t['tripStatus'] === 'IN_TRANSIT'));
 $onDutyDrivers    = count(array_filter($shiftsList, fn($s) => $s['shiftStatus'] === 'ON_DUTY'));
@@ -482,159 +465,25 @@ $pageTitle = "SmartMove — Staff Operations Portal";
 
 <div class="app-wrapper">
 
-  <!-- Sidebar Navigation -->
-  <aside class="sidebar" id="sidebar">
-    <div class="sidebar-header" title="SmartMove Staff Operations">
-      <div class="sidebar-brand-wrapper">
-        <div class="brand-icon-box">SM</div>
-        <div class="sidebar-header-text">
-          <span class="brand-name">SmartMove</span>
-          <span class="brand-subtext">STAFF PORTAL</span>
-        </div>
-      </div>
-      <div class="brand-arrows">⌘</div>
-    </div>
+  <!-- Sidebar -->
+  <?php include __DIR__ . '/../components/dashboard/sidebar.php'; ?>
 
-    <!-- Navigation List -->
-    <nav class="sidebar-nav">
-      <div class="sidebar-group">
-        <div class="sidebar-group-title">OPERATIONS CONTROL</div>
-        
-        <a class="nav-item <?php echo $activeView === 'dispatchView' ? 'active' : ''; ?>" data-view="dispatchView" title="Trip Dispatching & Schedules">
-          <div class="nav-item-icon">
-            <svg viewBox="0 0 24 24"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
-          </div>
-          <span>Dispatch & Trips</span>
-          <span class="nav-badge" style="background:var(--blue-primary);"><?php echo $activeTripsCount; ?></span>
-        </a>
-
-        <a class="nav-item <?php echo $activeView === 'shiftsView' ? 'active' : ''; ?>" data-view="shiftsView" title="Driver Shift Rostering">
-          <div class="nav-item-icon">
-            <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-          </div>
-          <span>Driver Shifts</span>
-          <span class="nav-badge" style="background:#10B981;"><?php echo $onDutyDrivers; ?></span>
-        </a>
-
-        <a class="nav-item <?php echo $activeView === 'maintenanceView' ? 'active' : ''; ?>" data-view="maintenanceView" title="Fleet Maintenance Logging">
-          <div class="nav-item-icon">
-            <svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
-          </div>
-          <span>Fleet Maintenance</span>
-          <?php if ($maintVehCount > 0): ?>
-            <span class="nav-badge" style="background:#F59E0B;"><?php echo $maintVehCount; ?></span>
-          <?php endif; ?>
-        </a>
-
-        <a class="nav-item <?php echo $activeView === 'ticketingView' ? 'active' : ''; ?>" data-view="ticketingView" title="Counter Ticketing & Bookings">
-          <div class="nav-item-icon">
-            <svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
-          </div>
-          <span>Counter Ticketing</span>
-        </a>
-
-        <a class="nav-item <?php echo $activeView === 'refundsView' ? 'active' : ''; ?>" data-view="refundsView" title="Cancellations & Refunds">
-          <div class="nav-item-icon">
-            <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-          </div>
-          <span>Refund Processing</span>
-        </a>
-
-        <a class="nav-item <?php echo $activeView === 'announcementsView' ? 'active' : ''; ?>" data-view="announcementsView" title="MongoDB Travel Advisories">
-          <div class="nav-item-icon">
-            <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-          </div>
-          <span>Travel Alerts</span>
-        </a>
-      </div>
-    </nav>
-
-    <!-- Sidebar Footer -->
-    <div class="sidebar-footer">
-      <button class="user-profile-btn" id="sidebarUserBtn" type="button">
-        <div class="user-avatar"><?php echo $initials; ?></div>
-        <div class="user-details">
-          <span class="user-name"><?php echo $fullName; ?></span>
-          <span class="user-email">STAFF OFFICER</span>
-        </div>
-        <div class="user-arrows">⇅</div>
-      </button>
-
-      <!-- Sidebar User Menu Popover -->
-      <div class="popover-menu" id="sidebarUserMenu">
-        <div class="popover-item">
-          <strong><?php echo $fullName; ?></strong><br>
-          <span style="font-size:11px;color:var(--text-muted);"><?php echo $email; ?></span>
-        </div>
-        <div class="popover-divider"></div>
-        <a href="../index.php" class="popover-item">← Main Website</a>
-        <?php if ($role === 'ADMIN'): ?>
-          <a href="dashboard.php" class="popover-item">🛡️ Admin Command Portal</a>
-        <?php endif; ?>
-        <div class="popover-divider"></div>
-        <a href="logout.php" class="popover-item" style="color:#F87171;">Sign Out</a>
-      </div>
-    </div>
-  </aside>
-
-  <!-- Main Viewport -->
-  <div class="main-viewport">
+  <!-- Main content -->
+  <main class="main-content">
     
-    <!-- Topbar Header -->
-    <header class="topbar">
-      <div class="topbar-left">
-        <button class="sidebar-toggle-btn" id="toggleSidebarBtn" type="button" title="Toggle Sidebar">
-          <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" fill="none"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-        </button>
-        <span style="font-weight:600;font-size:13.5px;color:var(--text-white);">Operations Control Center</span>
-      </div>
+    <!-- Topbar -->
+    <?php 
+    $topbarTitle = "Operations Control Center";
+    include __DIR__ . '/../components/dashboard/topbar.php'; 
+    ?>
 
-      <div class="topbar-right">
-        <!-- DB Status Badges -->
-        <div class="db-status-pill" title="Oracle DB Status">
-          <span class="status-dot <?php echo $oracleUp ? 'dot-green' : 'dot-red'; ?>"></span>
-          <span>Oracle <?php echo $oracleUp ? 'Live' : 'Mock/Offline'; ?></span>
-        </div>
-        <div class="db-status-pill" title="MongoDB Status">
-          <span class="status-dot <?php echo $mongoUp ? 'dot-green' : 'dot-red'; ?>"></span>
-          <span>MongoDB <?php echo $mongoUp ? 'Live' : 'Mock/Offline'; ?></span>
-        </div>
+    <!-- Content -->
+    <div class="content-container">
 
-        <!-- Topbar Avatar -->
-        <button class="topbar-avatar-btn" id="topbarAvatarBtn" type="button">
-          <div class="user-avatar"><?php echo $initials; ?></div>
-        </button>
+      <!-- Flash messages -->
+      <?php include __DIR__ . '/../components/dashboard/flash_messages.php'; ?>
 
-        <div class="popover-menu" id="topbarUserMenu">
-          <div class="popover-item">
-            <strong><?php echo $fullName; ?></strong><br>
-            <span style="font-size:11px;color:var(--text-muted);"><?php echo $email; ?></span>
-          </div>
-          <div class="popover-divider"></div>
-          <a href="../index.php" class="popover-item">← Main Website</a>
-          <a href="logout.php" class="popover-item" style="color:#F87171;">Sign Out</a>
-        </div>
-      </div>
-    </header>
-
-    <!-- Main Content Container -->
-    <main class="content-container">
-
-      <!-- Flash Notification Alerts -->
-      <?php if ($flashSuccess): ?>
-        <div class="alert-banner alert-banner-success">
-          <span>✓</span> <?php echo htmlspecialchars($flashSuccess); ?>
-        </div>
-      <?php endif; ?>
-      <?php if ($flashError): ?>
-        <div class="alert-banner alert-banner-error">
-          <span>⚠️</span> <?php echo htmlspecialchars($flashError); ?>
-        </div>
-      <?php endif; ?>
-
-      <!-- ====================================================================
-           VIEW 1: DISPATCH & SCHEDULED TRIPS
-           ==================================================================== -->
+      <!-- Dispatch view -->
       <section class="page-view <?php echo $activeView === 'dispatchView' ? 'active-view' : ''; ?>" id="dispatchView">
         <div class="view-header">
           <div class="view-title-group">
@@ -649,7 +498,7 @@ $pageTitle = "SmartMove — Staff Operations Portal";
           </div>
         </div>
 
-        <!-- Operational KPIs -->
+        <!-- KPIs -->
         <div class="stats-grid">
           <div class="stat-card">
             <div class="stat-header-row">
@@ -685,7 +534,7 @@ $pageTitle = "SmartMove — Staff Operations Portal";
           </div>
         </div>
 
-        <!-- Table Filters -->
+        <!-- Filters -->
         <div class="filter-pills-bar">
           <button class="filter-pill active" onclick="filterTrips('ALL', this)">All Trips (<?php echo count($scheduledTrips); ?>)</button>
           <button class="filter-pill" onclick="filterTrips('SCHEDULED', this)">Scheduled</button>
@@ -694,7 +543,7 @@ $pageTitle = "SmartMove — Staff Operations Portal";
           <button class="filter-pill" onclick="filterTrips('CANCELLED', this)">Cancelled</button>
         </div>
 
-        <!-- Trips Table -->
+        <!-- Trips table -->
         <div class="table-container">
           <table class="data-table">
             <thead>
@@ -774,9 +623,7 @@ $pageTitle = "SmartMove — Staff Operations Portal";
         </div>
       </section>
 
-      <!-- ====================================================================
-           VIEW 2: DRIVER SHIFT ROSTERING
-           ==================================================================== -->
+      <!-- Shifts view -->
       <section class="page-view <?php echo $activeView === 'shiftsView' ? 'active-view' : ''; ?>" id="shiftsView">
         <div class="view-header">
           <div class="view-title-group">
@@ -852,9 +699,7 @@ $pageTitle = "SmartMove — Staff Operations Portal";
         </div>
       </section>
 
-      <!-- ====================================================================
-           VIEW 3: FLEET MAINTENANCE LOGGING
-           ==================================================================== -->
+      <!-- Maintenance view -->
       <section class="page-view <?php echo $activeView === 'maintenanceView' ? 'active-view' : ''; ?>" id="maintenanceView">
         <div class="view-header">
           <div class="view-title-group">
@@ -919,9 +764,7 @@ $pageTitle = "SmartMove — Staff Operations Portal";
         </div>
       </section>
 
-      <!-- ====================================================================
-           VIEW 4: COUNTER TICKETING & RESERVATIONS
-           ==================================================================== -->
+      <!-- Ticketing view -->
       <section class="page-view <?php echo $activeView === 'ticketingView' ? 'active-view' : ''; ?>" id="ticketingView">
         <div class="view-header">
           <div class="view-title-group">
@@ -977,9 +820,7 @@ $pageTitle = "SmartMove — Staff Operations Portal";
         </div>
       </section>
 
-      <!-- ====================================================================
-           VIEW 5: REFUND PROCESSING
-           ==================================================================== -->
+      <!-- Refunds view -->
       <section class="page-view <?php echo $activeView === 'refundsView' ? 'active-view' : ''; ?>" id="refundsView">
         <div class="view-header">
           <div class="view-title-group">
@@ -1024,9 +865,7 @@ $pageTitle = "SmartMove — Staff Operations Portal";
         </div>
       </section>
 
-      <!-- ====================================================================
-           VIEW 6: TRAVEL ADVISORIES (MongoDB)
-           ==================================================================== -->
+      <!-- Alerts view -->
       <section class="page-view <?php echo $activeView === 'announcementsView' ? 'active-view' : ''; ?>" id="announcementsView">
         <div class="view-header">
           <div class="view-title-group">
@@ -1072,15 +911,14 @@ $pageTitle = "SmartMove — Staff Operations Portal";
         </div>
       </section>
 
+      <?php include __DIR__ . '/../components/dashboard/views/profile_view.php'; ?>
+
     </main>
   </div>
 </div>
 
-<!-- ========================================================================
-     MODALS FOR STAFF ACTIONS
-     ======================================================================== -->
-
-<!-- Modal 1: Dispatch New Trip -->
+<!-- Modals -->
+<!-- Dispatch trip modal -->
 <div class="modal-backdrop" id="addTripModal">
   <div class="modal-box">
     <div class="modal-header">
@@ -1145,7 +983,7 @@ $pageTitle = "SmartMove — Staff Operations Portal";
   </div>
 </div>
 
-<!-- Modal 2: Assign Driver Shift -->
+<!-- Assign shift modal -->
 <div class="modal-backdrop" id="assignShiftModal">
   <div class="modal-box">
     <div class="modal-header">
@@ -1184,7 +1022,7 @@ $pageTitle = "SmartMove — Staff Operations Portal";
   </div>
 </div>
 
-<!-- Modal 3: Log Vehicle Maintenance -->
+<!-- Maintenance modal -->
 <div class="modal-backdrop" id="addMaintenanceModal">
   <div class="modal-box">
     <div class="modal-header">
@@ -1233,7 +1071,7 @@ $pageTitle = "SmartMove — Staff Operations Portal";
   </div>
 </div>
 
-<!-- Modal 4: Issue Counter Ticket -->
+<!-- Counter ticket modal -->
 <div class="modal-backdrop" id="counterBookingModal">
   <div class="modal-box">
     <div class="modal-header">
@@ -1272,7 +1110,7 @@ $pageTitle = "SmartMove — Staff Operations Portal";
   </div>
 </div>
 
-<!-- Modal 5: Process Refund -->
+<!-- Refund modal -->
 <div class="modal-backdrop" id="processRefundModal">
   <div class="modal-box">
     <div class="modal-header">
@@ -1301,7 +1139,7 @@ $pageTitle = "SmartMove — Staff Operations Portal";
   </div>
 </div>
 
-<!-- Modal 6: Broadcast Travel Alert (MongoDB) -->
+<!-- Broadcast alert modal -->
 <div class="modal-backdrop" id="addAnnouncementModal">
   <div class="modal-box">
     <div class="modal-header">
@@ -1349,7 +1187,7 @@ $pageTitle = "SmartMove — Staff Operations Portal";
   </div>
 </div>
 
-<!-- Core Dashboard Engine (Zero Inline Scripts) -->
+<!-- Scripts -->
 <script src="../js/dashboard.js"></script>
 </body>
 </html>

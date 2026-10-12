@@ -1,46 +1,13 @@
-/**
- * SmartMove Transport Solutions — MongoDB Database Setup & Seeding Script
- * 
- * Coursework: NIBM DM2 (Data Management 2) — CW 1
- * Database Name: smartmove_db
- * Connection URI: mongodb://localhost:27017/smartmove_db
- * 
- * This script:
- * 1. Connects to 'smartmove_db'
- * 2. Cleans up existing collections (idempotent run)
- * 3. Creates 4 required collections with indexes:
- *    - vehicle_documents     (Vehicle images, PDF scans, registration, insurance)
- *    - passenger_reviews      (Ratings, customer feedback, sentiment, tags)
- *    - travel_announcements   (Highway notices, delays, weather advisories)
- *    - multimedia_content     (Station maps, route highlights, multimedia)
- * 4. Seeds realistic, rich test data aligned with Oracle relational IDs
- * 5. Demonstrates the 4 MANDATORY Coursework Queries with mongosh outputs
- * 
- * Usage in terminal:
- *   mongosh "mongodb://localhost:27017/smartmove_db" database/mongodb_setup.js
- */
-
-// 1. Switch to smartmove_db
+// MongoDB setup and seed script for smartmove_db
 db = db.getSiblingDB("smartmove_db");
-print("=====================================================================");
-print("  SmartMove Transport Solutions — MongoDB Database Initializer");
-print("  Target Database: " + db.getName());
-print("=====================================================================");
 
-// -----------------------------------------------------------------------------
-// 2. DROP EXISTING COLLECTIONS (Clean reset)
-// -----------------------------------------------------------------------------
+// Reset collections
 db.passenger_reviews.drop();
 db.vehicle_documents.drop();
 db.travel_announcements.drop();
 db.multimedia_content.drop();
-print("[+] Dropped prior collections for clean initialization.");
 
-// -----------------------------------------------------------------------------
-// 3. COLLECTION: vehicle_documents
-//    Captures vehicle legal papers (insurance, revenue license, VET certificate)
-//    and photo galleries (exterior, interior cabin).
-// -----------------------------------------------------------------------------
+// Vehicle documents
 db.vehicle_documents.insertMany([
   {
     documentId: "DOC-VH01",
@@ -251,13 +218,8 @@ db.vehicle_documents.insertMany([
     uploadedAt: new Date("2026-01-08T09:00:00Z")
   }
 ]);
-print("[+] Inserted documents into: vehicle_documents");
 
-// -----------------------------------------------------------------------------
-// 4. COLLECTION: passenger_reviews
-//    Captures reviews, ratings, sentiments, and tags. Includes keyword-rich
-//    comments for testing Query 3 (search by 'delay', 'AC', 'clean', etc.).
-// -----------------------------------------------------------------------------
+// Passenger reviews
 db.passenger_reviews.insertMany([
   {
     reviewId: "REV-2026-001",
@@ -422,12 +384,8 @@ db.passenger_reviews.insertMany([
     createdAt: new Date("2026-09-10T15:50:00Z")
   }
 ]);
-print("[+] Inserted documents into: passenger_reviews");
 
-// -----------------------------------------------------------------------------
-// 5. COLLECTION: travel_announcements
-//    Captures dynamic travel advisories, highway notices, and weather alerts.
-// -----------------------------------------------------------------------------
+// Travel announcements
 db.travel_announcements.insertMany([
   {
     announcementId: "ANN-2026-001",
@@ -478,12 +436,8 @@ db.travel_announcements.insertMany([
     author: "Airport Transit Logistics"
   }
 ]);
-print("[+] Inserted documents into: travel_announcements");
 
-// -----------------------------------------------------------------------------
-// 6. COLLECTION: multimedia_content
-//    Captures terminal maps, station boarding points, and transit imagery.
-// -----------------------------------------------------------------------------
+// Multimedia content
 db.multimedia_content.insertMany([
   {
     mediaId: "MED-001",
@@ -522,38 +476,21 @@ db.multimedia_content.insertMany([
     uploadedAt: new Date("2026-08-10T14:40:00Z")
   }
 ]);
-print("[+] Inserted documents into: multimedia_content");
 
-// -----------------------------------------------------------------------------
-// 7. CREATE OPTIMIZED INDEXES
-// -----------------------------------------------------------------------------
-// Indexes on passenger_reviews
+// Indexes
 db.passenger_reviews.createIndex({ routeId: 1 }, { name: "idx_reviews_route" });
 db.passenger_reviews.createIndex({ driverId: 1, rating: -1 }, { name: "idx_reviews_driver_rating" });
 db.passenger_reviews.createIndex({ vehicleId: 1, rating: -1 }, { name: "idx_reviews_vehicle_rating" });
 db.passenger_reviews.createIndex({ comment: "text", tags: "text" }, { name: "idx_reviews_text" });
 
-// Indexes on vehicle_documents
 db.vehicle_documents.createIndex({ vehicleId: 1 }, { unique: true, name: "idx_vehdocs_vehicleId" });
 db.vehicle_documents.createIndex({ registrationNo: 1 }, { name: "idx_vehdocs_regNo" });
 
-// Indexes on travel_announcements
 db.travel_announcements.createIndex({ active: 1, priority: 1 }, { name: "idx_announcements_active" });
 db.travel_announcements.createIndex({ affectedRoutes: 1 }, { name: "idx_announcements_routes" });
 
-print("[+] Created performance indexes for all collections.");
-
-// =============================================================================
-// 8. COURSEWORK DEMONSTRATION QUERIES (Mandatory Coursework Rubric Queries)
-// =============================================================================
-
-print("\n=====================================================================");
-print("  DEMONSTRATION OF MANDATORY COURSEWORK QUERIES (DM2 RUBRIC)");
-print("=====================================================================");
-
-// -----------------------------------------------------------------------------
-// QUERY 1: Retrieve all passenger reviews for a specific route (e.g. Route 1)
-// -----------------------------------------------------------------------------
+// Coursework queries
+// Query 1: Reviews by route
 print("\n--- QUERY 1: Retrieve all passenger reviews for Route #1 (Colombo - Kandy) ---");
 const query1Results = db.passenger_reviews.find(
   { routeId: 1 },
@@ -561,10 +498,8 @@ const query1Results = db.passenger_reviews.find(
 ).sort({ createdAt: -1 }).toArray();
 printjson(query1Results);
 
-// -----------------------------------------------------------------------------
-// QUERY 2: Identify highest-rated vehicles or drivers based on customer feedback
-// -----------------------------------------------------------------------------
-print("\n--- QUERY 2A: Highest-Rated Drivers (Aggregation Pipeline) ---");
+// Query 2: Top rated drivers and vehicles
+print("\n--- QUERY 2A: Highest-Rated Drivers ---");
 const topDrivers = db.passenger_reviews.aggregate([
   {
     $group: {
@@ -612,10 +547,8 @@ const topVehicles = db.passenger_reviews.aggregate([
 ]).toArray();
 printjson(topVehicles);
 
-// -----------------------------------------------------------------------------
-// QUERY 3: Search customer complaints or feedback using specific keywords ('delay' / 'AC')
-// -----------------------------------------------------------------------------
-print("\n--- QUERY 3: Search Customer Complaints for keyword: 'delay' (Regex Matching) ---");
+// Query 3: Search reviews by keyword
+print("\n--- QUERY 3: Search complaints for keyword: 'delay' ---");
 const query3Results = db.passenger_reviews.find(
   {
     $or: [
@@ -627,10 +560,8 @@ const query3Results = db.passenger_reviews.find(
 ).toArray();
 printjson(query3Results);
 
-// -----------------------------------------------------------------------------
-// QUERY 4: Retrieve vehicle documents and multimedia information (e.g. Vehicle #1)
-// -----------------------------------------------------------------------------
-print("\n--- QUERY 4: Retrieve Vehicle Documents & Multimedia for Vehicle #1 ---");
+// Query 4: Vehicle documents
+print("\n--- QUERY 4: Retrieve vehicle documents for Vehicle #1 ---");
 const query4Results = db.vehicle_documents.find(
   { vehicleId: 1 },
   { _id: 0, registrationNo: 1, model: 1, "documents.title": 1, "documents.status": 1, gallery: 1 }

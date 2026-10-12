@@ -1,13 +1,9 @@
-/* ==========================================================================
-   SMARTMOVE DESIGN SYSTEM TOKENS & CSS VARIABLES
-   Centralized Master Variable Registry for all SmartMove Applications
-   Theme: Charcoal Gray (#181A20), Deep Surface (#14161C), Royal Blue (#2563EB)
-   ========================================================================== */
+/* Design system tokens */
 
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
 
 :root {
-  /* Surface & Canvas Grays */
+  /* Colors */
   --bg-canvas: #181A20;            /* Charcoal dark main background */
   --bg-deep-charcoal: #181A20;
   --bg-gray-main: #181A20;
@@ -27,14 +23,14 @@
   --bg-input: #0A0C0F;             /* Input box background */
   --bg-input-gray: #0A0C0F;
 
-  /* Blue Highlights & Accents */
+  /* Accents */
   --blue-primary: #2563EB;
   --blue-hover: #1D4ED8;
   --blue-light: #3B82F6;
   --blue-accent: #60A5FA;
   --blue-border: rgba(59, 130, 246, 0.35);
   --blue-border-hover: #3B82F6;
-  --blue-glow: rgba(59, 130, 246, 0.25);
+  --blue-glow: transparent;
 
   --accent-blue: #2563EB;
   --accent-blue-hover: #1D4ED8;
@@ -46,7 +42,7 @@
   --amber-accent: #F59E0B;
   --rose-accent: #EF4444;
 
-  /* Black, White & Typography */
+  /* Typography */
   --color-black: #000000;
   --color-white: #FFFFFF;
   --text-primary: #FFFFFF;

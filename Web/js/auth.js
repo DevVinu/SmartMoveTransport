@@ -1,11 +1,13 @@
-/**
- * SmartMove Transport — Auth Interactivity (Login & Sign Up)
- * Handles role switching tabs and dynamic form field toggles
- */
+// Auth tabs and form handler
 document.addEventListener('DOMContentLoaded', () => {
   const roleButtons = document.querySelectorAll('.role-btn');
   const userRoleInput = document.getElementById('userRoleInput');
-  const driverFields = document.getElementById('driverFields');
+  const actorFieldGroups = {
+    PASSENGER: document.getElementById('passengerFields'),
+    DRIVER: document.getElementById('driverFields'),
+    STAFF: document.getElementById('staffFields'),
+    ADMIN: document.getElementById('adminFields')
+  };
 
   if (roleButtons.length > 0) {
     roleButtons.forEach(btn => {
@@ -13,18 +15,22 @@ document.addEventListener('DOMContentLoaded', () => {
         roleButtons.forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
 
-        const role = btn.dataset.role;
+        const role = (btn.dataset.role || 'PASSENGER').toUpperCase();
         if (userRoleInput) {
           userRoleInput.value = role;
         }
 
-        if (driverFields) {
-          if (role === 'DRIVER') {
-            driverFields.classList.add('show');
-          } else {
-            driverFields.classList.remove('show');
+        // Toggle actor fields
+        Object.keys(actorFieldGroups).forEach(r => {
+          const el = actorFieldGroups[r];
+          if (el) {
+            if (r === role) {
+              el.classList.add('show');
+            } else {
+              el.classList.remove('show');
+            }
           }
-        }
+        });
       });
     });
   }
