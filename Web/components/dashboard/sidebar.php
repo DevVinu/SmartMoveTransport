@@ -5,7 +5,9 @@ $currentRole = strtoupper($role ?? 'ADMIN');
 <aside class="sidebar" id="sidebar">
   <div class="sidebar-header" title="SmartMove <?php echo ucfirst(strtolower($currentRole)); ?> Portal">
     <div class="sidebar-brand-wrapper">
-      <div class="brand-icon-box">SM</div>
+      <div class="brand-icon-box" style="padding:0; overflow:hidden;">
+        <img src="../img/logo.jpg" alt="SmartMove Logo" style="width:100%; height:100%; object-fit:cover; border-radius:8px;">
+      </div>
       <div class="sidebar-header-text">
         <span class="brand-name">SmartMove</span>
         <span class="brand-subtext"><?php echo $currentRole; ?> PORTAL</span>
@@ -200,6 +202,12 @@ $currentRole = strtoupper($role ?? 'ADMIN');
           </div>
           <span>Travel Alerts</span>
         </a>
+        <a class="nav-item <?php echo $activeView === 'feedbackView' ? 'active' : ''; ?>" data-view="feedbackView" title="Passenger Reviews & Ratings">
+          <div class="nav-item-icon">
+            <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          </div>
+          <span>Passenger Reviews</span>
+        </a>
 
         <a class="nav-item <?php echo ($activeView ?? '') === 'profileView' ? 'active' : ''; ?>" data-view="profileView" title="Account Profile & Settings">
           <div class="nav-item-icon">
@@ -245,6 +253,20 @@ $currentRole = strtoupper($role ?? 'ADMIN');
             <svg viewBox="0 0 24 24"><path d="M3 22v-8a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v8"/><path d="M15 10a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v12"/><path d="M7 12V2"/><path d="M19 8V2"/></svg>
           </div>
           <span>Fuel &amp; Vehicle Logs</span>
+        </a>
+
+        <a class="nav-item <?php echo $activeView === 'docsView' ? 'active' : ''; ?>" data-view="docsView" title="Vehicle Compliance Documents">
+          <div class="nav-item-icon">
+            <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          </div>
+          <span>Vehicle Documents</span>
+        </a>
+
+        <a class="nav-item <?php echo $activeView === 'announcementsView' ? 'active' : ''; ?>" data-view="announcementsView" title="Travel &amp; Route Alerts">
+          <div class="nav-item-icon">
+            <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          </div>
+          <span>Travel Alerts</span>
         </a>
 
         <a class="nav-item <?php echo $activeView === 'feedbackView' ? 'active' : ''; ?>" data-view="feedbackView" title="Ratings & Passenger Feedback">
@@ -296,77 +318,33 @@ $currentRole = strtoupper($role ?? 'ADMIN');
 
       <div class="popover-divider"></div>
 
-      <?php if ($currentRole === 'ADMIN'): ?>
-        <a class="popover-item" data-view="settingsView" href="#settingsView" role="menuitem">
-          <svg class="popover-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-            stroke-linecap="round" stroke-linejoin="round">
-            <path
-              d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
-            <path d="M5 3v4" />
-            <path d="M19 17v4" />
-            <path d="M3 5h4" />
-            <path d="M17 19h4" />
-          </svg>
-          <span class="popover-item-text">Upgrade to Pro</span>
-        </a>
+      <a class="popover-item" data-view="profileView" href="#profileView" role="menuitem">
+        <svg class="popover-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+        <span class="popover-item-text">Manage Profile</span>
+      </a>
 
-        <div class="popover-divider"></div>
+      <a href="../index.php" class="popover-item" role="menuitem">
+        <svg class="popover-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+          <polyline points="9 22 9 12 15 12 15 22" />
+        </svg>
+        <span class="popover-item-text">Main Website</span>
+      </a>
 
-        <a class="popover-item" data-view="profileView" href="#profileView" role="menuitem">
-          <svg class="popover-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-            stroke-linecap="round" stroke-linejoin="round">
-            <path
-              d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1-6.76Z" />
-            <path d="m9 12 2 2 4-4" />
-          </svg>
-          <span class="popover-item-text">Manage Profile</span>
-        </a>
-
-        <a class="popover-item" data-view="financeView" href="#financeView" role="menuitem">
-          <svg class="popover-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-            stroke-linecap="round" stroke-linejoin="round">
-            <rect width="20" height="14" x="2" y="5" rx="2" />
-            <line x1="2" x2="22" y1="10" y2="10" />
-          </svg>
-          <span class="popover-item-text">Billing</span>
-        </a>
-
-        <a class="popover-item" data-view="announcementsView" href="#announcementsView" role="menuitem">
-          <svg class="popover-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-            stroke-linecap="round" stroke-linejoin="round">
-            <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
-            <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
-          </svg>
-          <span class="popover-item-text">Notifications</span>
-        </a>
-
-        <div class="popover-divider"></div>
-      <?php else: ?>
-        <a class="popover-item" data-view="profileView" href="#profileView" role="menuitem">
-          <svg class="popover-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-            stroke-linecap="round" stroke-linejoin="round">
-            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-            <circle cx="12" cy="7" r="4"/>
-          </svg>
-          <span class="popover-item-text">Manage Profile</span>
-        </a>
-        <a href="../index.php" class="popover-item" role="menuitem">
+      <?php if ($currentRole !== 'ADMIN' && strtoupper(Auth::user()['role'] ?? '') === 'ADMIN'): ?>
+        <a href="dashboard.php" class="popover-item" role="menuitem">
           <svg class="popover-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-            <polyline points="9 22 9 12 15 12 15 22" />
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
           </svg>
-          <span class="popover-item-text">Main Website</span>
+          <span class="popover-item-text">Admin Command Portal</span>
         </a>
-        <?php if (strtoupper(Auth::user()['role'] ?? '') === 'ADMIN'): ?>
-          <a href="dashboard.php" class="popover-item" role="menuitem">
-            <svg class="popover-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-            </svg>
-            <span class="popover-item-text">Admin Command Portal</span>
-          </a>
-        <?php endif; ?>
-        <div class="popover-divider"></div>
       <?php endif; ?>
+
+      <div class="popover-divider"></div>
 
       <!-- Sign out -->
       <a class="popover-item danger" href="logout.php" role="menuitem">

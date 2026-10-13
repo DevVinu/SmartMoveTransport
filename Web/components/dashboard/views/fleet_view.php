@@ -18,7 +18,7 @@
             <span class="filter-pill active" onclick="filterFleet('ALL', this)">All Fleet Units</span>
             <span class="filter-pill" onclick="filterFleet('BUS', this)">Buses</span>
             <span class="filter-pill" onclick="filterFleet('VAN', this)">Vans</span>
-            <span class="filter-pill" onclick="filterFleet('CAR', this)">Luxury Cars</span>
+            <span class="filter-pill" onclick="filterFleet('LUXURYCAR', this)">Luxury Cars</span>
             <span class="filter-pill" onclick="filterFleet('THREEWHEEL', this)">Three-Wheelers</span>
             <span class="filter-pill" onclick="filterFleet('BIKE', this)">Motorbikes</span>
           </div>
@@ -36,7 +36,7 @@
                     <th style="padding:0.75rem 1rem; text-align:left; color:var(--text-muted); font-size:0.75rem;">
                       CATEGORY</th>
                     <th style="padding:0.75rem 1rem; text-align:left; color:var(--text-muted); font-size:0.75rem;">MODEL
-                      & MANUFACTURER</th>
+                      & SUBTYPE ATTRIBUTES</th>
                     <th style="padding:0.75rem 1rem; text-align:left; color:var(--text-muted); font-size:0.75rem;">
                       CAPACITY</th>
                     <th style="padding:0.75rem 1rem; text-align:left; color:var(--text-muted); font-size:0.75rem;">
@@ -57,6 +57,31 @@
                       $vType = strtoupper($v['vehicletype'] ?? $v['VEHICLETYPE']);
                       $vStatus = strtoupper($v['status'] ?? $v['STATUS']);
                       $vId = (int) ($v['vehicleid'] ?? $v['VEHICLEID']);
+
+                      // Subtype attribute summary
+                      $specDetail = '';
+                      if ($vType === 'BUS') {
+                        $pNo = htmlspecialchars($v['routepermitno'] ?? $v['ROUTEPERMITNO'] ?? 'N/A');
+                        $bT = htmlspecialchars($v['bustype'] ?? $v['BUSTYPE'] ?? 'AC');
+                        $sCap = (int) ($v['standingcapacity'] ?? $v['STANDINGCAPACITY'] ?? 0);
+                        $specDetail = "Permit: $pNo &bull; $bT &bull; Standing: $sCap";
+                      } elseif ($vType === 'VAN') {
+                        $vCat = htmlspecialchars($v['vancategory'] ?? $v['VANCATEGORY'] ?? 'STANDARD');
+                        $cCap = htmlspecialchars($v['cargocapacity'] ?? $v['CARGOCAPACITY'] ?? '0');
+                        $specDetail = "Category: $vCat &bull; Cargo: {$cCap}kg";
+                      } elseif ($vType === 'LUXURYCAR') {
+                        $lCat = htmlspecialchars($v['luxurycategory'] ?? $v['LUXURYCATEGORY'] ?? 'SEDAN');
+                        $wifi = (($v['wifiavailable'] ?? $v['WIFIAVAILABLE'] ?? 'Y') === 'Y') ? 'WiFi Yes' : 'No WiFi';
+                        $specDetail = "Category: $lCat &bull; $wifi";
+                      } elseif ($vType === 'THREEWHEEL') {
+                        $met = (($v['meteredstatus'] ?? $v['METEREDSTATUS'] ?? 'Y') === 'Y') ? 'Metered' : 'Fixed';
+                        $lug = (($v['cancarryluggage'] ?? $v['CANCARRYLUGGAGE'] ?? 'Y') === 'Y') ? 'Luggage Yes' : 'Luggage No';
+                        $specDetail = "$met &bull; $lug";
+                      } elseif ($vType === 'BIKE') {
+                        $cc = htmlspecialchars($v['enginecc'] ?? $v['ENGINECC'] ?? '150');
+                        $hlm = (($v['helmetprovided'] ?? $v['HELMETPROVIDED'] ?? 'Y') === 'Y') ? 'Helmet Yes' : 'No Helmet';
+                        $specDetail = "{$cc}cc &bull; $hlm";
+                      }
                       ?>
                       <tr class="fleet-row" data-type="<?php echo $vType; ?>"
                         style="border-bottom:1px solid var(--border-muted);">
@@ -67,8 +92,11 @@
                         <td style="padding:0.85rem 1rem;"><span class="badge-status badge-info"><?php echo $vType; ?></span>
                         </td>
                         <td style="padding:0.85rem 1rem; color:var(--text-white);">
-                          <?php echo htmlspecialchars($v['model'] ?? $v['MODEL']); ?>
-                          (<?php echo htmlspecialchars($v['manufacturer'] ?? $v['MANUFACTURER']); ?>)</td>
+                          <div><strong><?php echo htmlspecialchars($v['model'] ?? $v['MODEL']); ?></strong> (<?php echo htmlspecialchars($v['manufacturer'] ?? $v['MANUFACTURER']); ?>)</div>
+                          <?php if ($specDetail): ?>
+                            <div style="font-size:0.75rem; color:var(--text-secondary); margin-top:0.25rem; font-family:monospace;"><?php echo $specDetail; ?></div>
+                          <?php endif; ?>
+                        </td>
                         <td style="padding:0.85rem 1rem; color:var(--text-secondary);">
                           <?php echo htmlspecialchars($v['capacity'] ?? $v['CAPACITY']); ?> Seats</td>
                         <td style="padding:0.85rem 1rem;">
