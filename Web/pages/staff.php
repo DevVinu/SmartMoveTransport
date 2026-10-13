@@ -26,7 +26,7 @@ $mongoUp  = $dbHealth['mongodb']['connected'] ?? false;
 
 // View routing
 $activeView = $_GET['view'] ?? 'dispatchView';
-$validViews = ['dispatchView', 'shiftsView', 'maintenanceView', 'ticketingView', 'refundsView', 'announcementsView', 'profileView'];
+$validViews = ['dispatchView', 'shiftsView', 'maintenanceView', 'ticketingView', 'refundsView', 'announcementsView', 'feedbackView', 'profileView'];
 if (!in_array($activeView, $validViews)) {
     $activeView = 'dispatchView';
 }
@@ -182,76 +182,34 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
         exit;
     }
 
-    // Counter booking
+    // Counter booking via PL/SQL stored procedure
     if ($action === 'counterBooking') {
-        $tripId      = (int)($_POST['tripId'] ?? 0);
-        $passengerId = (int)($_POST['passengerId'] ?? 10);
-        $seatNumber  = (int)($_POST['seatNumber'] ?? 1);
-        $promoCode   = trim($_POST['promoCode'] ?? '');
-        $promoParam  = empty($promoCode) ? null : $promoCode;
+        $tripId        = (int)($_POST['tripId'] ?? 0);
+        $passengerId   = (int)($_POST['passengerId'] ?? 10);
+        $seatNumber    = (int)($_POST['seatNumber'] ?? 1);
+        $promoCode     = trim($_POST['promoCode'] ?? '');
+        $paymentMethod = strtoupper(trim($_POST['paymentMethod'] ?? 'CASH'));
 
-        if ($tripId && $seatNumber > 0) {
-            $conn = Database::getOracle();
-            $bookingCreated = false;
-            if ($conn) {
-                $sql = "BEGIN processSeatBooking(:pId, :tId, :promo, :seat, :bId, :fare); END;";
-                $stmt = @oci_parse($conn, $sql);
-                if ($stmt) {
-                    $bId = 0; $fare = 0.0;
-                    @oci_bind_by_name($stmt, ':pId', $passengerId);
-                    @oci_bind_by_name($stmt, ':tId', $tripId);
-                    @oci_bind_by_name($stmt, ':promo', $promoParam);
-                    @oci_bind_by_name($stmt, ':seat', $seatNumber);
-                    @oci_bind_by_name($stmt, ':bId', $bId, 32);
-                    @oci_bind_by_name($stmt, ':fare', $fare, 32);
-                    if (@oci_execute($stmt)) {
-                        $bookingCreated = true;
-                        $_SESSION['flash_success'] = "Counter ticket booked! Booking #$bId for Seat #$seatNumber created.";
-                    }
-                }
-            }
-
-            if (!$bookingCreated) {
-                $ok = Database::executeOracle("
-                    INSERT INTO booking (passengerId, tripId, seatNumber, ticketPrice, bookingStatus)
-                    VALUES (:pId, :tId, :sNum, 1250.00, 'CONFIRMED')
-                ", [':pId' => $passengerId, ':tId' => $tripId, ':sNum' => $seatNumber]);
-                if ($ok) {
-                    Database::executeOracle("UPDATE scheduledTrip SET availableSeats = availableSeats - 1 WHERE tripId = :tId AND availableSeats > 0", [':tId' => $tripId]);
-                    $_SESSION['flash_success'] = "Counter ticket booked for Seat #$seatNumber.";
-                } else {
-                    $_SESSION['flash_error'] = "Seat booking failed. Please verify trip availability.";
-                }
-            }
+        $res = Database::callBookTicket($passengerId, $tripId, $promoCode, $seatNumber, $paymentMethod);
+        if ($res['status'] === 'SUCCESS') {
+            $_SESSION['flash_success'] = "Counter ticket confirmed! Ticket #" . $res['bookingId'] . " (Seat #$seatNumber, Fare: LKR " . number_format($res['amountPaid'], 2) . ").";
+        } else {
+            $_SESSION['flash_error'] = $res['message'];
         }
         header("Location: staff.php?view=ticketingView");
         exit;
     }
 
-    // Process refund
+    // Process refund via PL/SQL stored procedure
     if ($action === 'processRefund') {
         $bookingId = (int)($_POST['bookingId'] ?? 0);
-        $paymentId = (int)($_POST['paymentId'] ?? 0);
-        $amount    = (float)($_POST['refundAmount'] ?? 0.0);
-        $reason    = trim($_POST['refundReason'] ?? 'Customer cancellation');
+        $reason    = trim($_POST['refundReason'] ?? 'Customer counter cancellation');
 
-        if ($bookingId && $amount > 0) {
-            $ok = Database::executeOracle("
-                INSERT INTO refund (bookingId, paymentId, processedByStaffId, refundAmount, refundReason, refundDate, refundStatus)
-                VALUES (:bId, :pId, :sId, :amt, :rsn, SYSDATE, 'PENDING')
-            ", [
-                ':bId' => $bookingId,
-                ':pId' => $paymentId ?: 1,
-                ':sId' => $userId,
-                ':amt' => $amount,
-                ':rsn' => $reason
-            ]);
-            if ($ok) {
-                Database::executeOracle("UPDATE booking SET bookingStatus = 'CANCELLED' WHERE bookingId = :bId", [':bId' => $bookingId]);
-                $_SESSION['flash_success'] = "Refund of LKR " . number_format($amount, 2) . " processed successfully.";
-            } else {
-                $_SESSION['flash_error'] = "Failed to process refund.";
-            }
+        $res = Database::callProcessRefund($bookingId, $userId, $reason);
+        if ($res['status'] === 'SUCCESS') {
+            $_SESSION['flash_success'] = "Refund #" . $res['refundId'] . " processed! LKR " . number_format($res['refundAmount'], 2) . " credited.";
+        } else {
+            $_SESSION['flash_error'] = $res['message'];
         }
         header("Location: staff.php?view=refundsView");
         exit;
@@ -443,6 +401,12 @@ if (empty($announcements)) {
     ];
 }
 
+// Passenger reviews from MongoDB
+$staffReviews = [];
+if ($mongoUp) {
+    $staffReviews = Database::queryMongo('passenger_reviews', [], ['sort' => ['createdAt' => -1], 'limit' => 25]);
+}
+
 // KPIs
 $activeTripsCount = count(array_filter($scheduledTrips, fn($t) => in_array($t['tripStatus'], ['SCHEDULED', 'IN_TRANSIT'])));
 $inTransitCount   = count(array_filter($scheduledTrips, fn($t) => $t['tripStatus'] === 'IN_TRANSIT'));
@@ -457,6 +421,7 @@ $pageTitle = "SmartMove — Staff Operations Portal";
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><?php echo htmlspecialchars($pageTitle); ?></title>
+  <link rel="icon" type="image/jpeg" href="../img/logo.jpg">
   
   <link rel="stylesheet" href="../css/variables.css">
   <link rel="stylesheet" href="../css/dashboard.css">
@@ -570,24 +535,24 @@ $pageTitle = "SmartMove — Staff Operations Portal";
                 };
               ?>
                 <tr class="trip-row" data-status="<?php echo $st; ?>">
-                  <td><strong>#<?php echo $trip['tripId']; ?></strong></td>
+                  <td><strong>#<?php echo $trip['tripId'] ?? $trip['tripid'] ?? ''; ?></strong></td>
                   <td>
-                    <div style="font-weight:600;color:var(--text-white);"><?php echo htmlspecialchars($trip['routeName']); ?></div>
-                    <div style="font-size:11px;color:var(--text-muted);"><?php echo htmlspecialchars($trip['origin']); ?> to <?php echo htmlspecialchars($trip['destination']); ?></div>
+                    <div style="font-weight:600;color:var(--text-white);"><?php echo htmlspecialchars($trip['routeName'] ?? $trip['routename'] ?? ''); ?></div>
+                    <div style="font-size:11px;color:var(--text-muted);"><?php echo htmlspecialchars($trip['origin'] ?? ''); ?> to <?php echo htmlspecialchars($trip['destination'] ?? ''); ?></div>
                   </td>
                   <td>
-                    <div><?php echo htmlspecialchars($trip['registrationNo']); ?></div>
+                    <div><?php echo htmlspecialchars($trip['registrationNo'] ?? $trip['registrationno'] ?? ''); ?></div>
                     <div style="font-size:11px;color:var(--text-muted);"><?php echo htmlspecialchars($trip['model'] ?? ''); ?></div>
                   </td>
-                  <td><?php echo htmlspecialchars($trip['driverName'] ?? 'Unassigned'); ?></td>
+                  <td><?php echo htmlspecialchars($trip['driverName'] ?? $trip['drivername'] ?? 'Unassigned'); ?></td>
                   <td>
-                    <div><?php echo htmlspecialchars($trip['departureTime']); ?></div>
-                    <div style="font-size:11px;color:var(--text-muted);"><?php echo htmlspecialchars($trip['tripDate']); ?></div>
+                    <div><?php echo htmlspecialchars($trip['departureTime'] ?? $trip['departuretime'] ?? ''); ?></div>
+                    <div style="font-size:11px;color:var(--text-muted);"><?php echo htmlspecialchars($trip['tripDate'] ?? $trip['tripdate'] ?? ''); ?></div>
                   </td>
                   <td>
-                    <span class="type-badge"><?php echo $trip['availableSeats']; ?> Seats</span>
+                    <span class="type-badge"><?php echo $trip['availableSeats'] ?? $trip['availableseats'] ?? 0; ?> Seats</span>
                   </td>
-                  <td>LKR <?php echo number_format($trip['fareAmount'], 2); ?></td>
+                  <td>LKR <?php echo number_format((float)($trip['fareAmount'] ?? $trip['fareamount'] ?? 0), 2); ?></td>
                   <td>
                     <span class="badge-status <?php echo $badgeClass; ?>"><?php echo $st; ?></span>
                   </td>
@@ -669,11 +634,11 @@ $pageTitle = "SmartMove — Staff Operations Portal";
                 };
               ?>
                 <tr class="shift-row" data-status="<?php echo $sst; ?>">
-                  <td><strong>#<?php echo $shift['shiftId']; ?></strong></td>
-                  <td style="font-weight:600;color:var(--text-white);"><?php echo htmlspecialchars($shift['driverName']); ?></td>
-                  <td><span class="type-badge"><?php echo htmlspecialchars($shift['licenseNumber']); ?></span></td>
-                  <td><?php echo htmlspecialchars($shift['shiftDate']); ?></td>
-                  <td><?php echo htmlspecialchars($shift['startTime']); ?> — <?php echo htmlspecialchars($shift['endTime']); ?></td>
+                  <td><strong>#<?php echo $shift['shiftId'] ?? $shift['shiftid'] ?? ''; ?></strong></td>
+                  <td style="font-weight:600;color:var(--text-white);"><?php echo htmlspecialchars($shift['driverName'] ?? $shift['drivername'] ?? ''); ?></td>
+                  <td><span class="type-badge"><?php echo htmlspecialchars($shift['licenseNumber'] ?? $shift['licensenumber'] ?? ''); ?></span></td>
+                  <td><?php echo htmlspecialchars($shift['shiftDate'] ?? $shift['shiftdate'] ?? ''); ?></td>
+                  <td><?php echo htmlspecialchars($shift['startTime'] ?? $shift['starttime'] ?? ''); ?> — <?php echo htmlspecialchars($shift['endTime'] ?? $shift['endtime'] ?? ''); ?></td>
                   <td><span class="badge-status <?php echo $sBadge; ?>"><?php echo $sst; ?></span></td>
                   <td style="text-align:right;">
                     <?php if ($sst === 'SCHEDULED'): ?>
@@ -731,20 +696,20 @@ $pageTitle = "SmartMove — Staff Operations Portal";
             </thead>
             <tbody>
               <?php foreach ($maintenanceList as $maint): 
-                $mst = strtoupper($maint['maintenanceStatus']);
+                $mst = strtoupper($maint['maintenanceStatus'] ?? $maint['maintenancestatus'] ?? 'SCHEDULED');
                 $mBadge = $mst === 'COMPLETED' ? 'badge-active' : 'badge-urgent';
               ?>
                 <tr>
-                  <td><strong>#<?php echo $maint['maintenanceId']; ?></strong></td>
-                  <td style="font-weight:600;color:var(--text-white);"><?php echo htmlspecialchars($maint['registrationNo']); ?></td>
-                  <td><?php echo htmlspecialchars($maint['model']); ?></td>
+                  <td><strong>#<?php echo $maint['maintenanceId'] ?? $maint['maintenanceid'] ?? ''; ?></strong></td>
+                  <td style="font-weight:600;color:var(--text-white);"><?php echo htmlspecialchars($maint['registrationNo'] ?? $maint['registrationno'] ?? ''); ?></td>
+                  <td><?php echo htmlspecialchars($maint['model'] ?? ''); ?></td>
                   <td>
-                    <div><?php echo htmlspecialchars($maint['maintenanceType']); ?></div>
+                    <div><?php echo htmlspecialchars($maint['maintenanceType'] ?? $maint['maintenancetype'] ?? 'ROUTINE'); ?></div>
                     <div style="font-size:11px;color:var(--text-muted);"><?php echo htmlspecialchars($maint['description'] ?? ''); ?></div>
                   </td>
-                  <td>LKR <?php echo number_format($maint['cost'], 2); ?></td>
-                  <td><?php echo htmlspecialchars($maint['nextServiceDate']); ?></td>
-                  <td><?php echo htmlspecialchars($maint['staffName'] ?? 'Supervisor'); ?></td>
+                  <td>LKR <?php echo number_format((float)($maint['cost'] ?? 0), 2); ?></td>
+                  <td><?php echo htmlspecialchars($maint['nextServiceDate'] ?? $maint['nextservicedate'] ?? ''); ?></td>
+                  <td><?php echo htmlspecialchars($maint['staffName'] ?? $maint['staffname'] ?? 'Supervisor'); ?></td>
                   <td><span class="badge-status <?php echo $mBadge; ?>"><?php echo $mst; ?></span></td>
                   <td style="text-align:right;">
                     <?php if ($mst !== 'COMPLETED'): ?>
@@ -804,14 +769,14 @@ $pageTitle = "SmartMove — Staff Operations Portal";
                 };
               ?>
                 <tr>
-                  <td><strong>#<?php echo $bk['bookingId']; ?></strong></td>
-                  <td style="font-weight:600;color:var(--text-white);"><?php echo htmlspecialchars($bk['passengerName']); ?></td>
+                  <td><strong>#<?php echo $bk['bookingId'] ?? $bk['bookingid'] ?? ''; ?></strong></td>
+                  <td style="font-weight:600;color:var(--text-white);"><?php echo htmlspecialchars($bk['passengerName'] ?? $bk['passengername'] ?? ''); ?></td>
                   <td style="font-size:12px;color:var(--text-muted);"><?php echo htmlspecialchars($bk['phone'] ?? 'N/A'); ?></td>
-                  <td><?php echo htmlspecialchars($bk['routeName']); ?></td>
-                  <td><?php echo htmlspecialchars($bk['departureTime']); ?> (<?php echo htmlspecialchars($bk['tripDate']); ?>)</td>
-                  <td><span class="manifest-seat-badge">Seat <?php echo $bk['seatNumber']; ?></span></td>
-                  <td>LKR <?php echo number_format($bk['ticketPrice'], 2); ?></td>
-                  <td><span class="type-badge"><?php echo htmlspecialchars($bk['paymentMethod'] ?? 'COUNTER'); ?></span></td>
+                  <td><?php echo htmlspecialchars($bk['routeName'] ?? $bk['routename'] ?? ''); ?></td>
+                  <td><?php echo htmlspecialchars($bk['departureTime'] ?? $bk['departuretime'] ?? ''); ?> (<?php echo htmlspecialchars($bk['tripDate'] ?? $bk['tripdate'] ?? ''); ?>)</td>
+                  <td><span class="manifest-seat-badge">Seat <?php echo $bk['seatNumber'] ?? $bk['seatnumber'] ?? ''; ?></span></td>
+                  <td>LKR <?php echo number_format((float)($bk['ticketPrice'] ?? $bk['ticketprice'] ?? 0), 2); ?></td>
+                  <td><span class="type-badge"><?php echo htmlspecialchars($bk['paymentMethod'] ?? $bk['paymentmethod'] ?? 'COUNTER'); ?></span></td>
                   <td><span class="badge-status <?php echo $bBadge; ?>"><?php echo $bst; ?></span></td>
                 </tr>
               <?php endforeach; ?>
@@ -851,13 +816,13 @@ $pageTitle = "SmartMove — Staff Operations Portal";
             <tbody>
               <?php foreach ($refundsList as $ref): ?>
                 <tr>
-                  <td><strong>#<?php echo $ref['refundId']; ?></strong></td>
-                  <td>Booking #<?php echo $ref['bookingId']; ?></td>
-                  <td style="font-weight:600;color:#F87171;">LKR <?php echo number_format($ref['refundAmount'], 2); ?></td>
-                  <td><?php echo htmlspecialchars($ref['refundReason']); ?></td>
-                  <td><?php echo htmlspecialchars($ref['refundDate']); ?></td>
-                  <td><?php echo htmlspecialchars($ref['staffName'] ?? 'Operations Staff'); ?></td>
-                  <td><span class="badge-status badge-active"><?php echo htmlspecialchars($ref['refundStatus']); ?></span></td>
+                  <td><strong>#<?php echo $ref['refundId'] ?? $ref['refundid'] ?? ''; ?></strong></td>
+                  <td>Booking #<?php echo $ref['bookingId'] ?? $ref['bookingid'] ?? ''; ?></td>
+                  <td style="font-weight:600;color:#F87171;">LKR <?php echo number_format((float)($ref['refundAmount'] ?? $ref['refundamount'] ?? 0), 2); ?></td>
+                  <td><?php echo htmlspecialchars($ref['refundReason'] ?? $ref['refundreason'] ?? ''); ?></td>
+                  <td><?php echo htmlspecialchars($ref['refundDate'] ?? $ref['refunddate'] ?? ''); ?></td>
+                  <td><?php echo htmlspecialchars($ref['staffName'] ?? $ref['staffname'] ?? 'Operations Staff'); ?></td>
+                  <td><span class="badge-status badge-active"><?php echo htmlspecialchars($ref['refundStatus'] ?? $ref['refundstatus'] ?? ''); ?></span></td>
                 </tr>
               <?php endforeach; ?>
             </tbody>
@@ -909,6 +874,74 @@ $pageTitle = "SmartMove — Staff Operations Portal";
             </tbody>
           </table>
         </div>
+      </section>
+
+      <!-- Passenger Reviews & Feedback View -->
+      <section class="page-view <?php echo $activeView === 'feedbackView' ? 'active-view' : ''; ?>" id="feedbackView">
+        <div class="view-header">
+          <div class="view-title-group">
+            <h1>Commuter Reviews &amp; Service Feedback</h1>
+            <p>Live passenger ratings, sentiment scores, and journey experience logs from MongoDB.</p>
+          </div>
+        </div>
+
+        <?php if (empty($staffReviews)): ?>
+          <div class="dash-panel" style="text-align:center; padding:3rem 1rem; color:var(--text-secondary);">
+            <h3>No Passenger Reviews Available</h3>
+            <p style="margin-top:0.5rem; font-size:0.9rem;">Reviews submitted by passengers via web portal are recorded here.</p>
+          </div>
+        <?php else: ?>
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Review #</th>
+                  <th>Passenger</th>
+                  <th>Route / Corridor</th>
+                  <th>Captain &amp; Bus</th>
+                  <th>Rating</th>
+                  <th>Sentiment</th>
+                  <th>Commuter Comments</th>
+                  <th>Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                <?php foreach ($staffReviews as $rev): 
+                  $rRating = (float)($rev['rating'] ?? 5);
+                  $rSent = strtoupper($rev['sentiment'] ?? 'POSITIVE');
+                  $sBadge = ($rSent === 'POSITIVE') ? 'badge-active' : (($rSent === 'NEUTRAL') ? 'badge-warning' : 'badge-urgent');
+                  $rDate = $rev['createdAt'] ?? date('Y-m-d');
+                  if (is_array($rDate)) {
+                    $rDate = $rDate['$date'] ?? date('Y-m-d');
+                  }
+                  if (!is_string($rDate)) {
+                    $rDate = date('Y-m-d');
+                  }
+                ?>
+                  <tr>
+                    <td><strong><?php echo htmlspecialchars($rev['reviewId'] ?? 'REV'); ?></strong></td>
+                    <td style="font-weight:600; color:var(--text-white);"><?php echo htmlspecialchars($rev['passengerName'] ?? 'Commuter'); ?></td>
+                    <td><?php echo htmlspecialchars($rev['routeName'] ?? '-'); ?></td>
+                    <td>
+                      <div><?php echo htmlspecialchars($rev['driverName'] ?? '-'); ?></div>
+                      <span style="font-size:0.75rem; color:var(--text-muted);"><?php echo htmlspecialchars($rev['vehicleRegNo'] ?? ''); ?></span>
+                    </td>
+                    <td>
+                      <span style="color:#FBBF24; font-weight:700;">★ <?php echo number_format($rRating, 1); ?></span>
+                    </td>
+                    <td>
+                      <span class="badge-status <?php echo $sBadge; ?>"><?php echo $rSent; ?></span>
+                    </td>
+                    <td style="max-width:300px; font-size:0.85rem; color:var(--text-secondary);">
+                      "<?php echo htmlspecialchars($rev['comment'] ?? $rev['comments'] ?? ''); ?>"
+                    </td>
+                    <td style="font-size:0.75rem; color:var(--text-muted);"><?php echo htmlspecialchars($rDate); ?></td>
+                  </tr>
+                <?php endforeach; ?>
+              </tbody>
+            </table>
+          </div>
+        <?php endif; ?>
       </section>
 
       <?php include __DIR__ . '/../components/dashboard/views/profile_view.php'; ?>

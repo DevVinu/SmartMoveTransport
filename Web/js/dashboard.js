@@ -189,7 +189,9 @@ window.filterFleet = function(type, btn) {
   document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
   btn.classList.add('active');
   document.querySelectorAll('.fleet-row').forEach(r => {
-    r.style.display = (type === 'ALL' || r.dataset.type === type) ? '' : 'none';
+    const rType = (r.dataset.type || '').toUpperCase();
+    const isMatch = (type === 'ALL' || rType === type || (type === 'CAR' && rType === 'LUXURYCAR'));
+    r.style.display = isMatch ? '' : 'none';
   });
 };
 
@@ -228,6 +230,22 @@ window.toggleRoleFields = function(role, prefix) {
       el.style.display = (r.toUpperCase() === role.toUpperCase()) ? 'block' : 'none';
     }
   });
+};
+
+// Toggle vehicle subtype fields
+window.toggleVehicleFields = function(vType) {
+  const types = ['BUS', 'VAN', 'LUXURYCAR', 'THREEWHEEL', 'BIKE'];
+  const capMap = { 'BUS': 32, 'VAN': 14, 'LUXURYCAR': 4, 'THREEWHEEL': 3, 'BIKE': 1 };
+  types.forEach(t => {
+    const el = document.getElementById(`addVehicle${t}Fields`);
+    if (el) {
+      el.style.display = (t.toUpperCase() === vType.toUpperCase()) ? 'block' : 'none';
+    }
+  });
+  const capInput = document.getElementById('addVehicleCapacityInput');
+  if (capInput && capMap[vType.toUpperCase()]) {
+    capInput.value = capMap[vType.toUpperCase()];
+  }
 };
 
 // Open and populate edit user modal

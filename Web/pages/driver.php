@@ -26,7 +26,7 @@ $mongoUp  = $dbHealth['mongodb']['connected'] ?? false;
 
 // View routing
 $activeView = $_GET['view'] ?? 'cockpitView';
-$validViews = ['cockpitView', 'tripsView', 'shiftsView', 'fuelView', 'feedbackView', 'profileView'];
+$validViews = ['cockpitView', 'tripsView', 'shiftsView', 'fuelView', 'docsView', 'announcementsView', 'feedbackView', 'profileView'];
 if (!in_array($activeView, $validViews)) {
     $activeView = 'cockpitView';
 }
@@ -347,6 +347,23 @@ if (empty($passengerReviews)) {
 $totalScore = array_sum(array_column($passengerReviews, 'rating'));
 $avgRating  = count($passengerReviews) > 0 ? round($totalScore / count($passengerReviews), 1) : 4.9;
 
+// Vehicle documents from MongoDB
+$vehicleDocs = [];
+if ($mongoUp) {
+    $assignedVehicleId = !empty($activeTrip['vehicleId']) ? (int)$activeTrip['vehicleId'] : 1;
+    $vehicleDocs = Database::queryMongo('vehicle_documents', ['vehicleId' => $assignedVehicleId]);
+    if (empty($vehicleDocs)) {
+        $vehicleDocs = Database::queryMongo('vehicle_documents', [], ['limit' => 1]);
+    }
+}
+$currentVehicleDoc = !empty($vehicleDocs) ? $vehicleDocs[0] : null;
+
+// Travel announcements from MongoDB
+$driverAnnouncements = [];
+if ($mongoUp) {
+    $driverAnnouncements = Database::queryMongo('travel_announcements', ['active' => true], ['sort' => ['publishedAt' => -1]]);
+}
+
 $pageTitle = "SmartMove — Driver Partner Portal";
 ?>
 <!DOCTYPE html>
@@ -355,6 +372,7 @@ $pageTitle = "SmartMove — Driver Partner Portal";
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><?php echo htmlspecialchars($pageTitle); ?></title>
+  <link rel="icon" type="image/jpeg" href="../img/logo.jpg">
   
   <link rel="stylesheet" href="../css/variables.css">
   <link rel="stylesheet" href="../css/dashboard.css">
@@ -686,10 +704,10 @@ $pageTitle = "SmartMove — Driver Partner Portal";
                 };
               ?>
                 <tr>
-                  <td><strong>#<?php echo $sh['shiftId']; ?></strong></td>
-                  <td style="font-weight:600;color:var(--text-white);"><?php echo htmlspecialchars($sh['shiftDate']); ?></td>
-                  <td><?php echo htmlspecialchars($sh['startTime']); ?></td>
-                  <td><?php echo htmlspecialchars($sh['endTime']); ?></td>
+                  <td><strong>#<?php echo $sh['shiftId'] ?? $sh['shiftid'] ?? ''; ?></strong></td>
+                  <td style="font-weight:600;color:var(--text-white);"><?php echo htmlspecialchars($sh['shiftDate'] ?? $sh['shiftdate'] ?? ''); ?></td>
+                  <td><?php echo htmlspecialchars($sh['startTime'] ?? $sh['starttime'] ?? ''); ?></td>
+                  <td><?php echo htmlspecialchars($sh['endTime'] ?? $sh['endtime'] ?? ''); ?></td>
                   <td><span class="badge-status <?php echo $sBadge; ?>"><?php echo $sst; ?></span></td>
                   <td style="text-align:right;">
                     <?php if ($sst === 'SCHEDULED'): ?>
@@ -748,13 +766,13 @@ $pageTitle = "SmartMove — Driver Partner Portal";
             <tbody>
               <?php foreach ($fuelLogs as $fl): ?>
                 <tr>
-                  <td><strong>#<?php echo $fl['fuelLogId']; ?></strong></td>
-                  <td style="font-weight:600;color:var(--text-white);"><?php echo htmlspecialchars($fl['registrationNo']); ?></td>
-                  <td><?php echo htmlspecialchars($fl['refuelDate']); ?></td>
-                  <td><?php echo htmlspecialchars($fl['stationName']); ?></td>
-                  <td><span class="type-badge"><?php echo number_format($fl['litersPumped'], 1); ?> L</span></td>
-                  <td style="font-weight:600;color:#34D399;">LKR <?php echo number_format($fl['totalCost'], 2); ?></td>
-                  <td style="font-family:monospace;"><?php echo number_format($fl['odometerReading']); ?> KM</td>
+                  <td><strong>#<?php echo $fl['fuelLogId'] ?? $fl['fuellogid'] ?? ''; ?></strong></td>
+                  <td style="font-weight:600;color:var(--text-white);"><?php echo htmlspecialchars($fl['registrationNo'] ?? $fl['registrationno'] ?? ''); ?></td>
+                  <td><?php echo htmlspecialchars($fl['refuelDate'] ?? $fl['refueldate'] ?? ''); ?></td>
+                  <td><?php echo htmlspecialchars($fl['stationName'] ?? $fl['stationname'] ?? ''); ?></td>
+                  <td><span class="type-badge"><?php echo number_format((float)($fl['litersPumped'] ?? $fl['literspumped'] ?? 0), 1); ?> L</span></td>
+                  <td style="font-weight:600;color:#34D399;">LKR <?php echo number_format((float)($fl['totalCost'] ?? $fl['totalcost'] ?? 0), 2); ?></td>
+                  <td style="font-family:monospace;"><?php echo number_format((float)($fl['odometerReading'] ?? $fl['odometerreading'] ?? 0)); ?> KM</td>
                 </tr>
               <?php endforeach; ?>
             </tbody>
@@ -819,6 +837,155 @@ $pageTitle = "SmartMove — Driver Partner Portal";
             </div>
           <?php endforeach; ?>
         </div>
+      </section>
+
+      <!-- Vehicle Documents View -->
+      <section class="page-view <?php echo $activeView === 'docsView' ? 'active-view' : ''; ?>" id="docsView">
+        <div class="view-header">
+          <div class="view-title-group">
+            <h1>Vehicle Compliance Documents &amp; Specifications</h1>
+            <p>Inspect digital permits, commercial insurance, revenue license, and telemetry of your assigned coach.</p>
+          </div>
+        </div>
+
+        <?php if ($currentVehicleDoc): 
+          $docsList = $currentVehicleDoc['documents'] ?? [];
+          $telemetry = $currentVehicleDoc['telemetry'] ?? [];
+        ?>
+          <!-- Vehicle details card -->
+          <div class="dash-panel" style="margin-bottom:1.5rem; padding:1.25rem;">
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border-subtle); padding-bottom:1rem; margin-bottom:1rem;">
+              <div>
+                <span style="font-size:0.75rem; color:var(--text-muted); text-transform:uppercase;">Assigned Fleet Unit</span>
+                <h2 style="font-size:1.4rem; font-weight:800; color:var(--text-white); margin-top:0.2rem;">
+                  <?php echo htmlspecialchars($currentVehicleDoc['registrationNo'] ?? 'WP-ND-4521'); ?>
+                  <span style="font-size:0.85rem; font-weight:600; background:rgba(56,189,248,0.15); color:#38BDF8; padding:0.2rem 0.5rem; border-radius:4px; margin-left:0.5rem;">
+                    <?php echo htmlspecialchars($currentVehicleDoc['vehicleType'] ?? 'BUS'); ?>
+                  </span>
+                </h2>
+              </div>
+              <div style="text-align:right;">
+                <span style="font-size:0.75rem; color:var(--text-muted);">Model / Year</span>
+                <div style="font-size:1rem; font-weight:700; color:var(--text-white);">
+                  <?php echo htmlspecialchars(($currentVehicleDoc['manufacturer'] ?? '') . ' ' . ($currentVehicleDoc['model'] ?? '')); ?> (<?php echo htmlspecialchars($currentVehicleDoc['yearOfManufacture'] ?? '2024'); ?>)
+                </div>
+              </div>
+            </div>
+
+            <!-- Telemetry stats -->
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:1rem;">
+              <div style="background:var(--bg-card-inner); padding:0.75rem 1rem; border-radius:6px; border:1px solid var(--border-subtle);">
+                <div style="font-size:0.75rem; color:var(--text-muted);">SEATING CAPACITY</div>
+                <div style="font-size:1.1rem; font-weight:700; color:#fff;"><?php echo htmlspecialchars($currentVehicleDoc['capacity'] ?? 32); ?> Passengers</div>
+              </div>
+              <div style="background:var(--bg-card-inner); padding:0.75rem 1rem; border-radius:6px; border:1px solid var(--border-subtle);">
+                <div style="font-size:0.75rem; color:var(--text-muted);">GPS TRACKER IMEI</div>
+                <div style="font-size:0.95rem; font-weight:700; color:#38BDF8; font-family:monospace;"><?php echo htmlspecialchars($telemetry['gpsTrackingImei'] ?? '864209043219012'); ?></div>
+              </div>
+              <div style="background:var(--bg-card-inner); padding:0.75rem 1rem; border-radius:6px; border:1px solid var(--border-subtle);">
+                <div style="font-size:0.75rem; color:var(--text-muted);">FUEL TYPE</div>
+                <div style="font-size:1.1rem; font-weight:700; color:#34D399;"><?php echo htmlspecialchars($telemetry['fuelType'] ?? 'DIESEL'); ?></div>
+              </div>
+              <div style="background:var(--bg-card-inner); padding:0.75rem 1rem; border-radius:6px; border:1px solid var(--border-subtle);">
+                <div style="font-size:0.75rem; color:var(--text-muted);">LAST ODOMETER</div>
+                <div style="font-size:1.1rem; font-weight:700; color:#FBBF24;"><?php echo number_format((float)($telemetry['lastOdometerKm'] ?? 48250)); ?> KM</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Documents list -->
+          <div class="dash-panel">
+            <h3 style="font-size:1.05rem; font-weight:700; color:#fff; margin-bottom:1rem;">Verified Regulatory Documents</h3>
+            <div class="data-table-container">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Document Title</th>
+                    <th>Certificate #</th>
+                    <th>Issuing Authority</th>
+                    <th>Valid From</th>
+                    <th>Expiry Date</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <?php foreach ($docsList as $doc): ?>
+                    <tr>
+                      <td><span style="background:var(--bg-card-inner); padding:0.25rem 0.5rem; border-radius:4px; font-weight:700; font-size:0.75rem; color:#38BDF8;"><?php echo htmlspecialchars($doc['docType'] ?? 'PERMIT'); ?></span></td>
+                      <td><strong><?php echo htmlspecialchars($doc['title'] ?? 'Vehicle Permit'); ?></strong></td>
+                      <td style="font-family:monospace;"><?php echo htmlspecialchars($doc['documentNo'] ?? '-'); ?></td>
+                      <td><?php echo htmlspecialchars($doc['issuer'] ?? 'Ministry of Transport'); ?></td>
+                      <td><?php echo htmlspecialchars($doc['issueDate'] ?? '-'); ?></td>
+                      <td><strong><?php echo htmlspecialchars($doc['expiryDate'] ?? '-'); ?></strong></td>
+                      <td><span class="badge-status badge-active"><?php echo htmlspecialchars($doc['status'] ?? 'VALID'); ?></span></td>
+                    </tr>
+                  <?php endforeach; ?>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        <?php else: ?>
+          <div class="dash-panel" style="text-align:center; padding:3rem 1rem; color:var(--text-secondary);">
+            <h3>No Vehicle Compliance Records Found</h3>
+            <p style="margin-top:0.5rem; font-size:0.9rem;">Vehicle documents are retrieved from the MongoDB repository.</p>
+          </div>
+        <?php endif; ?>
+      </section>
+
+      <!-- Travel Announcements View -->
+      <section class="page-view <?php echo $activeView === 'announcementsView' ? 'active-view' : ''; ?>" id="announcementsView">
+        <div class="view-header">
+          <div class="view-title-group">
+            <h1>Travel Advisories &amp; Expressway Alerts</h1>
+            <p>Live road closure notices, weather alerts, and corridor bulletins issued by central dispatch.</p>
+          </div>
+        </div>
+
+        <?php if (empty($driverAnnouncements)): ?>
+          <div class="dash-panel" style="text-align:center; padding:3rem 1rem; color:var(--text-secondary);">
+            <h3>All Highway Corridors Clear</h3>
+            <p style="margin-top:0.5rem; font-size:0.9rem;">No active severe weather or lane closure advisories at this time.</p>
+          </div>
+        <?php else: ?>
+          <div style="display:grid; gap:1rem;">
+            <?php foreach ($driverAnnouncements as $ann): 
+              $pri = strtoupper($ann['priority'] ?? 'MEDIUM');
+              $priColor = ($pri === 'HIGH') ? '#F87171' : (($pri === 'MEDIUM') ? '#FBBF24' : '#34D399');
+              $priBg = ($pri === 'HIGH') ? 'rgba(239,68,68,0.15)' : (($pri === 'MEDIUM') ? 'rgba(251,191,36,0.15)' : 'rgba(52,211,153,0.15)');
+            ?>
+              <div class="dash-panel" style="padding:1.25rem; border-left:4px solid <?php echo $priColor; ?>;">
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.5rem;">
+                  <div style="display:flex; align-items:center; gap:0.5rem;">
+                    <span style="background:<?php echo $priBg; ?>; color:<?php echo $priColor; ?>; font-size:0.7rem; font-weight:700; padding:0.2rem 0.5rem; border-radius:4px;">
+                      <?php echo $pri; ?> PRIORITY
+                    </span>
+                    <span style="font-size:0.75rem; color:var(--text-muted); font-family:monospace;">
+                      <?php echo htmlspecialchars($ann['category'] ?? 'GENERAL'); ?>
+                    </span>
+                  </div>
+                  <span style="font-size:0.75rem; color:var(--text-muted);">
+                    <?php echo htmlspecialchars($ann['publishedAt'] ?? ''); ?>
+                  </span>
+                </div>
+
+                <h3 style="color:#fff; font-size:1.1rem; font-weight:700; margin-bottom:0.5rem;">
+                  <?php echo htmlspecialchars($ann['title'] ?? ''); ?>
+                </h3>
+                <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.5; margin-bottom:0.75rem;">
+                  <?php echo htmlspecialchars($ann['message'] ?? ''); ?>
+                </p>
+
+                <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:var(--text-muted); padding-top:0.5rem; border-top:1px solid var(--border-subtle);">
+                  <span>Issued by: <?php echo htmlspecialchars($ann['author'] ?? 'National Transit Operations'); ?></span>
+                  <?php if (!empty($ann['affectedRoutes'])): ?>
+                    <span>Affected Routes: Route #<?php echo implode(', #', $ann['affectedRoutes']); ?></span>
+                  <?php endif; ?>
+                </div>
+              </div>
+            <?php endforeach; ?>
+          </div>
+        <?php endif; ?>
       </section>
 
       <?php include __DIR__ . '/../components/dashboard/views/profile_view.php'; ?>

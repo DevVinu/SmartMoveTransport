@@ -1,40 +1,141 @@
   <!-- Add vehicle modal -->
   <div class="modal-backdrop" id="modalAddVehicle">
-    <div class="modal-box">
+    <div class="modal-box" style="max-width:560px;">
       <div class="modal-header">
         <h3 class="modal-title">Register New Vehicle to Fleet</h3>
         <button type="button" class="modal-close-btn" onclick="closeModal('modalAddVehicle')">&times;</button>
       </div>
       <form method="POST" action="dashboard.php">
         <input type="hidden" name="action" value="addVehicle">
-        <div class="form-group">
-          <label class="form-label">Registration Number (e.g. WP-ND-5544)</label>
-          <input type="text" name="registrationNo" class="form-input" required placeholder="WP-ND-5544">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Vehicle Category</label>
-          <select name="vehicleType" class="form-select">
-            <option value="BUS">Bus (Intercity Coach)</option>
-            <option value="VAN">Van (Executive Commuter)</option>
-            <option value="CAR">Car (Luxury Sedan)</option>
-            <option value="THREEWHEEL">Three-Wheeler</option>
-            <option value="BIKE">Motorbike</option>
-          </select>
+        <div class="form-group" style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem;">
+          <div>
+            <label class="form-label">Registration Number</label>
+            <input type="text" name="registrationNo" class="form-input" required placeholder="e.g. WP-ND-5544">
+          </div>
+          <div>
+            <label class="form-label">Vehicle Category</label>
+            <select name="vehicleType" id="addVehicleTypeSelect" class="form-select" onchange="toggleVehicleFields(this.value)">
+              <option value="BUS" selected>Bus (Intercity Coach)</option>
+              <option value="VAN">Van (Executive Commuter)</option>
+              <option value="LUXURYCAR">Car (Luxury Sedan)</option>
+              <option value="THREEWHEEL">Three-Wheeler</option>
+              <option value="BIKE">Motorbike</option>
+            </select>
+          </div>
         </div>
         <div class="form-group" style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem;">
           <div>
             <label class="form-label">Model</label>
-            <input type="text" name="model" class="form-input" required placeholder="Rosa / HiAce">
+            <input type="text" name="model" class="form-input" required placeholder="Rosa / HiAce / Prius">
           </div>
           <div>
             <label class="form-label">Manufacturer</label>
-            <input type="text" name="manufacturer" class="form-input" required placeholder="Toyota / Mitsubishi">
+            <input type="text" name="manufacturer" class="form-input" required placeholder="Toyota / Mitsubishi / Honda">
           </div>
         </div>
         <div class="form-group">
           <label class="form-label">Passenger Capacity (Seats)</label>
-          <input type="number" name="capacity" class="form-input" min="1" max="100" value="30" required>
+          <input type="number" name="capacity" id="addVehicleCapacityInput" class="form-input" min="1" max="100" value="32" required>
         </div>
+
+        <!-- Bus attributes -->
+        <div id="addVehicleBUSFields" class="actor-fields-group">
+          <div class="form-group" style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem;">
+            <div>
+              <label class="form-label">Bus Type</label>
+              <select name="busType" class="form-select">
+                <option value="AC" selected>Air Conditioned (AC)</option>
+                <option value="NON_AC">Normal / Non AC</option>
+                <option value="LUXURY">Super Luxury Coach</option>
+              </select>
+            </div>
+            <div>
+              <label class="form-label">Standing Capacity</label>
+              <input type="number" name="standingCapacity" class="form-input" min="0" max="50" value="5">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Route Permit Number</label>
+            <input type="text" name="routePermitNo" class="form-input" placeholder="e.g. WP-EX-0099">
+          </div>
+        </div>
+
+        <!-- Van attributes -->
+        <div id="addVehicleVANFields" class="actor-fields-group" style="display:none;">
+          <div class="form-group" style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem;">
+            <div>
+              <label class="form-label">Van Category</label>
+              <select name="vanCategory" class="form-select">
+                <option value="STANDARD" selected>Standard Commuter</option>
+                <option value="HIGH_ROOF">High Roof Deluxe</option>
+                <option value="VIP">VIP Executive</option>
+              </select>
+            </div>
+            <div>
+              <label class="form-label">Cargo Capacity (kg)</label>
+              <input type="number" step="0.5" name="cargoCapacity" class="form-input" min="0" value="450.00">
+            </div>
+          </div>
+        </div>
+
+        <!-- Luxury Car attributes -->
+        <div id="addVehicleLUXURYCARFields" class="actor-fields-group" style="display:none;">
+          <div class="form-group" style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem;">
+            <div>
+              <label class="form-label">Luxury Category</label>
+              <select name="luxuryCategory" class="form-select">
+                <option value="SEDAN" selected>Executive Sedan</option>
+                <option value="SUV">Luxury SUV</option>
+                <option value="PRESTIGE">Prestige Limousine</option>
+              </select>
+            </div>
+            <div>
+              <label class="form-label">WiFi Available</label>
+              <select name="wifiAvailable" class="form-select">
+                <option value="Y" selected>Yes, Available</option>
+                <option value="N">Not Available</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Three-Wheeler attributes -->
+        <div id="addVehicleTHREEWHEELFields" class="actor-fields-group" style="display:none;">
+          <div class="form-group" style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem;">
+            <div>
+              <label class="form-label">Fare Meter Status</label>
+              <select name="meteredStatus" class="form-select">
+                <option value="Y" selected>Digital Meter Equipped</option>
+                <option value="N">Fixed Rate</option>
+              </select>
+            </div>
+            <div>
+              <label class="form-label">Luggage Transport</label>
+              <select name="canCarryLuggage" class="form-select">
+                <option value="Y" selected>Can Carry Luggage</option>
+                <option value="N">Hand Bags Only</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Motorbike attributes -->
+        <div id="addVehicleBIKEFields" class="actor-fields-group" style="display:none;">
+          <div class="form-group" style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem;">
+            <div>
+              <label class="form-label">Safety Helmet Provided</label>
+              <select name="helmetProvided" class="form-select">
+                <option value="Y" selected>Yes, Provided</option>
+                <option value="N">Passenger Must Bring</option>
+              </select>
+            </div>
+            <div>
+              <label class="form-label">Engine Capacity (cc)</label>
+              <input type="number" name="engineCc" class="form-input" min="50" max="1500" value="150">
+            </div>
+          </div>
+        </div>
+
         <div style="display:flex; justify-content:flex-end; gap:0.75rem; margin-top:1.25rem;">
           <button type="button" class="action-btn-sm" onclick="closeModal('modalAddVehicle')">Cancel</button>
           <button type="submit" class="btn-primary" style="padding:0.6rem 1.25rem;">Save Vehicle</button>

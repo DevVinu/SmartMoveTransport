@@ -25,11 +25,28 @@ class Database
         'departuretime' => 'departureTime', 'arrivaltime' => 'arrivalTime', 'availableseats' => 'availableSeats',
         'fareamount' => 'fareAmount', 'tripstatus' => 'tripStatus', 'shiftid' => 'shiftId', 'shiftstatus' => 'shiftStatus',
         'maintenanceid' => 'maintenanceId', 'maintenancestatus' => 'maintenanceStatus', 'nextservicedate' => 'nextServiceDate',
-        'staffid' => 'staffId', 'staffname' => 'staffName', 'bookingid' => 'bookingId', 'bookingstatus' => 'bookingStatus',
+        'maintenancetype' => 'maintenanceType',
+        'staffid' => 'staffId', 'staffname' => 'staffName', 'staffstatus' => 'staffStatus',
+        'bookingid' => 'bookingId', 'bookingstatus' => 'bookingStatus', 'bookingdate' => 'bookingDate',
         'passengerid' => 'passengerId', 'passengername' => 'passengerName', 'seatnumber' => 'seatNumber',
         'ticketprice' => 'ticketPrice', 'paymentmethod' => 'paymentMethod', 'paymentstatus' => 'paymentStatus',
         'accountstatus' => 'accountStatus', 'userid' => 'userId', 'firstname' => 'firstName', 'lastname' => 'lastName',
-        'distancekm' => 'distanceKm', 'estimateddurationminutes' => 'estimatedDurationMinutes', 'basefare' => 'baseFare'
+        'distancekm' => 'distanceKm', 'estimateddurationminutes' => 'estimatedDurationMinutes', 'basefare' => 'baseFare',
+        'tripdateformatted' => 'tripDateFormatted', 'bookingdateformatted' => 'bookingDateFormatted',
+        'dateofbirth' => 'dateOfBirth', 'licenseexpirydate' => 'licenseExpiryDate', 'licensetype' => 'licenseType',
+        'shiftdate' => 'shiftDate', 'starttime' => 'startTime', 'endtime' => 'endTime',
+        'fuellogid' => 'fuelLogId', 'refueldate' => 'refuelDate', 'stationname' => 'stationName',
+        'literspumped' => 'litersPumped', 'fuelquantityliters' => 'fuelQuantityLiters', 'totalcost' => 'totalCost', 'odometerreading' => 'odometerReading',
+        'refundid' => 'refundId', 'refundamount' => 'refundAmount', 'refundreason' => 'refundReason', 'refunddate' => 'refundDate', 'refundstatus' => 'refundStatus',
+        'paymentid' => 'paymentId', 'amountpaid' => 'amountPaid', 'paymentdate' => 'paymentDate', 'transactionreference' => 'transactionReference',
+        'promoid' => 'promoId', 'promocode' => 'promoCode', 'discountpercentage' => 'discountPercentage',
+        'fullname' => 'fullName', 'admincode' => 'adminCode', 'privilegelevel' => 'privilegeLevel', 'preferredpaymentmethod' => 'preferredPaymentMethod',
+        'nextid' => 'nextId', 'completedtrips' => 'completedTrips', 'totalshifts' => 'totalShifts', 'totalfuellogged' => 'totalFuelLogged',
+        'totalbookings' => 'totalBookings', 'totalrevenue' => 'totalRevenue', 'transactioncount' => 'transactionCount', 'totalcollected' => 'totalCollected',
+        'urgencystatus' => 'urgencyStatus',
+        'routestopid' => 'routeStopId', 'stoporder' => 'stopOrder', 'stopid' => 'stopId', 'stopname' => 'stopName', 'locationaddress' => 'locationAddress',
+        'arrivaltimeoffset' => 'arrivalTimeOffset', 'departuretimeoffset' => 'departureTimeOffset',
+        'feedbackid' => 'feedbackId', 'feedbackdate' => 'feedbackDate'
     ];
 
     // Establish Oracle Connection
@@ -101,6 +118,154 @@ class Database
         $ok = @oci_execute($stmt, OCI_COMMIT_ON_SUCCESS);
         oci_free_statement($stmt);
         return $ok;
+    }
+
+    // Execute Oracle Stored Procedure returning a SYS_REFCURSOR
+    public static function callCursorProcedure($procedureCall, $cursorParam = ':pCursor')
+    {
+        $conn = self::getOracle();
+        if (!$conn) return [];
+
+        $cursor = oci_new_cursor($conn);
+        if (!$cursor) return [];
+
+        $stmt = oci_parse($conn, $procedureCall);
+        if (!$stmt) {
+            oci_free_statement($cursor);
+            return [];
+        }
+
+        oci_bind_by_name($stmt, $cursorParam, $cursor, -1, OCI_B_CURSOR);
+
+        if (!@oci_execute($stmt)) {
+            oci_free_statement($cursor);
+            oci_free_statement($stmt);
+            return [];
+        }
+
+        if (!@oci_execute($cursor)) {
+            oci_free_statement($cursor);
+            oci_free_statement($stmt);
+            return [];
+        }
+
+        $rows = [];
+        while ($row = oci_fetch_array($cursor, OCI_ASSOC + OCI_RETURN_NULLS)) {
+            $item = [];
+            foreach ($row as $k => $v) {
+                $low = strtolower($k);
+                $item[$k] = $v;
+                $item[$low] = $v;
+                if (isset(self::$aliases[$low])) {
+                    $item[self::$aliases[$low]] = $v;
+                }
+            }
+            $rows[] = $item;
+        }
+
+        oci_free_statement($cursor);
+        oci_free_statement($stmt);
+        return $rows;
+    }
+
+    // Call ticket booking procedure
+    public static function callBookTicket($passengerId, $tripId, $promoCode, $seatNumber, $paymentMethod)
+    {
+        $conn = self::getOracle();
+        if (!$conn) {
+            return ['status' => 'ERROR', 'message' => 'Oracle database offline'];
+        }
+
+        $sql = "BEGIN prcBookTicket(:pPassengerId, :pTripId, :pPromoCode, :pSeatNumber, :pPaymentMethod, :pBookingId, :pAmountPaid, :pStatus, :pMessage); END;";
+        $stmt = oci_parse($conn, $sql);
+        if (!$stmt) {
+            return ['status' => 'ERROR', 'message' => 'Failed to prepare booking statement'];
+        }
+
+        $pPassengerId = (int)$passengerId;
+        $pTripId = (int)$tripId;
+        $pPromoCode = (string)($promoCode ?? '');
+        $pSeatNumber = !empty($seatNumber) ? (int)$seatNumber : null;
+        $pPaymentMethod = (string)($paymentMethod ?: 'CARD');
+
+        $pBookingId = 0;
+        $pAmountPaid = 0.0;
+        $pStatus = str_repeat(' ', 30);
+        $pMessage = str_repeat(' ', 300);
+
+        oci_bind_by_name($stmt, ':pPassengerId', $pPassengerId);
+        oci_bind_by_name($stmt, ':pTripId', $pTripId);
+        oci_bind_by_name($stmt, ':pPromoCode', $pPromoCode);
+        oci_bind_by_name($stmt, ':pSeatNumber', $pSeatNumber);
+        oci_bind_by_name($stmt, ':pPaymentMethod', $pPaymentMethod);
+
+        oci_bind_by_name($stmt, ':pBookingId', $pBookingId, 32);
+        oci_bind_by_name($stmt, ':pAmountPaid', $pAmountPaid, 32);
+        oci_bind_by_name($stmt, ':pStatus', $pStatus, 50);
+        oci_bind_by_name($stmt, ':pMessage', $pMessage, 500);
+
+        $res = @oci_execute($stmt);
+        if (!$res) {
+            $e = oci_error($stmt);
+            oci_free_statement($stmt);
+            return ['status' => 'ERROR', 'message' => $e['message'] ?? 'Execution error'];
+        }
+
+        oci_free_statement($stmt);
+        return [
+            'bookingId'   => (int)$pBookingId,
+            'amountPaid'  => (float)$pAmountPaid,
+            'status'      => trim($pStatus),
+            'message'     => trim($pMessage)
+        ];
+    }
+
+    // Call refund processing procedure
+    public static function callProcessRefund($bookingId, $staffId, $refundReason)
+    {
+        $conn = self::getOracle();
+        if (!$conn) {
+            return ['status' => 'ERROR', 'message' => 'Oracle database offline'];
+        }
+
+        $sql = "BEGIN prcProcessRefund(:pBookingId, :pStaffId, :pRefundReason, :pRefundId, :pRefundAmount, :pStatus, :pMessage); END;";
+        $stmt = oci_parse($conn, $sql);
+        if (!$stmt) {
+            return ['status' => 'ERROR', 'message' => 'Failed to prepare refund statement'];
+        }
+
+        $pBookingId = (int)$bookingId;
+        $pStaffId = (int)($staffId ?: 1);
+        $pRefundReason = (string)($refundReason ?: 'Passenger Cancellation');
+
+        $pRefundId = 0;
+        $pRefundAmount = 0.0;
+        $pStatus = str_repeat(' ', 30);
+        $pMessage = str_repeat(' ', 300);
+
+        oci_bind_by_name($stmt, ':pBookingId', $pBookingId);
+        oci_bind_by_name($stmt, ':pStaffId', $pStaffId);
+        oci_bind_by_name($stmt, ':pRefundReason', $pRefundReason);
+
+        oci_bind_by_name($stmt, ':pRefundId', $pRefundId, 32);
+        oci_bind_by_name($stmt, ':pRefundAmount', $pRefundAmount, 32);
+        oci_bind_by_name($stmt, ':pStatus', $pStatus, 50);
+        oci_bind_by_name($stmt, ':pMessage', $pMessage, 500);
+
+        $res = @oci_execute($stmt);
+        if (!$res) {
+            $e = oci_error($stmt);
+            oci_free_statement($stmt);
+            return ['status' => 'ERROR', 'message' => $e['message'] ?? 'Execution error'];
+        }
+
+        oci_free_statement($stmt);
+        return [
+            'refundId'     => (int)$pRefundId,
+            'refundAmount' => (float)$pRefundAmount,
+            'status'       => trim($pStatus),
+            'message'      => trim($pMessage)
+        ];
     }
 
     // Establish MongoDB Connection

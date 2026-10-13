@@ -97,6 +97,7 @@ $pageTitle = "Sign Up | SmartMove Transport";
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><?php echo htmlspecialchars($pageTitle); ?></title>
+  <link rel="icon" type="image/jpeg" href="../img/logo.jpg">
 
   <link rel="stylesheet" href="../css/variables.css">
   <link rel="stylesheet" href="../css/base.css">
@@ -112,8 +113,8 @@ $pageTitle = "Sign Up | SmartMove Transport";
     <div class="auth-image-content">
       <!-- Brand logo -->
       <div>
-        <a href="../index.php" class="auth-brand-badge-link" title="SmartMove Home">
-          <span class="auth-brand-sq-box">S</span>
+        <a href="../index.php" class="auth-brand-badge-link" title="SmartMove Home" style="display:inline-flex; align-items:center; gap:0.6rem;">
+          <img src="../img/logo.jpg" alt="SmartMove Logo" style="width:36px; height:36px; border-radius:8px; object-fit:cover; box-shadow:0 0 10px rgba(0,180,255,0.4);">
           <span>SmartMove<span style="color:var(--blue-light);">.</span></span>
         </a>
       </div>
@@ -139,6 +140,9 @@ $pageTitle = "Sign Up | SmartMove Transport";
 
     <!-- Form container -->
     <div class="auth-form-box wide">
+      <div style="margin-bottom:1.25rem;">
+        <img src="../img/logo.jpg" alt="SmartMove Logo" style="width:58px; height:58px; border-radius:12px; object-fit:cover; box-shadow:0 4px 16px rgba(0,180,255,0.3);">
+      </div>
       <h1 class="auth-title">Create your account</h1>
       <p class="auth-subtitle">Join SmartMove to book instant rides, partner as a driver, or manage transit.</p>
 

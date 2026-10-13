@@ -115,4 +115,108 @@
               </table>
             </div>
           </div>
+
+          <!-- Promotional Discount Codes -->
+          <div
+            style="background:var(--bg-card); border:1px solid var(--border-subtle); border-radius:var(--radius-lg); padding:1.5rem; margin-top:1.5rem;">
+            <h2 style="font-size:1.05rem; font-weight:600; color:var(--text-white); margin-bottom:1rem;">Active Promotional Discount Codes (Oracle: <code>promoCode</code>)</h2>
+            <div style="overflow-x:auto;">
+              <table class="tasks-table" style="width:100%; border-collapse:collapse;">
+                <thead>
+                  <tr>
+                    <th style="padding:0.75rem 1rem; text-align:left; color:var(--text-muted); font-size:0.75rem;">PROMO ID</th>
+                    <th style="padding:0.75rem 1rem; text-align:left; color:var(--text-muted); font-size:0.75rem;">CODE</th>
+                    <th style="padding:0.75rem 1rem; text-align:left; color:var(--text-muted); font-size:0.75rem;">DISCOUNT</th>
+                    <th style="padding:0.75rem 1rem; text-align:left; color:var(--text-muted); font-size:0.75rem;">VALIDITY PERIOD</th>
+                    <th style="padding:0.75rem 1rem; text-align:left; color:var(--text-muted); font-size:0.75rem;">USAGE STATS</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <?php if (empty($promoCodesList)): ?>
+                    <tr>
+                      <td colspan="5" style="padding:2rem; text-align:center; color:var(--text-muted);">No promotional discount codes found.</td>
+                    </tr>
+                  <?php else: ?>
+                    <?php foreach ($promoCodesList as $pr): ?>
+                      <tr style="border-bottom:1px solid var(--border-muted);">
+                        <td style="padding:0.85rem 1rem; font-family:monospace; color:var(--accent-blue);">
+                          #PRM-<?php echo htmlspecialchars($pr['promoId'] ?? $pr['promoid'] ?? ''); ?>
+                        </td>
+                        <td style="padding:0.85rem 1rem;">
+                          <span style="background:rgba(56,189,248,0.15); border:1px solid rgba(56,189,248,0.3); color:#38BDF8; font-weight:700; padding:0.25rem 0.6rem; border-radius:4px; font-family:monospace;">
+                            <?php echo htmlspecialchars($pr['promoCode'] ?? $pr['promocode'] ?? ''); ?>
+                          </span>
+                        </td>
+                        <td style="padding:0.85rem 1rem; font-weight:700; color:#34D399;">
+                          <?php echo htmlspecialchars($pr['discountPercentage'] ?? $pr['discountpercentage'] ?? 0); ?>% OFF
+                        </td>
+                        <td style="padding:0.85rem 1rem; color:var(--text-secondary); font-size:0.85rem;">
+                          <?php echo htmlspecialchars($pr['validFrom'] ?? $pr['validfrom'] ?? ''); ?> &rarr; <?php echo htmlspecialchars($pr['validUntil'] ?? $pr['validuntil'] ?? ''); ?>
+                        </td>
+                        <td style="padding:0.85rem 1rem; color:var(--text-white);">
+                          <?php echo htmlspecialchars($pr['currentUsage'] ?? $pr['currentusage'] ?? 0); ?> / <?php echo htmlspecialchars($pr['maxUsage'] ?? $pr['maxusage'] ?? 0); ?> redeemed
+                        </td>
+                      </tr>
+                    <?php endforeach; ?>
+                  <?php endif; ?>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Processed Refunds Ledger -->
+          <div
+            style="background:var(--bg-card); border:1px solid var(--border-subtle); border-radius:var(--radius-lg); padding:1.5rem; margin-top:1.5rem;">
+            <h2 style="font-size:1.05rem; font-weight:600; color:var(--text-white); margin-bottom:1rem;">Processed Commuter Refunds &amp; Cancellations (Oracle: <code>refund</code>)</h2>
+            <div style="overflow-x:auto;">
+              <table class="tasks-table" style="width:100%; border-collapse:collapse;">
+                <thead>
+                  <tr>
+                    <th style="padding:0.75rem 1rem; text-align:left; color:var(--text-muted); font-size:0.75rem;">REFUND ID</th>
+                    <th style="padding:0.75rem 1rem; text-align:left; color:var(--text-muted); font-size:0.75rem;">BOOKING REF</th>
+                    <th style="padding:0.75rem 1rem; text-align:left; color:var(--text-muted); font-size:0.75rem;">REFUND AMOUNT</th>
+                    <th style="padding:0.75rem 1rem; text-align:left; color:var(--text-muted); font-size:0.75rem;">REASON</th>
+                    <th style="padding:0.75rem 1rem; text-align:left; color:var(--text-muted); font-size:0.75rem;">DATE</th>
+                    <th style="padding:0.75rem 1rem; text-align:left; color:var(--text-muted); font-size:0.75rem;">PROCESSED BY</th>
+                    <th style="padding:0.75rem 1rem; text-align:left; color:var(--text-muted); font-size:0.75rem;">STATUS</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <?php if (empty($refundsList)): ?>
+                    <tr>
+                      <td colspan="7" style="padding:2rem; text-align:center; color:var(--text-muted);">No processed refund records found.</td>
+                    </tr>
+                  <?php else: ?>
+                    <?php foreach ($refundsList as $rf): ?>
+                      <tr style="border-bottom:1px solid var(--border-muted);">
+                        <td style="padding:0.85rem 1rem; font-family:monospace; color:var(--accent-blue);">
+                          #RF-<?php echo htmlspecialchars($rf['refundId'] ?? $rf['refundid'] ?? ''); ?>
+                        </td>
+                        <td style="padding:0.85rem 1rem; font-family:monospace; color:var(--text-secondary);">
+                          #BK-<?php echo htmlspecialchars($rf['bookingId'] ?? $rf['bookingid'] ?? ''); ?>
+                        </td>
+                        <td style="padding:0.85rem 1rem; font-weight:700; color:#F87171;">
+                          LKR <?php echo number_format((float)($rf['refundAmount'] ?? $rf['refundamount'] ?? 0), 2); ?>
+                        </td>
+                        <td style="padding:0.85rem 1rem; color:var(--text-secondary);">
+                          <?php echo htmlspecialchars($rf['refundReason'] ?? $rf['refundreason'] ?? '-'); ?>
+                        </td>
+                        <td style="padding:0.85rem 1rem; color:var(--text-muted); font-size:0.8rem;">
+                          <?php echo htmlspecialchars($rf['refundDate'] ?? $rf['refunddate'] ?? ''); ?>
+                        </td>
+                        <td style="padding:0.85rem 1rem; color:var(--text-white);">
+                          <?php echo htmlspecialchars($rf['processedByStaff'] ?? $rf['processedbystaff'] ?? 'Central Dispatch'); ?>
+                        </td>
+                        <td style="padding:0.85rem 1rem;">
+                          <span class="badge-status badge-active">
+                            <?php echo htmlspecialchars($rf['refundStatus'] ?? $rf['refundstatus'] ?? 'PROCESSED'); ?>
+                          </span>
+                        </td>
+                      </tr>
+                    <?php endforeach; ?>
+                  <?php endif; ?>
+                </tbody>
+              </table>
+            </div>
+          </div>
         </section>
