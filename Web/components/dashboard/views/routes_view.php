@@ -136,4 +136,56 @@
               </table>
             </div>
           </div>
+
+          <!-- Intermediate Route Stops -->
+          <div
+            style="background:var(--bg-card); border:1px solid var(--border-subtle); border-radius:var(--radius-lg); padding:1.5rem; margin-top:1.5rem;">
+            <h2 style="font-size:1.05rem; font-weight:600; color:var(--text-white); margin-bottom:1rem;">Intermediate Route Transit Stops (Oracle: <code>routeStop</code> &amp; <code>stop</code>)</h2>
+            <div style="overflow-x:auto;">
+              <table class="tasks-table" style="width:100%; border-collapse:collapse;">
+                <thead>
+                  <tr>
+                    <th style="padding:0.75rem 1rem; text-align:left; color:var(--text-muted); font-size:0.75rem;">ROUTE</th>
+                    <th style="padding:0.75rem 1rem; text-align:left; color:var(--text-muted); font-size:0.75rem;">ORDER</th>
+                    <th style="padding:0.75rem 1rem; text-align:left; color:var(--text-muted); font-size:0.75rem;">STATION / INTERCHANGE NAME</th>
+                    <th style="padding:0.75rem 1rem; text-align:left; color:var(--text-muted); font-size:0.75rem;">PHYSICAL ADDRESS / LANDMARK</th>
+                    <th style="padding:0.75rem 1rem; text-align:left; color:var(--text-muted); font-size:0.75rem;">ARR OFFSET</th>
+                    <th style="padding:0.75rem 1rem; text-align:left; color:var(--text-muted); font-size:0.75rem;">DEP OFFSET</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <?php if (empty($routeStopsList)): ?>
+                    <tr>
+                      <td colspan="6" style="padding:2rem; text-align:center; color:var(--text-muted);">No intermediate stops recorded.</td>
+                    </tr>
+                  <?php else: ?>
+                    <?php foreach ($routeStopsList as $rs): ?>
+                      <tr style="border-bottom:1px solid var(--border-muted);">
+                        <td style="padding:0.85rem 1rem; font-weight:600; color:var(--text-white);">
+                          #RT-<?php echo htmlspecialchars($rs['routeId'] ?? $rs['routeid'] ?? ''); ?> (<?php echo htmlspecialchars($rs['routeName'] ?? $rs['routename'] ?? ''); ?>)
+                        </td>
+                        <td style="padding:0.85rem 1rem;">
+                          <span style="background:var(--bg-card-inner); padding:0.25rem 0.5rem; border-radius:4px; font-weight:700; color:var(--accent-blue);">
+                            Stop #<?php echo htmlspecialchars($rs['stopOrder'] ?? $rs['stoporder'] ?? 1); ?>
+                          </span>
+                        </td>
+                        <td style="padding:0.85rem 1rem; font-weight:600; color:var(--text-white);">
+                          <?php echo htmlspecialchars($rs['stopName'] ?? $rs['stopname'] ?? ''); ?>
+                        </td>
+                        <td style="padding:0.85rem 1rem; color:var(--text-secondary);">
+                          <?php echo htmlspecialchars($rs['locationAddress'] ?? $rs['locationaddress'] ?? '-'); ?>
+                        </td>
+                        <td style="padding:0.85rem 1rem; color:#34D399; font-weight:600;">
+                          +<?php echo htmlspecialchars($rs['arrivalTimeOffset'] ?? $rs['arrivaltimeoffset'] ?? 0); ?> mins
+                        </td>
+                        <td style="padding:0.85rem 1rem; color:#38BDF8; font-weight:600;">
+                          +<?php echo htmlspecialchars($rs['departureTimeOffset'] ?? $rs['departuretimeoffset'] ?? 0); ?> mins
+                        </td>
+                      </tr>
+                    <?php endforeach; ?>
+                  <?php endif; ?>
+                </tbody>
+              </table>
+            </div>
+          </div>
         </section>
