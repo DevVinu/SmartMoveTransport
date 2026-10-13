@@ -184,23 +184,101 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
   if ($action === 'addVehicle') {
     $regNo = strtoupper(trim($_POST['registrationNo'] ?? ''));
     $vType = strtoupper(trim($_POST['vehicleType'] ?? 'BUS'));
+    if ($vType === 'CAR') {
+      $vType = 'LUXURYCAR';
+    }
     $model = trim($_POST['model'] ?? '');
     $mfg = trim($_POST['manufacturer'] ?? '');
     $cap = (int) ($_POST['capacity'] ?? 30);
 
     if ($regNo && $model && $mfg && $cap > 0) {
+      $nextIdRow = Database::queryOracle("SELECT NVL(MAX(vehicleId), 0) + 1 AS nextId FROM vehicle");
+      $vId = (int) ($nextIdRow[0]['nextid'] ?? $nextIdRow[0]['NEXTID'] ?? 1);
+
       $ok = Database::executeOracle("
-                INSERT INTO vehicle (registrationNo, vehicleType, model, manufacturer, capacity, status)
-                VALUES (:reg, :vt, :md, :mf, :cap, 'AVAILABLE')
+                INSERT INTO vehicle (vehicleId, registrationNo, vehicleType, model, manufacturer, capacity, status)
+                VALUES (:vId, :reg, :vt, :md, :mf, :cap, 'AVAILABLE')
             ", [
+        ':vId' => $vId,
         ':reg' => $regNo,
         ':vt' => $vType,
         ':md' => $model,
         ':mf' => $mfg,
         ':cap' => $cap
       ]);
+
       if ($ok) {
-        $_SESSION['flash_success'] = "Vehicle $regNo ($model) registered into active fleet.";
+        // Insert subtype record
+        if ($vType === 'BUS') {
+          $busType = strtoupper(trim($_POST['busType'] ?? 'AC'));
+          if (!in_array($busType, ['AC', 'NON_AC', 'LUXURY'])) $busType = 'AC';
+          $standingCapacity = max(0, (int) ($_POST['standingCapacity'] ?? 0));
+          $routePermitNo = trim($_POST['routePermitNo'] ?? '');
+          if (empty($routePermitNo)) {
+            $routePermitNo = 'WP-EX-' . str_pad($vId, 4, '0', STR_PAD_LEFT);
+          }
+          Database::executeOracle("
+                    INSERT INTO bus (busId, busType, standingCapacity, routePermitNo)
+                    VALUES (:id, :bt, :sc, :rp)
+                ", [
+            ':id' => $vId,
+            ':bt' => $busType,
+            ':sc' => $standingCapacity,
+            ':rp' => $routePermitNo
+          ]);
+        } elseif ($vType === 'VAN') {
+          $vanCategory = strtoupper(trim($_POST['vanCategory'] ?? 'STANDARD'));
+          if (!in_array($vanCategory, ['STANDARD', 'HIGH_ROOF', 'VIP'])) $vanCategory = 'STANDARD';
+          $cargoCapacity = max(0.0, (float) ($_POST['cargoCapacity'] ?? 450.0));
+          Database::executeOracle("
+                    INSERT INTO van (vanId, vanCategory, cargoCapacity)
+                    VALUES (:id, :vc, :cc)
+                ", [
+            ':id' => $vId,
+            ':vc' => $vanCategory,
+            ':cc' => $cargoCapacity
+          ]);
+        } elseif ($vType === 'LUXURYCAR') {
+          $luxuryCategory = strtoupper(trim($_POST['luxuryCategory'] ?? 'SEDAN'));
+          if (!in_array($luxuryCategory, ['SEDAN', 'SUV', 'PRESTIGE'])) $luxuryCategory = 'SEDAN';
+          $wifiAvailable = strtoupper(trim($_POST['wifiAvailable'] ?? 'Y'));
+          if (!in_array($wifiAvailable, ['Y', 'N'])) $wifiAvailable = 'Y';
+          Database::executeOracle("
+                    INSERT INTO luxuryCar (luxuryCarId, luxuryCategory, wifiAvailable)
+                    VALUES (:id, :lc, :wf)
+                ", [
+            ':id' => $vId,
+            ':lc' => $luxuryCategory,
+            ':wf' => $wifiAvailable
+          ]);
+        } elseif ($vType === 'THREEWHEEL') {
+          $meteredStatus = strtoupper(trim($_POST['meteredStatus'] ?? 'Y'));
+          if (!in_array($meteredStatus, ['Y', 'N'])) $meteredStatus = 'Y';
+          $canCarryLuggage = strtoupper(trim($_POST['canCarryLuggage'] ?? 'Y'));
+          if (!in_array($canCarryLuggage, ['Y', 'N'])) $canCarryLuggage = 'Y';
+          Database::executeOracle("
+                    INSERT INTO threeWheel (threeWheelId, meteredStatus, canCarryLuggage)
+                    VALUES (:id, :ms, :lg)
+                ", [
+            ':id' => $vId,
+            ':ms' => $meteredStatus,
+            ':lg' => $canCarryLuggage
+          ]);
+        } elseif ($vType === 'BIKE') {
+          $helmetProvided = strtoupper(trim($_POST['helmetProvided'] ?? 'Y'));
+          if (!in_array($helmetProvided, ['Y', 'N'])) $helmetProvided = 'Y';
+          $engineCc = max(50, (int) ($_POST['engineCc'] ?? 150));
+          Database::executeOracle("
+                    INSERT INTO bike (bikeId, helmetProvided, engineCc)
+                    VALUES (:id, :hp, :cc)
+                ", [
+            ':id' => $vId,
+            ':hp' => $helmetProvided,
+            ':cc' => $engineCc
+          ]);
+        }
+
+        $_SESSION['flash_success'] = "Vehicle $regNo ($model - $vType) registered into active fleet.";
       } else {
         $_SESSION['flash_error'] = "Failed to register vehicle. Ensure registration number is unique.";
       }
@@ -344,11 +422,21 @@ if ($oracleUp) {
         ORDER BY b.bookingId DESC
     ");
 
-  // Fleet list
+  // Fleet list with subtype attributes
   $fleetList = Database::queryOracle("
-        SELECT vehicleId, registrationNo, vehicleType, model, manufacturer, capacity, status
-        FROM vehicle
-        ORDER BY vehicleId ASC
+        SELECT v.vehicleId, v.registrationNo, v.vehicleType, v.model, v.manufacturer, v.capacity, v.status,
+               b.busType, b.standingCapacity, b.routePermitNo,
+               vn.vanCategory, vn.cargoCapacity,
+               lc.luxuryCategory, lc.wifiAvailable,
+               tw.meteredStatus, tw.canCarryLuggage,
+               bk.helmetProvided, bk.engineCc
+        FROM vehicle v
+        LEFT JOIN bus b ON v.vehicleId = b.busId
+        LEFT JOIN van vn ON v.vehicleId = vn.vanId
+        LEFT JOIN luxuryCar lc ON v.vehicleId = lc.luxuryCarId
+        LEFT JOIN threeWheel tw ON v.vehicleId = tw.threeWheelId
+        LEFT JOIN bike bk ON v.vehicleId = bk.bikeId
+        ORDER BY v.vehicleId ASC
     ");
 
   // Users list
@@ -384,6 +472,32 @@ if ($oracleUp) {
         JOIN users u ON pass.passengerId = u.userId
         ORDER BY p.paymentId DESC
     ");
+
+  // Promo codes list
+  $promoCodesList = Database::queryOracle("
+        SELECT promoId, promoCode, discountPercentage, validFrom, validUntil, maxUsage, currentUsage
+        FROM promoCode
+        ORDER BY promoId ASC
+    ");
+
+  // Refunds list
+  $refundsList = Database::queryOracle("
+        SELECT ref.refundId, ref.bookingId, ref.refundAmount, ref.refundReason, ref.refundDate, ref.refundStatus,
+               (u.firstName || ' ' || u.lastName) AS processedByStaff
+        FROM refund ref
+        LEFT JOIN staff s ON ref.processedByStaffId = s.staffId
+        LEFT JOIN users u ON s.staffId = u.userId
+        ORDER BY ref.refundId DESC
+    ");
+
+  // Route intermediate stops
+  $routeStopsList = Database::queryOracle("
+        SELECT rs.routeId, r.routeName, rs.stopOrder, s.stopName, s.locationAddress, rs.arrivalTimeOffset, rs.departureTimeOffset
+        FROM routeStop rs
+        JOIN route r ON rs.routeId = r.routeId
+        JOIN stop s ON rs.stopId = s.stopId
+        ORDER BY rs.routeId, rs.stopOrder ASC
+    ");
 }
 
 // MongoDB queries
@@ -411,77 +525,23 @@ $reportData = [];
 if ($oracleUp) {
   switch ($activeReport) {
     case 'frequentRoutes':
-      $reportData = Database::queryOracle("
-                SELECT r.routeId, r.routeName, r.origin, r.destination,
-                       COUNT(b.bookingId) AS totalBookings,
-                       NVL(SUM(b.ticketPrice), 0) AS totalRevenue
-                FROM route r
-                JOIN scheduledTrip st ON r.routeId = st.routeId
-                JOIN booking b ON st.tripId = b.tripId
-                WHERE b.bookingStatus = 'CONFIRMED'
-                GROUP BY r.routeId, r.routeName, r.origin, r.destination
-                ORDER BY totalBookings DESC
-            ");
+      $reportData = Database::callCursorProcedure("BEGIN pkgSmartMoveReports.getFrequentRoutes(:pCursor); END;");
       break;
 
     case 'periodRevenue':
-      $reportData = Database::queryOracle("
-                SELECT p.paymentMethod,
-                       COUNT(p.paymentId) AS transactionCount,
-                       SUM(p.amountPaid) AS totalCollected
-                FROM payment p
-                WHERE p.paymentStatus = 'PAID'
-                GROUP BY p.paymentMethod
-                ORDER BY totalCollected DESC
-            ");
+      $reportData = Database::callCursorProcedure("BEGIN pkgSmartMoveReports.getPeriodRevenue(:pCursor); END;");
       break;
 
     case 'passengerHistory':
-      $reportData = Database::queryOracle("
-                SELECT b.bookingId, u.firstName || ' ' || u.lastName AS passengerName,
-                       st.tripDate, r.routeName, st.departureTime,
-                       b.seatNumber, b.ticketPrice, b.bookingStatus, p.paymentStatus
-                FROM booking b
-                JOIN passenger pass ON b.passengerId = pass.passengerId
-                JOIN users u ON pass.passengerId = u.userId
-                JOIN scheduledTrip st ON b.tripId = st.tripId
-                JOIN route r ON st.routeId = r.routeId
-                LEFT JOIN payment p ON b.bookingId = p.bookingId
-                ORDER BY st.tripDate DESC
-            ");
+      $reportData = Database::callCursorProcedure("BEGIN pkgSmartMoveReports.getPassengerHistory(:pCursor); END;");
       break;
 
     case 'maintenanceDue':
-      $reportData = Database::queryOracle("
-                SELECT v.registrationNo, v.vehicleType, v.model,
-                       ms.maintenanceType, ms.nextServiceDate,
-                       CASE 
-                           WHEN ms.nextServiceDate < SYSDATE THEN 'URGENT OVERDUE'
-                           WHEN ms.nextServiceDate <= SYSDATE + 7 THEN 'DUE IN 7 DAYS'
-                           ELSE 'UPCOMING'
-                       END AS urgencyStatus
-                FROM vehicle v
-                JOIN maintenance ms ON v.vehicleId = ms.vehicleId
-                WHERE ms.maintenanceStatus IN ('SCHEDULED', 'IN_PROGRESS')
-                ORDER BY ms.nextServiceDate ASC
-            ");
+      $reportData = Database::callCursorProcedure("BEGIN pkgSmartMoveReports.getMaintenanceDue(:pCursor); END;");
       break;
 
     case 'driverPerformance':
-      $reportData = Database::queryOracle("
-                SELECT u.firstName || ' ' || u.lastName AS driverName,
-                       d.licenseNumber AS licenseNo,
-                       COUNT(DISTINCT st.tripId) AS completedTrips,
-                       COUNT(DISTINCT ds.shiftId) AS totalShifts,
-                       NVL(SUM(fl.litersPumped), 0) AS totalFuelLogged
-                FROM driver d
-                JOIN users u ON d.driverId = u.userId
-                LEFT JOIN scheduledTrip st ON d.driverId = st.driverId AND st.tripStatus = 'COMPLETED'
-                LEFT JOIN driverShift ds ON d.driverId = ds.driverId
-                LEFT JOIN fuelLog fl ON d.driverId = fl.driverId
-                GROUP BY u.firstName, u.lastName, d.licenseNumber
-                ORDER BY completedTrips DESC
-            ");
+      $reportData = Database::callCursorProcedure("BEGIN pkgSmartMoveReports.getDriverPerformance(:pCursor); END;");
       break;
   }
 }
@@ -495,6 +555,7 @@ $pageTitle = "SmartMove — Enterprise Admin Portal";
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><?php echo htmlspecialchars($pageTitle); ?></title>
+  <link rel="icon" type="image/jpeg" href="../img/logo.jpg">
 
   <link rel="stylesheet" href="../css/variables.css">
   <link rel="stylesheet" href="../css/dashboard.css">
