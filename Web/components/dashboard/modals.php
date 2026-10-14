@@ -97,6 +97,11 @@
               </select>
             </div>
           </div>
+          <div class="form-group" style="margin-top:0.5rem;">
+            <label class="form-label">Driving License Document (PDF / Scan)</label>
+            <input type="file" name="licensePdf" class="form-input" accept=".pdf,image/png,image/jpeg" style="padding:0.35rem; font-size:0.8rem;">
+            <small style="color:var(--text-muted); font-size:0.75rem;">Upload license copy (saved to MongoDB document repository)</small>
+          </div>
         </div>
 
         <!-- Three-Wheeler attributes -->
@@ -151,7 +156,7 @@
         <h3 class="modal-title">Create System User Account</h3>
         <button type="button" class="modal-close-btn" onclick="closeModal('modalAddUser')">&times;</button>
       </div>
-      <form method="POST" action="dashboard.php">
+      <form method="POST" action="dashboard.php" enctype="multipart/form-data">
         <input type="hidden" name="action" value="addUser">
         <div class="form-group" style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem;">
           <div>
@@ -306,7 +311,7 @@
         <h3 class="modal-title">Edit User Account &amp; Actor Details</h3>
         <button type="button" class="modal-close-btn" onclick="closeModal('modalEditUser')">&times;</button>
       </div>
-      <form method="POST" action="dashboard.php">
+      <form method="POST" action="dashboard.php" enctype="multipart/form-data">
         <input type="hidden" name="action" value="editUser">
         <input type="hidden" name="userId" id="editUserId" value="">
         <div class="form-group" style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem;">
@@ -406,6 +411,11 @@
                 <option value="SUSPENDED">Suspended</option>
               </select>
             </div>
+          </div>
+          <div class="form-group" style="margin-top:0.5rem;">
+            <label class="form-label">Update License Document (PDF / Scan)</label>
+            <input type="file" name="licensePdf" class="form-input" accept=".pdf,image/png,image/jpeg" style="padding:0.35rem; font-size:0.8rem;">
+            <small style="color:var(--text-muted); font-size:0.75rem;">Upload new copy to verify or renew driver license (saved to MongoDB)</small>
           </div>
         </div>
 

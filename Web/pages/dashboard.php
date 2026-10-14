@@ -89,6 +89,21 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
     exit;
   }
 
+  // Confirm payment
+  if ($action === 'confirmPayment') {
+    $payId = (int)($_POST['paymentId'] ?? 0);
+    if ($payId > 0) {
+      $res = Database::callConfirmPayment($payId, $userId, 'Settled and confirmed by Administrator');
+      if ($res['status'] === 'SUCCESS') {
+        $_SESSION['flash_success'] = $res['message'];
+      } else {
+        $_SESSION['flash_error'] = $res['message'];
+      }
+    }
+    header("Location: dashboard.php?view=financeView");
+    exit;
+  }
+
   // Add user
   if ($action === 'addUser') {
     $uEmail = trim($_POST['email'] ?? '');
@@ -107,6 +122,9 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
       } else {
         $createdId = User::createUserWithRole($_POST);
         if ($createdId) {
+          if ($uRole === 'DRIVER' && !empty($_FILES['licensePdf']['tmp_name'])) {
+            User::uploadLicenseDocument($createdId, $_FILES['licensePdf']);
+          }
           $_SESSION['flash_success'] = "User account ($uRole) for $uFirstName $uLastName created successfully (ID #$createdId).";
         } else {
           $_SESSION['flash_error'] = "Failed to create user. Please verify all fields.";
@@ -129,6 +147,10 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
     if ($uId > 0 && $uFirstName && $uLastName && $uEmail) {
       $ok = User::updateUserWithRole($uId, $_POST);
       if ($ok) {
+        $uRole = strtoupper(trim($_POST['role'] ?? ''));
+        if ($uRole === 'DRIVER' && !empty($_FILES['licensePdf']['tmp_name'])) {
+          User::uploadLicenseDocument($uId, $_FILES['licensePdf']);
+        }
         $_SESSION['flash_success'] = "User #$uId profile and actor details updated successfully.";
       } else {
         $_SESSION['flash_error'] = "Failed to update user details.";

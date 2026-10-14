@@ -43,6 +43,26 @@ unset($_SESSION['flash_success'], $_SESSION['flash_error']);
 if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
     $action = $_POST['action'] ?? '';
 
+    // Update preferred payment method
+    if ($action === 'updatePaymentPreference') {
+        $newPref = strtoupper(trim($_POST['preferredPaymentMethod'] ?? 'CARD'));
+        if (in_array($newPref, ['CARD', 'CASH', 'WALLET', 'ONLINE'])) {
+            Database::executeOracle("UPDATE passenger SET preferredPaymentMethod = :pay WHERE passengerId = :id", [
+                ':pay' => $newPref,
+                ':id'  => $userId
+            ]);
+            if (isset($_SESSION['user'])) {
+                $_SESSION['user']['preferredPaymentMethod'] = $newPref;
+            }
+            $_SESSION['flash_success'] = "Preferred payment method updated to " . htmlspecialchars($newPref) . ".";
+        } else {
+            $_SESSION['flash_error'] = "Invalid payment method selected.";
+        }
+
+        header("Location: passenger.php?view=" . urlencode($activeView));
+        exit;
+    }
+
     // Book trip via atomic PL/SQL stored procedure
     if ($action === 'bookTrip') {
         $tripId     = (int)($_POST['tripId'] ?? 0);
@@ -208,31 +228,37 @@ $pageTitle = "SmartMove — Passenger Travel Portal";
   <style>
     .passenger-nav-tabs {
       display: flex;
+      flex-wrap: wrap;
       gap: 0.5rem;
+      margin-bottom: 1.25rem;
+      padding-bottom: 1rem;
       border-bottom: 1px solid var(--border-subtle);
-      margin-bottom: 1.5rem;
     }
     .passenger-tab-btn {
-      padding: 0.75rem 1.25rem;
-      background: transparent;
-      border: none;
+      background: var(--bg-card-inner);
+      border: 1px solid var(--border-subtle);
       color: var(--text-secondary);
-      font-weight: 600;
-      font-size: 0.9rem;
+      font-size: 0.8rem;
+      font-weight: 500;
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius-md);
       cursor: pointer;
-      border-bottom: 2px solid transparent;
-      transition: all 0.2s ease;
       text-decoration: none;
+      transition: all 0.15s ease;
+      box-shadow: none;
       display: inline-flex;
       align-items: center;
       gap: 0.5rem;
     }
     .passenger-tab-btn:hover {
+      background: var(--bg-active);
       color: var(--text-white);
     }
     .passenger-tab-btn.active {
-      color: var(--blue-light);
-      border-bottom-color: var(--blue-light);
+      background: var(--blue-primary);
+      color: #FFFFFF;
+      border-color: var(--blue-primary);
+      box-shadow: none;
     }
     .trip-card-grid {
       display: grid;
@@ -247,11 +273,11 @@ $pageTitle = "SmartMove — Passenger Travel Portal";
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      transition: transform 0.2s ease, border-color 0.2s ease;
+      transition: border-color 0.15s ease;
+      box-shadow: none;
     }
     .trip-booking-card:hover {
-      border-color: rgba(56, 189, 248, 0.4);
-      transform: translateY(-2px);
+      border-color: var(--border-subtle);
     }
   </style>
 </head>
@@ -266,7 +292,7 @@ $pageTitle = "SmartMove — Passenger Travel Portal";
     <header class="topbar" style="border-radius:0; padding:1rem 2rem;">
       <div class="topbar-left" style="display:flex; align-items:center; gap:0.75rem;">
         <a href="../index.php" class="brand-logo" style="text-decoration:none; font-size:1.3rem; font-weight:800; color:#fff; display:inline-flex; align-items:center; gap:0.6rem;">
-          <img src="../img/logo.jpg" alt="SmartMove Logo" style="width:34px; height:34px; border-radius:8px; object-fit:cover; box-shadow:0 0 10px rgba(0,180,255,0.35);">
+          <img src="../img/logo.jpg" alt="SmartMove Logo" style="width:34px; height:34px; border-radius:8px; object-fit:cover;">
           <span>SmartMove<span style="color:var(--blue-light);">.</span></span>
         </a>
         <span style="font-size:0.85rem; color:var(--text-muted); padding-left:0.75rem; border-left:1px solid var(--border-subtle);">
@@ -327,13 +353,28 @@ $pageTitle = "SmartMove — Passenger Travel Portal";
           <div class="stat-subtext">Upcoming departures</div>
         </div>
 
-        <div class="stat-card">
+        <div class="stat-card" style="position:relative;">
           <div class="stat-header-row">
             <span class="stat-label">Preferred Payment</span>
-            <span class="stat-icon">PAY</span>
+            <span class="stat-icon" title="Preferred Payment Method">PAY</span>
           </div>
-          <div class="stat-value" style="font-size:1.3rem;"><?php echo htmlspecialchars($passengerInfo['preferredPaymentMethod'] ?? 'CARD'); ?></div>
-          <div class="stat-subtext"><?php echo htmlspecialchars($passengerInfo['address'] ?? 'Sri Lanka'); ?></div>
+          <form method="POST" action="passenger.php?view=<?php echo urlencode($activeView); ?>" style="margin-top:0.35rem; margin-bottom:0.15rem;">
+            <input type="hidden" name="action" value="updatePaymentPreference">
+            <div style="position:relative;">
+              <select name="preferredPaymentMethod" onchange="this.form.submit()" class="form-select" style="font-size:1.25rem; font-weight:800; color:#38BDF8; background:rgba(15,23,42,0.6); border:1px solid rgba(56,189,248,0.3); border-radius:6px; padding:0.35rem 0.6rem; width:100%; cursor:pointer;" title="Click to change your preferred payment method">
+                <option value="CARD" <?php echo ($passengerInfo['preferredPaymentMethod'] ?? '') === 'CARD' ? 'selected' : ''; ?>>CARD (Debit/Credit)</option>
+                <option value="CASH" <?php echo ($passengerInfo['preferredPaymentMethod'] ?? '') === 'CASH' ? 'selected' : ''; ?>>CASH (At Boarding)</option>
+                <option value="WALLET" <?php echo ($passengerInfo['preferredPaymentMethod'] ?? '') === 'WALLET' ? 'selected' : ''; ?>>WALLET (Digital)</option>
+                <option value="ONLINE" <?php echo ($passengerInfo['preferredPaymentMethod'] ?? '') === 'ONLINE' ? 'selected' : ''; ?>>ONLINE (Net Banking)</option>
+              </select>
+            </div>
+          </form>
+          <div class="stat-subtext" style="display:flex; justify-content:space-between; align-items:center; margin-top:0.35rem;">
+            <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:180px;" title="<?php echo htmlspecialchars($passengerInfo['address'] ?? 'Sri Lanka'); ?>">
+              <?php echo htmlspecialchars($passengerInfo['address'] ?? 'Sri Lanka'); ?>
+            </span>
+            <span style="color:var(--text-muted); font-size:0.7rem;">Click to change</span>
+          </div>
         </div>
       </div>
 
@@ -559,11 +600,12 @@ $pageTitle = "SmartMove — Passenger Travel Portal";
                     </div>
 
                     <div style="display:flex; gap:0.5rem; align-items:center;">
+                      <?php $prefPayMethod = strtoupper($passengerInfo['preferredPaymentMethod'] ?? 'CARD'); ?>
                       <select name="paymentMethod" style="flex:1; padding:0.45rem; font-size:0.8rem; background:var(--bg-card-inner); border:1px solid var(--border-subtle); color:#fff; border-radius:4px;">
-                        <option value="CARD">Debit / Credit Card</option>
-                        <option value="ONLINE">Online Banking</option>
-                        <option value="WALLET">Mobile Wallet</option>
-                        <option value="CASH">Cash at Boarding</option>
+                        <option value="CARD" <?php echo $prefPayMethod === 'CARD' ? 'selected' : ''; ?>>Debit / Credit Card</option>
+                        <option value="ONLINE" <?php echo $prefPayMethod === 'ONLINE' ? 'selected' : ''; ?>>Online Banking</option>
+                        <option value="WALLET" <?php echo $prefPayMethod === 'WALLET' ? 'selected' : ''; ?>>Mobile Wallet</option>
+                        <option value="CASH" <?php echo $prefPayMethod === 'CASH' ? 'selected' : ''; ?>>Cash at Boarding</option>
                       </select>
                       <button type="submit" class="btn-primary" style="padding:0.45rem 1rem; font-size:0.85rem; white-space:nowrap;">
                         Book Ticket

@@ -77,7 +77,7 @@
   justify-content: center;
   font-weight: 900;
   font-size: 18px;
-  box-shadow: 0 0 16px var(--blue-glow);
+  box-shadow: none;
 }
 
 .auth-image-caption-area {
@@ -271,7 +271,7 @@
 
 .form-control:focus {
   border-color: var(--blue-light, #3B82F6);
-  box-shadow: 0 0 0 2px var(--blue-glow);
+  box-shadow: none;
 }
 
 .form-control::placeholder {
