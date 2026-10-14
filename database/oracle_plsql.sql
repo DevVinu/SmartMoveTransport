@@ -129,6 +129,7 @@ CREATE OR REPLACE PROCEDURE prcBookTicket(
     vDiscountPct    NUMBER(5,2) := 0;
     vPaymentId      NUMBER;
     vTxnRef         VARCHAR2(60);
+    vPayStatus      VARCHAR2(20);
     vSeat           NUMBER := pSeatNumber;
     eNoSeats        EXCEPTION;
     eInvalidTrip    EXCEPTION;
@@ -192,9 +193,16 @@ BEGIN
     SELECT NVL(MAX(paymentId), 0) + 1 INTO vPaymentId FROM payment;
     vTxnRef := 'TXN-' || UPPER(SUBSTR(NVL(pPaymentMethod, 'CARD'), 1, 3)) || '-' || TO_CHAR(SYSDATE, 'YYYYMMDD') || '-' || LPAD(pBookingId, 4, '0');
 
-    -- Insert verified payment record
+    -- Determine payment status: Pre-paid (CARD, ONLINE, WALLET) = PAID; Post-paid (CASH) = PENDING
+    IF UPPER(NVL(pPaymentMethod, 'CARD')) = 'CASH' THEN
+        vPayStatus := 'PENDING';
+    ELSE
+        vPayStatus := 'PAID';
+    END IF;
+
+    -- Insert payment record
     INSERT INTO payment (paymentId, bookingId, paymentDate, amountPaid, paymentMethod, transactionReference, paymentStatus)
-    VALUES (vPaymentId, pBookingId, SYSDATE, vFinalFare, NVL(pPaymentMethod, 'CARD'), vTxnRef, 'PAID');
+    VALUES (vPaymentId, pBookingId, SYSDATE, vFinalFare, NVL(pPaymentMethod, 'CARD'), vTxnRef, vPayStatus);
 
     -- Decrement available seats on scheduled trip
     UPDATE scheduledTrip
@@ -205,7 +213,11 @@ BEGIN
 
     pAmountPaid := vFinalFare;
     pStatus := 'SUCCESS';
-    pMessage := 'Booking confirmed with payment reference ' || vTxnRef;
+    IF vPayStatus = 'PENDING' THEN
+        pMessage := 'Reservation confirmed. Payment pending at boarding (' || vTxnRef || ')';
+    ELSE
+        pMessage := 'Booking confirmed with payment reference ' || vTxnRef;
+    END IF;
 
 EXCEPTION
     WHEN eInvalidTrip THEN
@@ -320,3 +332,39 @@ EXCEPTION
         pMessage := 'Database error: ' || SQLERRM;
 END prcProcessRefund;
 /
+
+-- Stored Procedure: Confirm Payment (Cash / Post-paid Settlement)
+CREATE OR REPLACE PROCEDURE prcConfirmPayment(
+    pPaymentId   IN  NUMBER,
+    pCollectorId IN  NUMBER,
+    pStatus      OUT VARCHAR2,
+    pMessage     OUT VARCHAR2
+) AS
+    vCount NUMBER;
+BEGIN
+    SELECT COUNT(*) INTO vCount FROM payment WHERE paymentId = pPaymentId;
+    IF vCount = 0 THEN
+        pStatus := 'ERROR';
+        pMessage := 'Payment record not found.';
+        RETURN;
+    END IF;
+
+    UPDATE payment
+    SET paymentStatus = 'PAID', paymentDate = SYSDATE
+    WHERE paymentId = pPaymentId;
+
+    UPDATE booking
+    SET bookingStatus = 'CONFIRMED'
+    WHERE bookingId = (SELECT bookingId FROM payment WHERE paymentId = pPaymentId);
+
+    COMMIT;
+    pStatus := 'SUCCESS';
+    pMessage := 'Payment verified and settled.';
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        pStatus := 'ERROR';
+        pMessage := 'Failed to confirm payment: ' || SQLERRM;
+END prcConfirmPayment;
+/
+

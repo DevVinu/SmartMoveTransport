@@ -72,8 +72,15 @@
                               Code: <strong><?php echo htmlspecialchars($u['admincode'] ?? 'ADM-001'); ?></strong> • <?php echo htmlspecialchars($u['privilegelevel'] ?? 'OPS_ADMIN'); ?> (<?php echo htmlspecialchars($u['department'] ?? 'Operations'); ?>)
                             </div>
                           <?php elseif ($uRole === 'DRIVER'): ?>
-                            <div style="font-size:0.75rem; color:#FBBF24; margin-top:2px;">
-                              License: <strong><?php echo htmlspecialchars($u['licenseno'] ?? 'N/A'); ?></strong> (<?php echo htmlspecialchars($u['licensetype'] ?? 'COACH'); ?>) • Status: <?php echo htmlspecialchars($u['driverstatus'] ?? 'AVAILABLE'); ?>
+                            <div style="font-size:0.75rem; color:#FBBF24; margin-top:2px; display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                              <span>License: <strong><?php echo htmlspecialchars($u['licenseno'] ?? 'N/A'); ?></strong> (<?php echo htmlspecialchars($u['licensetype'] ?? 'COACH'); ?>)</span>
+                              <?php if (!empty($u['licensedocument'])): ?>
+                                <a href="../<?php echo htmlspecialchars($u['licensedocument']); ?>" target="_blank" style="display:inline-flex; align-items:center; gap:3px; background:rgba(56,189,248,0.15); color:#38BDF8; padding:1px 6px; border-radius:4px; text-decoration:none; font-size:0.7rem; border:1px solid rgba(56,189,248,0.3);" title="View Driver License Document (PDF)">
+                                  📄 View License PDF
+                                </a>
+                              <?php else: ?>
+                                <span style="font-size:0.7rem; color:var(--text-muted);">No PDF</span>
+                              <?php endif; ?>
                             </div>
                           <?php elseif ($uRole === 'STAFF'): ?>
                             <div style="font-size:0.75rem; color:#34D399; margin-top:2px;">

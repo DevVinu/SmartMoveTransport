@@ -75,6 +75,7 @@ CREATE TABLE driver (
     licenseNumber     VARCHAR2(30),
     licenseType       VARCHAR2(30) NOT NULL,
     licenseExpiryDate DATE NOT NULL,
+    licenseDocument   VARCHAR2(255),
     driverStatus      VARCHAR2(20) DEFAULT 'AVAILABLE',
     CONSTRAINT fkDriverUser FOREIGN KEY (driverId) REFERENCES users(userId) ON DELETE CASCADE,
     CONSTRAINT chkDriverStatus CHECK (driverStatus IN ('AVAILABLE', 'ON_DUTY', 'OFF_DUTY', 'SUSPENDED'))

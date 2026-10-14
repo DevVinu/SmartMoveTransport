@@ -105,7 +105,7 @@ $pageTitle = "Sign In | SmartMove Transport";
       <!-- Brand logo -->
       <div>
         <a href="../index.php" class="auth-brand-badge-link" title="SmartMove Home" style="display:inline-flex; align-items:center; gap:0.6rem;">
-          <img src="../img/logo.jpg" alt="SmartMove Logo" style="width:36px; height:36px; border-radius:8px; object-fit:cover; box-shadow:0 0 10px rgba(0,180,255,0.4);">
+          <img src="../img/logo.jpg" alt="SmartMove Logo" style="width:36px; height:36px; border-radius:8px; object-fit:cover;">
           <span>SmartMove<span style="color:var(--blue-light);">.</span></span>
         </a>
       </div>
@@ -134,7 +134,7 @@ $pageTitle = "Sign In | SmartMove Transport";
     <!-- Form container -->
     <div class="auth-form-box">
       <div style="margin-bottom:1.25rem;">
-        <img src="../img/logo.jpg" alt="SmartMove Logo" style="width:58px; height:58px; border-radius:12px; object-fit:cover; box-shadow:0 4px 16px rgba(0,180,255,0.3);">
+        <img src="../img/logo.jpg" alt="SmartMove Logo" style="width:58px; height:58px; border-radius:12px; object-fit:cover;">
       </div>
       <h1 class="auth-title">Welcome back</h1>
       <p class="auth-subtitle">Sign in to access your SmartMove portal.</p>
