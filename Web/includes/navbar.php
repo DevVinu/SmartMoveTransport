@@ -17,7 +17,7 @@ $navFirstName = htmlspecialchars($navUser['firstName'] ?? $navUser['firstname'] 
   <div class="uber-nav-container">
     <div class="nav-left-group">
       <a href="index.php" class="brand-logo" style="display:inline-flex; align-items:center; gap:0.6rem;">
-        <img src="img/logo.jpg" alt="SmartMove Logo" style="width:34px; height:34px; border-radius:8px; object-fit:cover; box-shadow:0 0 10px rgba(0,180,255,0.35);">
+        <img src="img/logo.jpg" alt="SmartMove Logo" style="width:34px; height:34px; border-radius:8px; object-fit:cover;">
         <span>SmartMove<span class="blue-dot">.</span></span>
       </a>
       <ul class="nav-menu-links">

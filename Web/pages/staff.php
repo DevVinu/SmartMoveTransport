@@ -182,6 +182,21 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
         exit;
     }
 
+    // Confirm payment (Cash / Post-paid settlement)
+    if ($action === 'confirmPayment') {
+        $paymentId = (int)($_POST['paymentId'] ?? 0);
+        if ($paymentId > 0) {
+            $res = Database::callConfirmPayment($paymentId, $userId, 'Confirmed at transit counter by staff');
+            if ($res['status'] === 'SUCCESS') {
+                $_SESSION['flash_success'] = $res['message'];
+            } else {
+                $_SESSION['flash_error'] = $res['message'];
+            }
+        }
+        header("Location: staff.php?view=ticketingView");
+        exit;
+    }
+
     // Counter booking via PL/SQL stored procedure
     if ($action === 'counterBooking') {
         $tripId        = (int)($_POST['tripId'] ?? 0);
@@ -757,6 +772,7 @@ $pageTitle = "SmartMove — Staff Operations Portal";
                 <th>Fare (LKR)</th>
                 <th>Payment</th>
                 <th>Status</th>
+                <th style="text-align:right;">Action</th>
               </tr>
             </thead>
             <tbody>
@@ -778,6 +794,19 @@ $pageTitle = "SmartMove — Staff Operations Portal";
                   <td>LKR <?php echo number_format((float)($bk['ticketPrice'] ?? $bk['ticketprice'] ?? 0), 2); ?></td>
                   <td><span class="type-badge"><?php echo htmlspecialchars($bk['paymentMethod'] ?? $bk['paymentmethod'] ?? 'COUNTER'); ?></span></td>
                   <td><span class="badge-status <?php echo $bBadge; ?>"><?php echo $bst; ?></span></td>
+                  <td style="text-align:right;">
+                    <?php if (strtoupper($bk['paymentStatus'] ?? '') === 'PENDING'): ?>
+                      <form method="POST" style="display:inline;">
+                        <input type="hidden" name="action" value="confirmPayment">
+                        <input type="hidden" name="paymentId" value="<?php echo $bk['paymentId'] ?? 0; ?>">
+                        <button type="submit" class="action-btn-sm" style="color:#34D399;border:1px solid rgba(52,211,153,0.3);background:rgba(52,211,153,0.1);padding:3px 8px;border-radius:4px;cursor:pointer;font-weight:600;" title="Confirm Cash Payment">
+                          ✓ Confirm Paid
+                        </button>
+                      </form>
+                    <?php else: ?>
+                      <span style="font-size:11px;color:var(--text-muted);">Settled</span>
+                    <?php endif; ?>
+                  </td>
                 </tr>
               <?php endforeach; ?>
             </tbody>

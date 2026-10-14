@@ -162,15 +162,18 @@ class User {
             $dStatus = strtoupper(trim($data['driverStatus'] ?? 'AVAILABLE'));
             if (!in_array($dStatus, ['AVAILABLE', 'ON_DUTY', 'OFF_DUTY', 'SUSPENDED'])) $dStatus = 'AVAILABLE';
 
+            $licDoc = trim($data['licenseDocument'] ?? '');
+
             Database::executeOracle("
-                INSERT INTO driver (driverId, licenseNo, licenseNumber, licenseType, licenseExpiryDate, driverStatus)
-                VALUES (:id, :lic, :licNum, :type, TO_DATE(:expiry, 'YYYY-MM-DD'), :status)
+                INSERT INTO driver (driverId, licenseNo, licenseNumber, licenseType, licenseExpiryDate, licenseDocument, driverStatus)
+                VALUES (:id, :lic, :licNum, :type, TO_DATE(:expiry, 'YYYY-MM-DD'), :doc, :status)
             ", [
                 ':id'     => $userId,
                 ':lic'    => $lic,
                 ':licNum' => $lic,
                 ':type'   => $type,
                 ':expiry' => $expiry,
+                ':doc'    => $licDoc,
                 ':status' => $dStatus
             ]);
         } elseif ($role === 'STAFF') {
@@ -407,7 +410,7 @@ class User {
                        u.email, u.phone, u.nic, TO_CHAR(u.dateOfBirth, 'YYYY-MM-DD') AS dateOfBirth, u.role, u.accountStatus,
                        a.adminCode, a.privilegeLevel, a.department,
                        s.staffName, s.position, s.status AS staffStatus,
-                       d.licenseNo, d.licenseNumber, d.licenseType, TO_CHAR(d.licenseExpiryDate, 'YYYY-MM-DD') AS licenseExpiryDate, d.driverStatus,
+                       d.licenseNo, d.licenseNumber, d.licenseType, TO_CHAR(d.licenseExpiryDate, 'YYYY-MM-DD') AS licenseExpiryDate, d.licenseDocument, d.driverStatus,
                        p.address, p.preferredPaymentMethod
                 FROM users u
                 LEFT JOIN admin a ON u.userId = a.adminId
@@ -425,7 +428,7 @@ class User {
                        u.email, u.phone, u.nic, TO_CHAR(u.dateOfBirth, 'YYYY-MM-DD') AS dateOfBirth, u.role, u.accountStatus,
                        a.adminCode, a.privilegeLevel, a.department,
                        s.staffName, s.position, s.status AS staffStatus,
-                       d.licenseNo, d.licenseNumber, d.licenseType, TO_CHAR(d.licenseExpiryDate, 'YYYY-MM-DD') AS licenseExpiryDate, d.driverStatus,
+                       d.licenseNo, d.licenseNumber, d.licenseType, TO_CHAR(d.licenseExpiryDate, 'YYYY-MM-DD') AS licenseExpiryDate, d.licenseDocument, d.driverStatus,
                        p.address, p.preferredPaymentMethod
                 FROM users u
                 LEFT JOIN admin a ON u.userId = a.adminId
@@ -466,12 +469,32 @@ class User {
                     ':id'  => (int)$userId
                 ]);
             }
+            if (!empty($data['licenseDocument'])) {
+                Database::executeOracle("UPDATE driver SET licenseDocument = :doc WHERE driverId = :id", [
+                    ':doc' => trim($data['licenseDocument']),
+                    ':id'  => (int)$userId
+                ]);
+            }
 
             if (!empty($data['address'])) {
                 Database::executeOracle("UPDATE passenger SET address = :addr WHERE passengerId = :id", [
                     ':addr' => trim($data['address']),
                     ':id'   => (int)$userId
                 ]);
+            }
+
+            // Update preferred payment method
+            if (!empty($data['preferredPaymentMethod'])) {
+                $payPref = strtoupper(trim($data['preferredPaymentMethod']));
+                if (in_array($payPref, ['CARD', 'CASH', 'WALLET', 'ONLINE'])) {
+                    Database::executeOracle("UPDATE passenger SET preferredPaymentMethod = :pay WHERE passengerId = :id", [
+                        ':pay' => $payPref,
+                        ':id'  => (int)$userId
+                    ]);
+                    if (isset($_SESSION['user'])) {
+                        $_SESSION['user']['preferredPaymentMethod'] = $payPref;
+                    }
+                }
             }
         }
 
@@ -518,5 +541,85 @@ class User {
         }
 
         return true;
+    }
+
+    // Upload driver license document (PDF / image)
+    public static function uploadLicenseDocument($driverId, $fileArray) {
+        $driverId = (int)$driverId;
+        if (empty($fileArray) || empty($fileArray['tmp_name']) || ($fileArray['error'] ?? UPLOAD_ERR_OK) !== UPLOAD_ERR_OK) {
+            return ['status' => 'ERROR', 'message' => 'No valid file uploaded'];
+        }
+
+        $origName = basename($fileArray['name']);
+        $ext = strtolower(pathinfo($origName, PATHINFO_EXTENSION));
+        $allowedExts = ['pdf', 'png', 'jpg', 'jpeg'];
+        if (!in_array($ext, $allowedExts)) {
+            return ['status' => 'ERROR', 'message' => 'Only PDF, JPG, and PNG files are accepted'];
+        }
+
+        $uploadsDir = dirname(__DIR__) . '/uploads/licenses';
+        if (!is_dir($uploadsDir)) {
+            mkdir($uploadsDir, 0777, true);
+        }
+
+        $newFileName = 'license_' . $driverId . '_' . time() . '.' . $ext;
+        $destPath = $uploadsDir . '/' . $newFileName;
+        $relativePath = 'uploads/licenses/' . $newFileName;
+
+        $moved = is_uploaded_file($fileArray['tmp_name']) ? move_uploaded_file($fileArray['tmp_name'], $destPath) : copy($fileArray['tmp_name'], $destPath);
+        if (!$moved) {
+            return ['status' => 'ERROR', 'message' => 'Failed to store uploaded file on server'];
+        }
+
+        // Update Oracle driver record
+        if (Database::getOracle() !== null) {
+            Database::executeOracle("UPDATE driver SET licenseDocument = :doc WHERE driverId = :id", [
+                ':doc' => $relativePath,
+                ':id'  => $driverId
+            ]);
+        }
+
+        // Store in MongoDB driver_documents collection
+        Database::insertMongo('driver_documents', [
+            'driverId'           => $driverId,
+            'documentType'       => 'DRIVING_LICENSE',
+            'fileName'           => $origName,
+            'filePath'           => $relativePath,
+            'fileSize'           => $fileArray['size'] ?? 0,
+            'fileType'           => $fileArray['type'] ?? 'application/pdf',
+            'uploadedAt'         => date('Y-m-d H:i:s'),
+            'verificationStatus' => 'VERIFIED'
+        ]);
+
+        return ['status' => 'SUCCESS', 'filePath' => $relativePath, 'fileName' => $origName];
+    }
+
+    // Get driver license document
+    public static function getDriverDocument($driverId) {
+        $driverId = (int)$driverId;
+        // Check MongoDB first
+        $mongoDocs = Database::queryMongo('driver_documents', [
+            'driverId'     => $driverId,
+            'documentType' => 'DRIVING_LICENSE'
+        ], ['sort' => ['uploadedAt' => -1], 'limit' => 1]);
+
+        if (!empty($mongoDocs)) {
+            return $mongoDocs[0];
+        }
+
+        // Fallback to Oracle
+        $ora = Database::queryOracle("SELECT licenseDocument, licenseNo FROM driver WHERE driverId = :id", [':id' => $driverId]);
+        if (!empty($ora) && !empty($ora[0]['licenseDocument'])) {
+            return [
+                'driverId'           => $driverId,
+                'documentType'       => 'DRIVING_LICENSE',
+                'filePath'           => $ora[0]['licenseDocument'],
+                'fileName'           => basename($ora[0]['licenseDocument']),
+                'uploadedAt'         => date('Y-m-d H:i:s'),
+                'verificationStatus' => 'VERIFIED'
+            ];
+        }
+
+        return null;
     }
 }

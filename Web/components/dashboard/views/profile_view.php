@@ -11,7 +11,8 @@ $uRole = strtoupper($currentUser['role'] ?? 'USER');
 $uStatus = strtoupper($currentUser['accountStatus'] ?? $currentUser['accountstatus'] ?? 'ACTIVE');
 $uInitials = strtoupper(substr($uFirstName, 0, 1) . substr($uLastName, 0, 1));
 $uLicense = htmlspecialchars($currentUser['licenseNo'] ?? $currentUser['licenseNumber'] ?? '');
-$uAddress = htmlspecialchars($currentUser['address'] ?? '');
+$uAddress = htmlspecialchars($currentUser['address'] ?? ($passengerInfo['address'] ?? ''));
+$uPayPref = strtoupper(htmlspecialchars($currentUser['preferredPaymentMethod'] ?? $currentUser['preferredpaymentmethod'] ?? ($passengerInfo['preferredPaymentMethod'] ?? 'CARD')));
 ?>
 <!-- Profile view -->
 <section class="page-view <?php echo ($activeView ?? '') === 'profileView' ? 'active-view' : ''; ?>" id="profileView">
@@ -63,7 +64,7 @@ $uAddress = htmlspecialchars($currentUser['address'] ?? '');
         <p style="font-size:0.8rem; color:var(--text-secondary);">Update your name and primary contact details</p>
       </div>
 
-      <form method="POST">
+      <form method="POST" enctype="multipart/form-data">
         <input type="hidden" name="action" value="updateProfile">
         
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
@@ -101,12 +102,36 @@ $uAddress = htmlspecialchars($currentUser['address'] ?? '');
             <label class="form-label">Driver License Number</label>
             <input type="text" name="licenseNo" class="form-input" value="<?php echo $uLicense; ?>" placeholder="B-1234567">
           </div>
+          <div class="form-group">
+            <label class="form-label" style="display:flex; justify-content:space-between;">
+              <span>Driving License Document (PDF / Scan)</span>
+              <?php 
+                $myDoc = User::getDriverDocument($uId);
+                if (!empty($myDoc['filePath'])):
+              ?>
+                <a href="../<?php echo htmlspecialchars($myDoc['filePath']); ?>" target="_blank" style="color:#38BDF8; font-size:0.8rem; text-decoration:none;">
+                  📄 View Current PDF
+                </a>
+              <?php endif; ?>
+            </label>
+            <input type="file" name="licensePdf" class="form-input" accept=".pdf,image/png,image/jpeg" style="padding:0.35rem; font-size:0.8rem;">
+            <small style="color:var(--text-muted); font-size:0.75rem;">Upload new copy to verify or renew driver license</small>
+          </div>
         <?php endif; ?>
 
         <?php if ($uRole === 'PASSENGER'): ?>
           <div class="form-group">
             <label class="form-label">Residential Address</label>
             <input type="text" name="address" class="form-input" value="<?php echo $uAddress; ?>" placeholder="Colombo, Sri Lanka">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Preferred Payment Method</label>
+            <select name="preferredPaymentMethod" class="form-select">
+              <option value="CARD" <?php echo $uPayPref === 'CARD' ? 'selected' : ''; ?>>CARD (Debit / Credit)</option>
+              <option value="CASH" <?php echo $uPayPref === 'CASH' ? 'selected' : ''; ?>>CASH (At Boarding)</option>
+              <option value="WALLET" <?php echo $uPayPref === 'WALLET' ? 'selected' : ''; ?>>WALLET (Digital Wallet)</option>
+              <option value="ONLINE" <?php echo $uPayPref === 'ONLINE' ? 'selected' : ''; ?>>ONLINE (Net Banking)</option>
+            </select>
           </div>
         <?php endif; ?>
 
@@ -126,7 +151,7 @@ $uAddress = htmlspecialchars($currentUser['address'] ?? '');
           <p style="font-size:0.8rem; color:var(--text-secondary);">Change your sign-in password</p>
         </div>
 
-        <form method="POST">
+        <form method="POST" enctype="multipart/form-data">
           <input type="hidden" name="action" value="updatePassword">
 
           <div class="form-group">

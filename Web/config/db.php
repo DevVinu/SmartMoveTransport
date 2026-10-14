@@ -46,7 +46,8 @@ class Database
         'urgencystatus' => 'urgencyStatus',
         'routestopid' => 'routeStopId', 'stoporder' => 'stopOrder', 'stopid' => 'stopId', 'stopname' => 'stopName', 'locationaddress' => 'locationAddress',
         'arrivaltimeoffset' => 'arrivalTimeOffset', 'departuretimeoffset' => 'departureTimeOffset',
-        'feedbackid' => 'feedbackId', 'feedbackdate' => 'feedbackDate'
+        'feedbackid' => 'feedbackId', 'feedbackdate' => 'feedbackDate',
+        'licensedocument' => 'licenseDocument'
     ];
 
     // Establish Oracle Connection
@@ -265,6 +266,69 @@ class Database
             'refundAmount' => (float)$pRefundAmount,
             'status'       => trim($pStatus),
             'message'      => trim($pMessage)
+        ];
+    }
+
+    // Confirm payment (Cash / Post-paid settlement)
+    public static function callConfirmPayment($paymentId, $collectorId = 0, $notes = 'Payment confirmed at boarding')
+    {
+        $conn = self::getOracle();
+        if (!$conn) {
+            return ['status' => 'ERROR', 'message' => 'Oracle database offline'];
+        }
+
+        $paymentId = (int)$paymentId;
+        $collectorId = (int)$collectorId;
+
+        // Fetch payment details
+        $rows = self::queryOracle("
+            SELECT p.paymentId, p.bookingId, p.amountPaid, p.paymentMethod, p.paymentStatus, b.passengerId
+            FROM payment p
+            JOIN booking b ON p.bookingId = b.bookingId
+            WHERE p.paymentId = :pId
+        ", [':pId' => $paymentId]);
+
+        if (empty($rows)) {
+            return ['status' => 'ERROR', 'message' => 'Payment transaction not found'];
+        }
+
+        $payRec = $rows[0];
+        $bookingId = (int)($payRec['bookingId'] ?? $payRec['bookingid']);
+        $amountPaid = (float)($payRec['amountPaid'] ?? $payRec['amountpaid']);
+        $method = $payRec['paymentMethod'] ?? $payRec['paymentmethod'];
+
+        // Update payment in Oracle
+        self::executeOracle("
+            UPDATE payment
+            SET paymentStatus = 'PAID', paymentDate = SYSDATE
+            WHERE paymentId = :pId
+        ", [':pId' => $paymentId]);
+
+        // Ensure booking is marked CONFIRMED
+        self::executeOracle("
+            UPDATE booking
+            SET bookingStatus = 'CONFIRMED'
+            WHERE bookingId = :bId
+        ", [':bId' => $bookingId]);
+
+        // Log payment audit in MongoDB
+        self::insertMongo('payment_audit_logs', [
+            'paymentId'     => $paymentId,
+            'bookingId'     => $bookingId,
+            'amountPaid'    => $amountPaid,
+            'paymentMethod' => $method,
+            'action'        => 'PAYMENT_SETTLED',
+            'confirmedBy'   => $collectorId,
+            'notes'         => $notes,
+            'settledAt'     => date('Y-m-d H:i:s')
+        ]);
+
+        return [
+            'status'     => 'SUCCESS',
+            'paymentId'  => $paymentId,
+            'bookingId'  => $bookingId,
+            'amountPaid' => $amountPaid,
+            'message'    => "Payment #$paymentId confirmed and verified successfully."
         ];
     }
 
