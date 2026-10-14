@@ -40,6 +40,37 @@ unset($_SESSION['flash_success'], $_SESSION['flash_error']);
 if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
     $action = $_POST['action'] ?? '';
 
+    // Confirm passenger payment at boarding
+    if ($action === 'confirmPassengerPayment') {
+        $paymentId = (int)($_POST['paymentId'] ?? 0);
+        if ($paymentId > 0) {
+            $res = Database::callConfirmPayment($paymentId, $userId, 'Cash collected at boarding by driver captain');
+            if ($res['status'] === 'SUCCESS') {
+                $_SESSION['flash_success'] = "Payment #" . $paymentId . " verified and collected! Commuter marked as PAID.";
+            } else {
+                $_SESSION['flash_error'] = $res['message'];
+            }
+        }
+        header("Location: driver.php?view=" . urlencode($activeView));
+        exit;
+    }
+
+    // Upload driver license document
+    if ($action === 'uploadLicenseDoc') {
+        if (!empty($_FILES['licensePdf']['tmp_name'])) {
+            $res = User::uploadLicenseDocument($userId, $_FILES['licensePdf']);
+            if ($res['status'] === 'SUCCESS') {
+                $_SESSION['flash_success'] = "Driving license document uploaded and archived in MongoDB!";
+            } else {
+                $_SESSION['flash_error'] = $res['message'];
+            }
+        } else {
+            $_SESSION['flash_error'] = "Please choose a valid PDF or image file to upload.";
+        }
+        header("Location: driver.php?view=" . urlencode($activeView));
+        exit;
+    }
+
     // Set duty status
     if ($action === 'setDutyStatus') {
         $newDuty = strtoupper(trim($_POST['dutyStatus'] ?? 'AVAILABLE'));
@@ -274,10 +305,12 @@ if ($activeTrip) {
     if ($oracleUp) {
         $tripManifest = Database::queryOracle("
             SELECT b.bookingId, b.seatNumber, b.ticketPrice, b.bookingStatus,
-                   u.firstName || ' ' || u.lastName AS passengerName, u.phone
+                   u.firstName || ' ' || u.lastName AS passengerName, u.phone,
+                   p.paymentId, p.paymentMethod, p.paymentStatus, p.amountPaid
             FROM booking b
             JOIN passenger pass ON b.passengerId = pass.passengerId
             JOIN users u ON pass.passengerId = u.userId
+            LEFT JOIN payment p ON b.bookingId = p.bookingId
             WHERE b.tripId = :tId AND b.bookingStatus IN ('CONFIRMED', 'RESERVED')
             ORDER BY b.seatNumber ASC
         ", [':tId' => $activeTrip['tripId']]);
@@ -288,7 +321,7 @@ if ($activeTrip) {
             ['bookingId' => 501, 'seatNumber' => 4, 'passengerName' => 'Kasun Jayawardena', 'phone' => '+94711112233', 'bookingStatus' => 'CONFIRMED'],
             ['bookingId' => 502, 'seatNumber' => 7, 'passengerName' => 'Dilani Wickramasinghe', 'phone' => '+94712223344', 'bookingStatus' => 'CONFIRMED'],
             ['bookingId' => 503, 'seatNumber' => 12, 'passengerName' => 'Rohan Samaraweera', 'phone' => '+94713334455', 'bookingStatus' => 'CONFIRMED'],
-            ['bookingId' => 504, 'seatNumber' => 15, 'passengerName' => 'Anoma Senanayake', 'phone' => '+94714445566', 'bookingStatus' => 'RESERVED']
+            ['bookingId' => 504, 'seatNumber' => 15, 'passengerName' => 'Anoma Senanayake', 'phone' => '+94714445566', 'bookingStatus' => 'RESERVED', 'paymentId' => 304, 'paymentMethod' => 'CASH', 'paymentStatus' => 'PENDING']
         ];
     }
 }
@@ -364,6 +397,8 @@ if ($mongoUp) {
     $driverAnnouncements = Database::queryMongo('travel_announcements', ['active' => true], ['sort' => ['publishedAt' => -1]]);
 }
 
+$driverDoc = User::getDriverDocument($userId);
+$driverDoc = User::getDriverDocument($userId);
 $pageTitle = "SmartMove — Driver Partner Portal";
 ?>
 <!DOCTYPE html>
@@ -412,9 +447,20 @@ $pageTitle = "SmartMove — Driver Partner Portal";
       </div>
 
       <div class="topbar-right">
-        <!-- License -->
-        <div class="type-badge" style="background:var(--bg-card-inner);border:1px solid var(--border-subtle);" title="Driver License">
-          Lic: <?php echo htmlspecialchars($driverInfo['licenseNumber'] ?? 'B-LIC'); ?>
+        <!-- License & PDF Document badge -->
+        <div style="display:inline-flex; align-items:center; gap:6px;">
+          <div class="type-badge" style="background:var(--bg-card-inner);border:1px solid var(--border-subtle);" title="Driver License">
+            Lic: <?php echo htmlspecialchars($driverInfo['licenseNumber'] ?? 'B-LIC'); ?>
+          </div>
+          <?php if (!empty($driverDoc['filePath'])): ?>
+            <a href="../<?php echo htmlspecialchars($driverDoc['filePath']); ?>" target="_blank" class="type-badge" style="background:rgba(56,189,248,0.15);color:#38BDF8;border:1px solid rgba(56,189,248,0.3);text-decoration:none;cursor:pointer;" title="View Uploaded License PDF">
+              📄 License PDF
+            </a>
+          <?php else: ?>
+            <button type="button" onclick="document.getElementById('driverDocModal').style.display='flex'" class="type-badge" style="background:rgba(245,158,11,0.15);color:#FBBF24;border:1px solid rgba(245,158,11,0.3);cursor:pointer;" title="Upload License PDF">
+              + Upload PDF
+            </button>
+          <?php endif; ?>
         </div>
 
         <!-- Rating -->
@@ -536,16 +582,33 @@ $pageTitle = "SmartMove — Driver Partner Portal";
                   <div style="padding:16px;text-align:center;color:var(--text-muted);">No passengers currently booked on this run.</div>
                 <?php else: ?>
                   <?php foreach ($tripManifest as $passenger): ?>
-                    <div class="manifest-item">
+                    <div class="manifest-item" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
                       <div style="display:flex;align-items:center;gap:12px;">
                         <span class="manifest-seat-badge">Seat <?php echo $passenger['seatNumber']; ?></span>
                         <div>
                           <div style="font-weight:600;color:var(--text-white);"><?php echo htmlspecialchars($passenger['passengerName']); ?></div>
-                          <div style="font-size:11px;color:var(--text-muted);">Contact: <?php echo htmlspecialchars($passenger['phone'] ?? 'N/A'); ?></div>
+                          <div style="font-size:11px;color:var(--text-muted);">Contact: <?php echo htmlspecialchars($passenger['phone'] ?? 'N/A'); ?> • Fare: LKR <?php echo number_format((float)($passenger['ticketPrice'] ?? 0), 2); ?></div>
                         </div>
                       </div>
-                      <div>
-                        <span class="badge-status badge-active">CONFIRMED</span>
+                      <div style="display:flex;align-items:center;gap:8px;">
+                        <?php 
+                          $payStatus = strtoupper($passenger['paymentStatus'] ?? 'PAID');
+                          $payMethod = strtoupper($passenger['paymentMethod'] ?? 'CARD');
+                        ?>
+                        <?php if ($payStatus === 'PENDING'): ?>
+                          <span class="badge-status badge-urgent" style="font-size:11px;">PENDING (<?php echo $payMethod; ?>)</span>
+                          <?php if (!empty($passenger['paymentId'])): ?>
+                            <form method="POST" style="display:inline;">
+                              <input type="hidden" name="action" value="confirmPassengerPayment">
+                              <input type="hidden" name="paymentId" value="<?php echo $passenger['paymentId']; ?>">
+                              <button type="submit" class="action-btn-sm" style="background:#059669;color:#fff;border:none;padding:4px 10px;border-radius:4px;cursor:pointer;font-weight:600;font-size:11px;" title="Confirm Cash Received at Boarding">
+                                ✓ Confirm Payment
+                              </button>
+                            </form>
+                          <?php endif; ?>
+                        <?php else: ?>
+                          <span class="badge-status badge-active" style="font-size:11px;">PAID (<?php echo $payMethod; ?>)</span>
+                        <?php endif; ?>
                       </div>
                     </div>
                   <?php endforeach; ?>
@@ -1031,5 +1094,30 @@ $pageTitle = "SmartMove — Driver Partner Portal";
 
 <!-- Script -->
 <script src="../js/dashboard.js"></script>
+
+<!-- Driver License Document Upload Modal -->
+<div id="driverDocModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:9999;align-items:center;justify-content:center;padding:1rem;">
+  <div style="background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);max-width:480px;width:100%;padding:1.5rem;box-shadow:none;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;border-bottom:1px solid var(--border-subtle);padding-bottom:0.75rem;">
+      <h3 style="color:#fff;font-size:1.1rem;margin:0;">Upload Driving License Document</h3>
+      <button type="button" onclick="document.getElementById('driverDocModal').style.display='none'" style="background:none;border:none;color:var(--text-muted);font-size:1.5rem;cursor:pointer;">&times;</button>
+    </div>
+    <form method="POST" action="driver.php" enctype="multipart/form-data">
+      <input type="hidden" name="action" value="uploadLicenseDoc">
+      <p style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:1rem;">
+        Upload a digital copy of your heavy vehicle driving license (PDF, JPG, or PNG). This document will be securely cataloged in MongoDB.
+      </p>
+      <div style="margin-bottom:1.25rem;">
+        <label style="display:block;font-size:0.8rem;color:var(--text-muted);margin-bottom:0.35rem;">Select Document File *</label>
+        <input type="file" name="licensePdf" accept=".pdf,image/png,image/jpeg" required style="width:100%;padding:0.5rem;background:var(--bg-card-inner);border:1px dashed var(--border-subtle);color:#fff;border-radius:6px;cursor:pointer;">
+      </div>
+      <div style="display:flex;justify-content:flex-end;gap:0.75rem;">
+        <button type="button" onclick="document.getElementById('driverDocModal').style.display='none'" class="btn-ghost" style="padding:0.5rem 1rem;">Cancel</button>
+        <button type="submit" class="btn-primary" style="padding:0.5rem 1.25rem;">Upload Document</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 </body>
 </html>

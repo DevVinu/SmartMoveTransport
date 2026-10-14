@@ -74,6 +74,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
       $createdId = User::createUserWithRole($userData);
       if ($createdId) {
+        // Upload driver license PDF if provided
+        if ($role === 'DRIVER' && !empty($_FILES['licensePdf']['tmp_name'])) {
+          User::uploadLicenseDocument($createdId, $_FILES['licensePdf']);
+        }
         header('Location: signin.php?registered=1');
         exit;
       } else {
@@ -114,7 +118,7 @@ $pageTitle = "Sign Up | SmartMove Transport";
       <!-- Brand logo -->
       <div>
         <a href="../index.php" class="auth-brand-badge-link" title="SmartMove Home" style="display:inline-flex; align-items:center; gap:0.6rem;">
-          <img src="../img/logo.jpg" alt="SmartMove Logo" style="width:36px; height:36px; border-radius:8px; object-fit:cover; box-shadow:0 0 10px rgba(0,180,255,0.4);">
+          <img src="../img/logo.jpg" alt="SmartMove Logo" style="width:36px; height:36px; border-radius:8px; object-fit:cover;">
           <span>SmartMove<span style="color:var(--blue-light);">.</span></span>
         </a>
       </div>
@@ -141,7 +145,7 @@ $pageTitle = "Sign Up | SmartMove Transport";
     <!-- Form container -->
     <div class="auth-form-box wide">
       <div style="margin-bottom:1.25rem;">
-        <img src="../img/logo.jpg" alt="SmartMove Logo" style="width:58px; height:58px; border-radius:12px; object-fit:cover; box-shadow:0 4px 16px rgba(0,180,255,0.3);">
+        <img src="../img/logo.jpg" alt="SmartMove Logo" style="width:58px; height:58px; border-radius:12px; object-fit:cover;">
       </div>
       <h1 class="auth-title">Create your account</h1>
       <p class="auth-subtitle">Join SmartMove to book instant rides, partner as a driver, or manage transit.</p>
@@ -152,7 +156,7 @@ $pageTitle = "Sign Up | SmartMove Transport";
         </div>
       <?php endif; ?>
 
-      <form class="auth-form" action="signup.php" method="POST">
+      <form class="auth-form" action="signup.php" method="POST" enctype="multipart/form-data">
         <input type="hidden" name="role" id="userRoleInput" value="<?php echo htmlspecialchars($selectedRole); ?>">
 
         <!-- Basic user details (first) -->
@@ -268,6 +272,17 @@ $pageTitle = "Sign Up | SmartMove Transport";
             <label for="licenseExpiryDate" class="form-label">License Expiry Date</label>
             <input type="date" name="licenseExpiryDate" id="licenseExpiryDate" class="form-control"
               value="<?php echo htmlspecialchars($_POST['licenseExpiryDate'] ?? date('Y-m-d', strtotime('+3 years'))); ?>">
+          </div>
+          <div class="form-group" style="margin-top:0.5rem;">
+            <label for="licensePdf" class="form-label" style="display:flex; justify-content:space-between;">
+              <span>Driving License Document (PDF / Scan)</span>
+              <span style="font-size:0.75rem; color:var(--text-muted);">PDF, JPG, PNG (Max 5MB)</span>
+            </label>
+            <input type="file" name="licensePdf" id="licensePdf" class="form-control" accept=".pdf,image/png,image/jpeg"
+              style="padding:0.4rem; font-size:0.8rem; background-color:var(--bg-card-inner); color:#fff; border:1px dashed var(--border-subtle); cursor:pointer;">
+            <small style="font-size:0.75rem; color:var(--text-muted); display:block; margin-top:4px;">
+              Upload your official driving license copy (stored securely in MongoDB document archive).
+            </small>
           </div>
         </div>
 

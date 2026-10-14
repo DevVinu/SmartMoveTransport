@@ -7,6 +7,9 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST' && isset($_POST['action']))
 
     if ($action === 'updateProfile' && $userId > 0) {
         $ok = User::updateProfile($userId, $_POST);
+        if (!empty($_FILES['licensePdf']['tmp_name'])) {
+            User::uploadLicenseDocument($userId, $_FILES['licensePdf']);
+        }
         if ($ok) {
             $_SESSION['flash_success'] = 'Your profile details have been updated successfully.';
         } else {

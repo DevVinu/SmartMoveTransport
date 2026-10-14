@@ -607,7 +607,7 @@ body.dashboard-body {
 
 .topbar-search-box:focus-within {
   border-color: var(--border-focus);
-  box-shadow: 0 0 0 2px var(--blue-glow);
+  box-shadow: none;
 }
 
 .topbar-search-box svg {
@@ -1067,7 +1067,7 @@ body.dashboard-body {
 
 .table-search-input:focus {
   border-color: var(--border-focus);
-  box-shadow: 0 0 0 2px var(--blue-glow);
+  box-shadow: none;
 }
 
 .table-search-input::placeholder {
@@ -1542,7 +1542,7 @@ body.dashboard-body {
 .settings-select:focus,
 .settings-textarea:focus {
   border-color: var(--border-focus);
-  box-shadow: 0 0 0 2px var(--blue-glow);
+  box-shadow: none;
 }
 
 .settings-textarea {
@@ -1648,7 +1648,7 @@ body.dashboard-body {
 }
 .search-input-box:focus {
   border-color: var(--blue-light);
-  box-shadow: 0 0 0 2px var(--blue-glow);
+  box-shadow: none;
 }
 
 /* Metric KPI Cards & Grid */
@@ -1797,25 +1797,34 @@ body.dashboard-body {
 }
 .form-input:focus, .form-select:focus, .form-textarea:focus {
   border-color: var(--blue-light);
-  box-shadow: 0 0 0 2px var(--blue-glow);
+  box-shadow: none;
 }
 .filter-pills-bar {
   display: flex;
   gap: 0.5rem;
-  margin-bottom: 1rem;
+  margin-bottom: 1.25rem;
   flex-wrap: wrap;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border-subtle);
 }
 .filter-pill {
   background: var(--bg-card-inner);
   border: 1px solid var(--border-subtle);
   color: var(--text-secondary);
-  font-size: 0.75rem;
-  padding: 0.35rem 0.75rem;
-  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-md);
   cursor: pointer;
+  text-decoration: none;
   transition: all 0.15s ease;
+  box-shadow: none;
 }
-.filter-pill:hover, .filter-pill.active {
+.filter-pill:hover {
+  background: var(--bg-active);
+  color: var(--text-white);
+}
+.filter-pill.active {
   background: var(--blue-primary);
   color: #FFFFFF;
   border-color: var(--blue-primary);
@@ -1897,8 +1906,8 @@ body.dashboard-body {
 
 /* Driver Cockpit Banner */
 .cockpit-banner {
-  background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.95) 100%);
-  border: 1px solid var(--blue-border);
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-card);
   padding: 24px;
   display: flex;
@@ -1906,7 +1915,7 @@ body.dashboard-body {
   gap: 18px;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+  box-shadow: none;
 }
 
 .cockpit-banner::before {
