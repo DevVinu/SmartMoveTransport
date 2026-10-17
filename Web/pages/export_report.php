@@ -691,7 +691,7 @@ $auditHash   = strtoupper(hash('sha256', $reportRefId . '|' . $currentUser['user
 
   <?php if ($autoPrint): ?>
     <script>
-      // Automatically prompt print / save as PDF dialog when requested
+      //  print save as PDF 
       window.addEventListener('DOMContentLoaded', function() {
         setTimeout(function() {
           window.print();

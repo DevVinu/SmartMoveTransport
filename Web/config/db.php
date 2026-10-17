@@ -102,7 +102,7 @@ class Database
         return $rows;
     }
 
-    // Execute Oracle INSERT, UPDATE, DELETE (Auto-commit)
+    // Execute Oracle INSERT, UPDATE, DELETE 
     public static function executeOracle($sql, $params = [])
     {
         $conn = self::getOracle();
@@ -120,8 +120,7 @@ class Database
         oci_free_statement($stmt);
         return $ok;
     }
-
-    // Execute Oracle Stored Procedure returning a SYS_REFCURSOR
+    
     public static function callCursorProcedure($procedureCall, $cursorParam = ':pCursor')
     {
         $conn = self::getOracle();

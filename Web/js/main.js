@@ -14,7 +14,7 @@ function initPickupTimeToggle() {
   let isNow = true;
   timeBtn.addEventListener('click', () => {
     isNow = !isNow;
-    timeBtn.innerHTML = isNow ? '🕒 Pickup now ▾' : '📅 Schedule for later ▾';
+    timeBtn.innerHTML = isNow ? ' Pickup now ▾' : ' Schedule for later ▾';
   });
 }
 
@@ -36,7 +36,7 @@ function initSeePricesAction() {
       return;
     }
 
-    alert(`🎉 Route Found!\n\nPickup: ${pickupVal || 'Current Location'}\nDropoff: ${dropoffVal}\n\nRedirecting to sign in account to finalize booking...`);
+    alert(` Route Found!\n\nPickup: ${pickupVal || 'Current Location'}\nDropoff: ${dropoffVal}\n\nRedirecting to sign in account to finalize booking...`);
     window.location.href = 'pages/signin.php';
   });
 }

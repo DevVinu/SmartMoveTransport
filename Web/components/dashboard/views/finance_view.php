@@ -197,7 +197,7 @@
   <div
     style="background:var(--bg-card); border:1px solid var(--border-subtle); border-radius:var(--radius-lg); padding:1.5rem; margin-top:1.5rem;">
     <h2 style="font-size:1.05rem; font-weight:600; color:var(--text-white); margin-bottom:1rem;">Processed Commuter
-      Refunds &amp; Cancellations (Oracle: <code>refund</code>)</h2>
+      Refunds &amp; Cancellations (<code>refund</code>)</h2>
     <div style="overflow-x:auto;">
       <table class="tasks-table" style="width:100%; border-collapse:collapse;">
         <thead>
