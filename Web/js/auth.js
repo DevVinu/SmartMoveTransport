@@ -1,4 +1,4 @@
-// Auth tabs and dynamic category fields handler
+// Auth tabs
 document.addEventListener('DOMContentLoaded', () => {
   const roleButtons = document.querySelectorAll('.role-btn');
   const userRoleInput = document.getElementById('userRoleInput');

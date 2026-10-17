@@ -62,7 +62,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
         header("Location: passenger.php?view=" . urlencode($activeView));
         exit;
     }
-
+    // ticket booking procedure (prcBookingTicket)
     // Book trip via atomic PL/SQL stored procedure
     if ($action === 'bookTrip') {
         $tripId     = (int)($_POST['tripId'] ?? 0);
@@ -84,7 +84,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
         exit;
     }
 
-    // Cancel booking via atomic PL/SQL refund procedure
+    // Cancel booking 
     if ($action === 'cancelBooking') {
         $bookingId = (int)($_POST['bookingId'] ?? 0);
         $res = Database::callProcessRefund($bookingId, 2, 'Passenger online cancellation');
@@ -98,14 +98,14 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
         exit;
     }
 
-    // Submit review and rating to Oracle and MongoDB
+    // Submit review and rating 
     if ($action === 'submitReview') {
         $bookingId = (int)($_POST['bookingId'] ?? 0);
         $tripId    = (int)($_POST['tripId'] ?? 0);
         $rating    = max(1, min(5, (float)($_POST['rating'] ?? 5)));
         $comment   = trim($_POST['comment'] ?? '');
 
-        // Generate feedback ID and insert into Oracle feedback table
+        // Generate feedback ID 
         $fIdRow     = Database::queryOracle("SELECT NVL(MAX(feedbackId), 0) + 1 AS nextId FROM feedback");
         $feedbackId = (int)($fIdRow[0]['nextId'] ?? 1);
         Database::executeOracle("
@@ -119,7 +119,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
             ':comments' => $comment
         ]);
 
-        // Fetch journey context for MongoDB review record
+        // Fetch journey context for review record
         $tripInfo = Database::queryOracle("
             SELECT st.tripId, r.routeId, r.routeName, v.vehicleId, v.registrationNo, v.vehicleType,
                    d.driverId, (u.firstName || ' ' || u.lastName) AS driverName

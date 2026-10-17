@@ -89,7 +89,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
     exit;
   }
 
-  // Confirm payment
+  // Confirm payment PL/SQL
   if ($action === 'confirmPayment') {
     $payId = (int)($_POST['paymentId'] ?? 0);
     if ($payId > 0) {
@@ -461,7 +461,7 @@ if ($oracleUp) {
         ORDER BY v.vehicleId ASC
     ");
 
-  // Users list
+  
   // Users list
   $usersList = User::getAllWithDetails();
 
@@ -540,7 +540,7 @@ if ($mongoUp) {
   $mongoVehDocs = MongoService::getVehicleDocumentsAndMedia();
 }
 
-// Report queries
+// Report queries PL/SQL
 $activeReport = $_GET['report'] ?? 'frequentRoutes';
 $reportData = [];
 

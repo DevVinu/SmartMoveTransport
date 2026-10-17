@@ -40,7 +40,7 @@ unset($_SESSION['flash_success'], $_SESSION['flash_error']);
 if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
     $action = $_POST['action'] ?? '';
 
-    // Confirm passenger payment at boarding
+    // Confirm passenger payment at boarding PL/SQL
     if ($action === 'confirmPassengerPayment') {
         $paymentId = (int)($_POST['paymentId'] ?? 0);
         if ($paymentId > 0) {

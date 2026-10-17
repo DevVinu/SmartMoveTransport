@@ -17,16 +17,6 @@ $currentRole = strtoupper($role ?? 'ADMIN');
   </div>
 
   <div class="topbar-right">
-    <?php if (isset($oracleUp) && isset($mongoUp) && $currentRole !== 'ADMIN'): ?>
-      <div class="db-status-pill" title="Oracle DB Status">
-        <span class="status-dot <?php echo $oracleUp ? 'dot-green' : 'dot-red'; ?>"></span>
-        <span>Oracle <?php echo $oracleUp ? 'Live' : 'Mock/Offline'; ?></span>
-      </div>
-      <div class="db-status-pill" title="MongoDB Status">
-        <span class="status-dot <?php echo $mongoUp ? 'dot-green' : 'dot-red'; ?>"></span>
-        <span>MongoDB <?php echo $mongoUp ? 'Live' : 'Mock/Offline'; ?></span>
-      </div>
-    <?php endif; ?>
 
     <!-- User avatar -->
     <button class="topbar-avatar-btn" id="topbarUserBtn" type="button" title="<?php echo htmlspecialchars($fullName ?? 'User'); ?>">
